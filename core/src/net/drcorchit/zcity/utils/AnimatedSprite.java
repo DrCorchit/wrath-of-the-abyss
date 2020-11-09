@@ -1,0 +1,138 @@
+package net.drcorchit.zcity.utils;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+
+import javax.annotation.Nonnull;
+
+/**
+ * Handles locally-stored sprites possibly having multiple frames/animation
+ * Implements BaseDrawable but sets borders to 0
+ */
+public class AnimatedSprite extends BaseDrawable {
+	private float speed, index, xOffset, yOffset;
+	private final Color blend;
+	private SpriteList frames;
+
+	public AnimatedSprite(@Nonnull SpriteList frames) {
+		this.frames = frames;
+		speed = frames.length() < 2 ? 0 : 1;
+		index = 0;
+		blend = Color.WHITE.cpy();
+		resetDims();
+		xOffset = 0;
+		yOffset = 0;
+	}
+
+	public void resetDims() {
+		setLeftWidth(0);
+		setRightWidth(0);
+		setTopHeight(0);
+		setBottomHeight(0);
+		if (size() == 0) {
+			setMinWidth(0);
+			setMinHeight(0);
+		} else {
+			setMinWidth(frames.get(0).getRegionWidth());
+			setMinHeight(frames.get(0).getRegionHeight());
+		}
+	}
+
+	private TextureRegion getNextFrame() {
+		TextureRegion output = frames.get((int) index);
+		index += speed;
+		if (index < 0) {
+			index += frames.length();
+		} else if (index >= frames.length()) {
+			index -= frames.length();
+		}
+
+		return output;
+	}
+
+	public void draw(Batch batch, float x, float y) {
+		draw(batch, x, y, xOffset, yOffset, getMinWidth(), getMinHeight(), 1, 1, 0);
+	}
+
+	public void draw(Batch batch, float x, float y, float rotation) {
+		draw(batch, x, y, xOffset, yOffset, getMinWidth(), getMinHeight(), 1, 1, rotation);
+	}
+
+	@Override
+	public void draw(Batch batch, float x, float y, float width, float height) {
+		float xOff = xOffset * (width / getMinWidth());
+		float yOff = yOffset * (height / getMinHeight());
+
+		draw(batch, x, y, xOff, yOff, width, height, 1, 1, 0);
+	}
+
+	public void draw(Batch batch, float x, float y, float originX, float originY, float width, float height, float scaleX,
+					 float scaleY, float rotation) {
+		Color temp = batch.getColor().cpy();
+		batch.setColor(blend);
+		getCurrentTexture().draw(batch, x - originX, y - originY, originX, originY, width, height, scaleX, scaleY, rotation);
+		batch.setColor(temp);
+	}
+
+	public void setOffset(float xOffset, float yOffset) {
+		this.xOffset = xOffset;
+		this.yOffset = yOffset;
+	}
+
+	public int size() {
+		return frames.length();
+	}
+
+	public void setOffsetCentered() {
+		setOffset(getMinWidth() / 2, getMinHeight() / 2);
+	}
+
+	public void setBlend(Color color) {
+		blend.set(color);
+	}
+
+	public void setAlpha(float alpha) {
+		blend.a = alpha;
+	}
+
+	public float getIndex() {
+		return index;
+	}
+
+	public void setIndex(float index) {
+		this.index = index;
+	}
+
+	public float getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(float speed) {
+		this.speed = speed;
+	}
+
+	public SpriteList getFrames() {
+		return frames;
+	}
+
+	public void setFrames(SpriteList frames) {
+		this.frames = frames;
+		index = 0;
+	}
+
+	public TextureRegion getCurrentFrame() {
+		return frames.get(index);
+	}
+
+	public TextureRegionDrawable getCurrentTexture() {
+		return new TextureRegionDrawable(frames.get(index));
+	}
+
+	public void updateFrame() {
+		index += speed;
+		if (index >= frames.length()) index -= frames.length();
+	}
+}
