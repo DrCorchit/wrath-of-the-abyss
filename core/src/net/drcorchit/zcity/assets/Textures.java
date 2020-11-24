@@ -11,80 +11,26 @@ import java.io.File;
 
 public class Textures {
 
-	public static final Texture yields, globe, haze, glow, river, selectScreen, selectScreenBack;
-	public static final Texture viewMap, viewTechs, viewGovernment, viewDiplomacy, viewHistory, viewEmpire;
-	public static final Texture dropup, dropdown, refresh, left, right, menuArrow, background, background4k;
-	public static final Texture corner, edge, wedgeFlat, wedgeRound, selected, hex, hexBorder;
-	public static final Texture city, cityIcon, capitalIcon, cityIconDark, capitalIconDark;
-	public static final Texture fogOfWar, fogOfWarLight, checkbox, refresh2, quit, colorPickerBackdrop;
-	public static final Texture reply, collapse, expand, crosshairs, messageGreyout, white;
+	public static final Texture white;
+	public static final Texture torso, head, leftArm, rightArm, leftThigh, rightThigh;
+	public static final Texture leftForearm, rightForearm, leftCalf, rightCalf;
 
 	private static final Logger log;
 
 	static {
 		log = Logger.getLogger(Textures.class);
 
-		yields = initTexture("yields_back.png");
-		//globe = initTexture("globe_strip150.png");
-		globe = initTexture("loading_globe.png");
-		//glow = initTexture("glow.png");
-		glow = initTexture("glow_sheet.png");
-		haze = initTexture("haze.png");
-		river = initTexture("river_strip60.png");
-		selectScreen = initTexture("select_screen.png");
-		selectScreenBack = initTexture("select_screen_back.png");
-
-		viewMap = initTexture("view_map.png");
-		viewTechs = initTexture("view_techs.png");
-		viewGovernment = initTexture("view_government.png");
-		viewDiplomacy = initTexture("view_diplomacy.png");
-		viewHistory = initTexture("view_history.png");
-		viewEmpire = initTexture("view_empire.png");
-
-		hex = initTexture("hex.png");
-		hexBorder = initTexture("hex_border.png");
-		dropup = initTexture("dropup.png");
-		dropdown = initTexture("dropdown.png");
-		refresh = initTexture("refresh.png");
-		left = initTexture("left.png");
-		right = initTexture("right.png");
-		menuArrow = initTexture("menu_arrow.png");
-
-		corner = initTexture("border_corner.png");
-		edge = initTexture("border_edge.png");
-		wedgeFlat = initTexture("wedge_flat.png");
-		wedgeRound = initTexture("wedge_round.png");
-		selected = initTexture("selected_strip54.png");
-
-		city = initTexture("city.png");
-		cityIcon = initTexture("city_icon.png");
-		capitalIcon = initTexture("city_capital_icon.png");
-		cityIconDark = initTexture("city_icon_dark.png");
-		capitalIconDark = initTexture("city_capital_icon_dark_2.png");
-
-		fogOfWar = initTexture("fog_of_war.png");
-		fogOfWarLight = initTexture("fog_of_war_light.png");
-		checkbox = initTexture("checkbox.png");
-		refresh2 = initTexture("refresh2.png");
-		quit = initTexture("quit.png");
-		colorPickerBackdrop = initTexture("color_picker_backdrop.png");
-
-		reply = initTexture("reply.png");
-		collapse = initTexture("collapse.png");
-		expand = initTexture("expand.png");
-		crosshairs = initTexture("crosshair.png");
-		messageGreyout = initTexture("message_greyout.png");
 		white = initTexture("white.png");
-
-		///Applications/CivPlanet.app/Contents/app/resources/planets
-		File planets = IOUtils.getFileAsChildOfWorkingDir("resources/planets");
-		File img = IOUtils.randomImageFromFolder(planets);
-		background = new Texture(img == null ? null : img.getPath());
-		
-		///Applications/CivPlanet.app/Contents/app/resources/planets
-		File planets4k = IOUtils.getFileAsChildOfWorkingDir("resources/planets4k");
-		File img4k = IOUtils.randomImageFromFolder(planets4k);
-		background4k = new Texture(img4k == null ? null : img4k.getPath());
+		torso = initTexture("skins/0/torso.png");
+		head = initTexture("skins/0/head.png");
+		leftArm = initTexture("skins/0/arm_left.png");
+		rightArm = initTexture("skins/0/arm_right.png");
+		leftThigh = initTexture("skins/0/thigh_left.png");
+		rightThigh = initTexture("skins/0/thigh_right.png");
+		leftForearm = initTexture("skins/0/forearm_left.png");
+		rightForearm = initTexture("skins/0/forearm_right.png");
+		leftCalf = initTexture("skins/0/calf_left.png");
+		rightCalf = initTexture("skins/0/calf_right.png");
 	}
 
 	public static TextureRegion asRegion(Texture texture) {

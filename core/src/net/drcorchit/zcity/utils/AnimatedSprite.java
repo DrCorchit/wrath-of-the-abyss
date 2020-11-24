@@ -63,10 +63,18 @@ public class AnimatedSprite extends BaseDrawable {
 
 	@Override
 	public void draw(Batch batch, float x, float y, float width, float height) {
+		drawStretched(batch, x, y, width, height, 0);
+	}
+
+	public void drawStretched(Batch batch, float x, float y, float width, float height, float rotation) {
 		float xOff = xOffset * (width / getMinWidth());
 		float yOff = yOffset * (height / getMinHeight());
 
-		draw(batch, x, y, xOff, yOff, width, height, 1, 1, 0);
+		draw(batch, x, y, xOff, yOff, width, height, 1, 1, rotation);
+	}
+
+	public void drawScaled(Batch batch, float x, float y, float xScale, float yScale, float rotation) {
+		draw(batch, x, y, xOffset, yOffset, getMinWidth(), getMinHeight(), xScale, yScale, rotation);
 	}
 
 	public void draw(Batch batch, float x, float y, float originX, float originY, float width, float height, float scaleX,

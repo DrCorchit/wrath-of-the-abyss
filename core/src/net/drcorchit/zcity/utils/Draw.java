@@ -13,12 +13,16 @@ import java.util.List;
 public class Draw {
 
 	//Aids in drawing utilities
-	private final Batch batch;
+	private final PolygonSpriteBatch batch;
 	private final ShapeRenderer shape;
 
-	public Draw(Batch batch) {
+	public Draw(PolygonSpriteBatch batch) {
 		this.batch = batch;
 		shape = new ShapeRenderer();
+	}
+
+	public PolygonSpriteBatch getBatch() {
+		return batch;
 	}
 
 	//For consistency, drawing util functions should have their args ordered like this
@@ -39,8 +43,8 @@ public class Draw {
 	//Base case
 	public void drawSpriteScaled(float x, float y, float w, float h, @Nonnull TextureRegion texture, Direction align, Color color) {
 		Pair<Float, Float> offsets = align.getOffset(w, h);
-		x += offsets.key();
-		y += offsets.value();
+		x += offsets.key;
+		y += offsets.val;
 
 		drawSpriteScaled(texture, x, y, 0, w, h, color);
 	}
@@ -119,7 +123,7 @@ public class Draw {
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		shape.begin(ShapeRenderer.ShapeType.Filled);
 		shape.setColor(color);
-		shape.rect(x + offsets.key(), y + offsets.value(), w, h);
+		shape.rect(x + offsets.key, y + offsets.val, w, h);
 		shape.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 		batch.begin();
@@ -144,7 +148,7 @@ public class Draw {
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		shape.begin(ShapeRenderer.ShapeType.Line);
 		shape.setColor(color);
-		shape.rect(x + offsets.key(), y + offsets.value(), w, h);
+		shape.rect(x + offsets.key, y + offsets.val, w, h);
 		shape.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 		batch.begin();
@@ -161,7 +165,7 @@ public class Draw {
 		float w = layout.width, h = layout.height;
 		Pair<Float, Float> offsets = align.getOffset(w, h);
 		//x = x + offsets.key();
-		y = y + offsets.value() + h;
+		y = y + offsets.val + h;
 
 		font.draw(batch, layout, x, y);
 		return new Pair<>(w, h);
@@ -179,8 +183,8 @@ public class Draw {
 
 	public Pair<Float, Float> drawTextBackground(float x, float y, BitmapFont font, String text, float width, float border, Direction align, Color textColor, Color backColor) {
 		Pair<Float, Float> dims = calculateDimensions(font, text, width);
-		float borderW = dims.key() + border * 2;
-		float borderH = dims.value() + border * 2;
+		float borderW = dims.key + border * 2;
+		float borderH = dims.val + border * 2;
 		drawRectangle(x, y, borderW, borderH, align, backColor);
 		float textX = x + align.getHoriz() * border;
 		float textY = y + align.getVert() * border;
@@ -192,8 +196,8 @@ public class Draw {
 		float maxW = 0, maxH = 0;
 		for (String line : text) {
 			Pair<Float, Float> dims = calculateDimensions(font, line, width);
-			maxW = Math.max(maxW, dims.key());
-			maxH += dims.value();
+			maxW = Math.max(maxW, dims.key);
+			maxH += dims.val;
 		}
 		return new Pair<>(maxW, maxH);
 	}

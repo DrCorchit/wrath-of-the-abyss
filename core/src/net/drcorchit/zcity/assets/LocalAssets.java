@@ -6,12 +6,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import net.drcorchit.zcity.utils.IOUtils;
 import net.drcorchit.zcity.utils.Logger;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class LocalAssets {
 
@@ -27,7 +27,7 @@ public class LocalAssets {
 	private final AssetManager manager;
 	private final HashMap<String, Texture> localTextures;
 	private final HashMap<String, BitmapFont> localFonts;
-	private Skin skin;
+	private com.badlogic.gdx.scenes.scene2d.ui.Skin uiSkin;
 
 	public LocalAssets() {
 		manager = new AssetManager();
@@ -40,21 +40,34 @@ public class LocalAssets {
 		File resourcesFolder = IOUtils.getFileAsChildOfWorkingDir("resources");
 		File skinFile = IOUtils.getFileAsChildOfFolder(resourcesFolder, "textures/uiskin.json");
 		FileHandle handle = new FileHandle(skinFile);
-		skin = new Skin(handle);
+		uiSkin = new com.badlogic.gdx.scenes.scene2d.ui.Skin(handle);
 		log.info("load", "Loaded ui skin from local resources: " + skinFile.getPath());
 
 		File spriteFolder = IOUtils.getFileAsChildOfFolder(resourcesFolder, "sprites");
-		File[] sprites = IOUtils.listImageFiles(spriteFolder);
-		for (File sprite : sprites) {
-			String key = sprite.getName().toLowerCase();
-			Texture value = new Texture(sprite.getPath());
-			localTextures.put(key, value);
-			log.info("load", "Loaded sprite from local resources: " + sprite.getPath());
+		File[] sprites = IOUtils.listImageFilesAndFolders(spriteFolder);
+		Stack<String> path = new Stack<>();
+		dfsForSprites(path, sprites);
+	}
+
+	private void dfsForSprites(Stack<String> path, File[] sprites) {
+		for (File file : sprites) {
+			path.push(file.getName());
+
+			if (file.isDirectory()) {
+				dfsForSprites(path, IOUtils.listImageFilesAndFolders(file));
+			} else {
+				Texture value = new Texture(file.getPath());
+				String key = String.join("/", path);
+				localTextures.put(key, value);
+				log.info("load", "Loaded sprite from local resources: " + file.getPath());
+			}
+
+			path.pop();
 		}
 	}
 
-	public Skin getSkin() {
-		return skin;
+	public com.badlogic.gdx.scenes.scene2d.ui.Skin getUISkin() {
+		return uiSkin;
 	}
 
 	BitmapFont getOrMakeFont(String name, String fileName, int size) {
@@ -86,13 +99,13 @@ public class LocalAssets {
 	}
 
 	Texture getTexture(String name) {
-		return localTextures.get(name.toLowerCase());
+		return localTextures.get(name);
 	}
 
 	//Easy asset disposing, whenever you are done with it just dispose the manager instead of many files.
 	public void dispose() {
 		manager.dispose();
-		skin.dispose();
+		uiSkin.dispose();
 		for (Texture texture : localTextures.values()) {
 			texture.dispose();
 		}

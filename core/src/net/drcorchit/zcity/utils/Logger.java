@@ -25,7 +25,7 @@ public class Logger {
 	static {
 		String home = System.getProperty("user.home");
 		String now = Long.toString(System.currentTimeMillis());
-		String logFolderPath = String.format("%s/CivPlanet/logs", home);
+		String logFolderPath = String.format("%s/ZCity/logs", home);
 		logFolder = new File(logFolderPath);
 		String logFilePath = String.format("%s/%s.log", logFolderPath, now);
 		

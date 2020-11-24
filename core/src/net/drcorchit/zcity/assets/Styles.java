@@ -15,16 +15,16 @@ public class Styles {
 	public static final float BUTTON_HEIGHT = 75;
 	public static final float TEXT_FIELD_HEIGHT = BUTTON_HEIGHT;
 	public static final float TEXT_FIELD_WIDTH = 500;
-	private static final Skin skin = LocalAssets.getInstance().getSkin();
+	private static final com.badlogic.gdx.scenes.scene2d.ui.Skin UI_SKIN = LocalAssets.getInstance().getUISkin();
 
 	public static final Label.LabelStyle DEFAULT, DEFAULT_BACKLESS, DEFAULT_SMALL, DEFAULT_SMALL_BACKLESS, ERROR, VERSION, ERA;
 	public static final ImageButton.ImageButtonStyle IMAGE_BUTTON;
 	public static final TextButton.TextButtonStyle TECH_BUTTON, TECH_BUTTON_DISCOVERED, TECH_BUTTON_REACHABLE;
 	public static final TextButton.TextButtonStyle DEFAULT_BUTTON, ERROR_BUTTON, RED_BUTTON;
 
-	public static final NinePatchDrawable DR = (NinePatchDrawable) skin.getDrawable("default-round");
-	public static final NinePatchDrawable DRL = (NinePatchDrawable) skin.getDrawable("default-round-light");
-	public static final NinePatchDrawable DRD = (NinePatchDrawable) skin.getDrawable("default-round-dark");
+	public static final NinePatchDrawable DR = (NinePatchDrawable) UI_SKIN.getDrawable("default-round");
+	public static final NinePatchDrawable DRL = (NinePatchDrawable) UI_SKIN.getDrawable("default-round-light");
+	public static final NinePatchDrawable DRD = (NinePatchDrawable) UI_SKIN.getDrawable("default-round-dark");
 
 	public static final TextField.TextFieldStyle POST;
 
@@ -39,7 +39,7 @@ public class Styles {
 
 	static {
 		DEFAULT = new Label.LabelStyle();
-		DEFAULT.background = skin.getDrawable("default-round");
+		DEFAULT.background = UI_SKIN.getDrawable("default-round");
 		DEFAULT.font = Fonts.ERAS_24;
 		DEFAULT.fontColor = TECH_BLUE_LIGHT;
 
@@ -53,7 +53,7 @@ public class Styles {
 		DEFAULT_SMALL_BACKLESS.background = null;
 
 		ERROR = new Label.LabelStyle();
-		ERROR.background = skin.getDrawable("default-round-dark");
+		ERROR.background = UI_SKIN.getDrawable("default-round-dark");
 		ERROR.font = Fonts.ERAS_24;
 		ERROR.fontColor = ERROR_RED;
 
@@ -65,9 +65,9 @@ public class Styles {
 		ERA = new Label.LabelStyle(Fonts.EURO_36, TECH_BLUE_LIGHT);
 		//TECH = new Label.LabelStyle(Fonts.EURO_20, TECH_BLUE_LIGHT);
 
-		IMAGE_BUTTON = skin.get(ImageButton.ImageButtonStyle.class);
+		IMAGE_BUTTON = UI_SKIN.get(ImageButton.ImageButtonStyle.class);
 
-		TextButton.TextButtonStyle temp = skin.get(TextButton.TextButtonStyle.class);
+		TextButton.TextButtonStyle temp = UI_SKIN.get(TextButton.TextButtonStyle.class);
 		TECH_BUTTON = new TextButton.TextButtonStyle(temp);
 		TECH_BUTTON.font = Fonts.ERAS_16;
 		TECH_BUTTON.fontColor = TECH_BLUE_LIGHT;
@@ -89,7 +89,7 @@ public class Styles {
 		TECH_BUTTON_DISCOVERED.up = DRL.tint(TECH_BLUE_LIGHT);
 		TECH_BUTTON_DISCOVERED.down = DRL.tint(TECH_BLUE_DARK);
 
-		DEFAULT_BUTTON = skin.get(TextButton.TextButtonStyle.class);
+		DEFAULT_BUTTON = UI_SKIN.get(TextButton.TextButtonStyle.class);
 
 		ERROR_BUTTON = new TextButton.TextButtonStyle(DEFAULT_BUTTON);
 		ERROR_BUTTON.font = Fonts.ERAS_24;
@@ -105,11 +105,11 @@ public class Styles {
 		POST = new TextField.TextFieldStyle();
 		POST.font = Fonts.ERAS_16;
 		POST.fontColor = TECH_BLUE_LIGHT;
-		POST.background = new NinePatchDrawable(skin.getPatch("textfield"));
-		POST.cursor = new NinePatchDrawable(skin.getPatch("cursor"));
-		POST.selection = new TextureRegionDrawable(skin.getRegion("selection"));
+		POST.background = new NinePatchDrawable(UI_SKIN.getPatch("textfield"));
+		POST.cursor = new NinePatchDrawable(UI_SKIN.getPatch("cursor"));
+		POST.selection = new TextureRegionDrawable(UI_SKIN.getRegion("selection"));
 
-		PANE_STYLE_GRAY = LocalAssets.getInstance().getSkin().get(ScrollPane.ScrollPaneStyle.class);
+		PANE_STYLE_GRAY = LocalAssets.getInstance().getUISkin().get(ScrollPane.ScrollPaneStyle.class);
 		PANE_STYLE_BLACK = new ScrollPane.ScrollPaneStyle(PANE_STYLE_GRAY);
 		PANE_STYLE_BLACK.background = new ColorDrawable(Color.BLACK);
 	}
@@ -125,7 +125,7 @@ public class Styles {
 	}
 
 	public static TextButton.TextButtonStyle makeStyle(BitmapFont font) {
-		TextButton.TextButtonStyle style = skin.get(TextButton.TextButtonStyle.class);
+		TextButton.TextButtonStyle style = UI_SKIN.get(TextButton.TextButtonStyle.class);
 		style = new TextButton.TextButtonStyle(style);
 		style.font = font;
 		style.fontColor = TECH_BLUE_LIGHT;
@@ -137,7 +137,7 @@ public class Styles {
 	}
 
 	public static ImageButton.ImageButtonStyle makeStyle(Texture texture, int frames) {
-		ImageButton.ImageButtonStyle style = skin.get(ImageButton.ImageButtonStyle.class);
+		ImageButton.ImageButtonStyle style = UI_SKIN.get(ImageButton.ImageButtonStyle.class);
 		ImageButton.ImageButtonStyle copy = new ImageButton.ImageButtonStyle(style);
 
 		AnimatedSprite up = Textures.asSprite(texture, frames);

@@ -127,10 +127,10 @@ public class JsonUtils {
 
 		for (Pair<String, Integer> pair : knownEntries.sortedEntries()) {
 			//it's not practical to abbreviate values that occur too infrequently
-			if (pair.value() < 2) continue;
+			if (pair.val < 2) continue;
 			//avoid abbreviating entries that are already very short
-			if (pair.key().length() < 4) continue;
-			mappings.put(pair.key(), Integer.toString(i++));
+			if (pair.key.length() < 4) continue;
+			mappings.put(pair.key, Integer.toString(i++));
 			while (knownEntries.containsKey(Integer.toString(i))) i++;
 		}
 

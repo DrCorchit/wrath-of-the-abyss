@@ -14,10 +14,10 @@ public class IOUtils {
 		log = Logger.getLogger(IOUtils.class);
 		String homePath = System.getProperty("user.home");
 		File home = new File(homePath);
-		homeDir = getFileAsChildOfFolder(home, "CivPlanet");
+		homeDir = getFileAsChildOfFolder(home, "ZCity");
 		homeDir.mkdirs();
 
-		File macAppFolder = new File("/Applications/CivPlanet.app");
+		File macAppFolder = new File("/Applications/ZCity.app");
 		if (OSUtils.CURRENT_OS.equals(OSUtils.OS.MAC) && macAppFolder.exists()) {
 			workingDir = getFileAsChildOfFolder(macAppFolder, "Contents/app");
 		} else {
@@ -58,7 +58,11 @@ public class IOUtils {
 	public static File getFileAsChildOfWorkingDir(String relativePath) {
 		return getFileAsChildOfFolder(workingDir, relativePath);
 	}
-	
+
+	public static File[] listImageFilesAndFolders(File folder) {
+		return folder.listFiles((file) -> (file.isDirectory() || file.getName().endsWith(".jpg") || file.getName().endsWith(".png")));
+	}
+
 	public static File[] listImageFiles(File folder) {
 		return folder.listFiles((dir, name) -> (name.endsWith(".jpg") || name.endsWith(".png")));
 	}
