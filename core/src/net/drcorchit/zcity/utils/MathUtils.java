@@ -21,6 +21,11 @@ public class MathUtils {
 		return i < 0 ? i + divisor : i;
 	}
 
+	public static double mod(double value, double divisor) {
+		double i = value % divisor;
+		return i < 0 ? i + divisor : i;
+	}
+
 	public static double distance(double x1, double y1, double x2, double y2) {
 		double x = x2 - x1;
 		double y = y2 - y1;

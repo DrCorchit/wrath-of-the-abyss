@@ -1,0 +1,21 @@
+{
+  "speed": 0.01,
+  "frames": [
+    {
+      "left_shoulder": 0,
+      "right_shoulder": 180
+    },
+    {
+      "left_shoulder": 90,
+      "right_shoulder": 270
+    },
+    {
+      "left_shoulder": 180,
+      "right_shoulder": 0
+    },
+    {
+      "left_shoulder": 270,
+      "right_shoulder": 90
+    }
+  ]
+}

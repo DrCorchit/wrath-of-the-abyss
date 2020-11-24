@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import net.drcorchit.zcity.ZCityGame;
 import net.drcorchit.zcity.utils.Draw;
 import net.drcorchit.zcity.utils.FloatPair;
+import net.drcorchit.zcity.utils.MathUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,10 +22,15 @@ public class Skeleton {
 		root = new Joint("root", null, 0, 0);
 		joints = new HashMap<>();
 		joints.put(root.name, root);
+		scale = 1;
 	}
 
 	public Joint getJoint(String name) {
-		return joints.get(name);
+		Joint output = joints.get(name);
+		if (output == null) {
+			throw new IllegalArgumentException("No joint with that name was found in the skeleton: " + name);
+		}
+		return output;
 	}
 
 	public void draw(float x, float y) {
@@ -51,12 +57,23 @@ public class Skeleton {
 			angle = 0;
 		}
 
+		public void approachAngle(float angle, float tweening) {
+			angle = (float) MathUtils.mod(angle, 360.0);
+			if (angle - this.angle > 180) angle -= 360;
+			else if (this.angle - angle > 180) angle += 360;
+
+			float maxAngle = this.angle + tweening;
+			float minAngle = this.angle - tweening;
+			setAngle(MathUtils.clamp(minAngle, angle, maxAngle));
+			System.out.printf("joint %s %.1f < %.1f < %.1f -> %.1f\n", name, minAngle, angle, maxAngle, this.angle);
+		}
+
 		public void incrementAngle(float angle) {
-			this.angle += angle;
+			setAngle(this.angle + angle);
 		}
 
 		public void setAngle(float angle) {
-			this.angle = angle;
+			this.angle = (float) MathUtils.mod(angle, 360.0);
 		}
 
 		public float getAngle() {
@@ -86,7 +103,13 @@ public class Skeleton {
 			}
 		}
 
-		public Joint addJoint(String name, float distanceFromParent, float angleFromParent) {
+		public Joint addJointCartesian(String name, float parentX, float parentY) {
+			float distance = (float) MathUtils.distance(0, 0, parentX, parentY);
+			float angle = (float) Math.toDegrees(Math.atan2(parentY, parentX));
+			return addJointPolar(name, distance, angle);
+		}
+
+		public Joint addJointPolar(String name, float distanceFromParent, float angleFromParent) {
 			if (joints.containsKey(name)) {
 				throw new IllegalArgumentException("A joint already exists with that name: "+name);
 			}
@@ -112,23 +135,23 @@ public class Skeleton {
 
 	public static Skeleton newFemaleSkeleton() {
 		Skeleton output = new Skeleton();
-		Joint neck = output.root.addJoint("neck", 52.0385f, 92.203f);
+		Joint neck = output.root.addJointCartesian("neck", -3, 52);
 
-		Joint leftShoulder = output.root.addJoint("left_shoulder", 40.792f, 78.690f);
-		Joint leftElbow = leftShoulder.addJoint("left_elbow", 23, -85);
-		Joint leftHand = leftElbow.addJoint("left_hand", 35, -75);
+		Joint leftShoulder = output.root.addJointCartesian("left_shoulder", 10, 43);
+		Joint leftElbow = leftShoulder.addJointCartesian("left_elbow", 0, -24);
+		Joint leftHand = leftElbow.addJointCartesian("left_hand", 7, -34);
 
-		Joint rightShoulder = output.root.addJoint("right_shoulder", 42.544f, 113.550f);
-		Joint rightElbow = rightShoulder.addJoint("right_elbow", 22, -90);
-		Joint rightHand = rightElbow.addJoint("right_hand", 35, -70);
+		Joint rightShoulder = output.root.addJointCartesian("right_shoulder", -20, 40);
+		Joint rightElbow = rightShoulder.addJointCartesian("right_elbow", 0, -22);
+		Joint rightHand = rightElbow.addJointCartesian("right_hand", 10, -33);
 
-		Joint leftHip = output.root.addJoint("left_hip", 12.207f, -55.008f);
-		Joint leftKnee = leftHip.addJoint("left_knee", 34, -90);
-		Joint leftAnkle = leftKnee.addJoint("left_ankle", 54, -92);
+		Joint leftHip = output.root.addJointCartesian("left_hip", 7f, -11f);
+		Joint leftKnee = leftHip.addJointCartesian("left_knee", 0, -35);
+		Joint leftAnkle = leftKnee.addJointCartesian("left_ankle", -2, -57);
 
-		Joint rightHip = output.root.addJoint("right_hip", 14.866f, -109.65f);
-		Joint rightKnee = rightHip.addJoint("right_knee", 30, -102);
-		Joint rightAnkle = rightKnee.addJoint("right_ankle", 55, -95);
+		Joint rightHip = output.root.addJointCartesian("right_hip", -7, -15);
+		Joint rightKnee = rightHip.addJointCartesian("right_knee", -9, -32);
+		Joint rightAnkle = rightKnee.addJointCartesian("right_ankle", -3, -56);
 		return output;
 	}
 }

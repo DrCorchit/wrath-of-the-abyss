@@ -38,10 +38,6 @@ public class Skin {
 
 	public void addSprite(String jointName, AnimatedSprite sprite) {
 		Skeleton.Joint target = skeleton.getJoint(jointName);
-		if (target == null) {
-			throw new IllegalArgumentException("No joint with that name was found in the skeleton: " + jointName);
-		}
-
 		sprites.add(new SkinSprite(sprite, target, 0, 0, 0));
 	}
 
