@@ -48,7 +48,7 @@ public class ZCityGame extends ApplicationAdapter {
 		LocalAssets.getInstance().load();
 
 		skeleton = Skeletons.human_female.copy();
-		skeleton.scale = 1;
+		skeleton.scale = 1f;
 		//skeleton.getJoint("left_shoulder").setAngle(90);
 		//skeleton.getJoint("right_shoulder").setAngle(-90);
 

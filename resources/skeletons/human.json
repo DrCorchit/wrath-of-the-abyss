@@ -26,8 +26,8 @@
     },
     {
       "name": "right_shoulder",
-      "x": -20,
-      "y": 40,
+      "x": -18,
+      "y": 43,
       "children": [
         {
           "name": "right_elbow",

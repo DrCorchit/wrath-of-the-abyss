@@ -7,23 +7,23 @@ import com.google.common.collect.ImmutableList;
 
 public class SpriteList {
 	private final ImmutableList<TextureRegion> frames;
-	public final float xOrigin, yOrigin;
+	public final float originX, originY;
 
 	public static final SpriteList EMPTY = new SpriteList();
 
 	private SpriteList() {
 		frames = ImmutableList.of();
-		xOrigin = 0;
-		yOrigin = 0;
+		originX = 0;
+		originY = 0;
 	}
 
 	public SpriteList(Sprite sprite) {
 		frames = ImmutableList.of(sprite);
-		xOrigin = sprite.getOriginX();
-		yOrigin = sprite.getOriginY();
+		originX = sprite.getOriginX();
+		originY = sprite.getOriginY();
 	}
 
-	public SpriteList(Texture texture, int framesHoriz, int framesVert, float xOrigin, float yOrigin) {
+	public SpriteList(Texture texture, int framesHoriz, int framesVert, float originX, float originY) {
 		if (texture == null) throw new NullPointerException();
 		int w = texture.getWidth() / framesHoriz;
 		int h = texture.getHeight() / framesVert;
@@ -40,8 +40,8 @@ public class SpriteList {
 		}
 
 		frames = framesBuilder.build();
-		this.xOrigin = xOrigin;
-		this.yOrigin = yOrigin;
+		this.originX = originX;
+		this.originY = originY;
 	}
 
 	public TextureRegion get(double index) {

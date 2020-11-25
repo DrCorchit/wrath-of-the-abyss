@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
  * Implements BaseDrawable but sets borders to 0
  */
 public class AnimatedSprite extends BaseDrawable {
-	private float speed, index, xOffset, yOffset;
+	private float speed, index, originX, originY;
 	private final Color blend;
 	private SpriteList frames;
 
@@ -23,8 +23,8 @@ public class AnimatedSprite extends BaseDrawable {
 		index = 0;
 		blend = Color.WHITE.cpy();
 		resetDims();
-		xOffset = frames.xOrigin;
-		yOffset = frames.yOrigin;
+		originX = frames.originX;
+		originY = frames.originY;
 	}
 
 	public void resetDims() {
@@ -54,11 +54,11 @@ public class AnimatedSprite extends BaseDrawable {
 	}
 
 	public void draw(Batch batch, float x, float y) {
-		draw(batch, x, y, xOffset, yOffset, getMinWidth(), getMinHeight(), 1, 1, 0);
+		draw(batch, x, y, originX, originY, getMinWidth(), getMinHeight(), 1, 1, 0);
 	}
 
 	public void draw(Batch batch, float x, float y, float rotation) {
-		draw(batch, x, y, xOffset, yOffset, getMinWidth(), getMinHeight(), 1, 1, rotation);
+		draw(batch, x, y, originX, originY, getMinWidth(), getMinHeight(), 1, 1, rotation);
 	}
 
 	@Override
@@ -67,14 +67,14 @@ public class AnimatedSprite extends BaseDrawable {
 	}
 
 	public void drawStretched(Batch batch, float x, float y, float width, float height, float rotation) {
-		float xOff = xOffset * (width / getMinWidth());
-		float yOff = yOffset * (height / getMinHeight());
+		float xOff = originX * (width / getMinWidth());
+		float yOff = originY * (height / getMinHeight());
 
 		draw(batch, x, y, xOff, yOff, width, height, 1, 1, rotation);
 	}
 
 	public void drawScaled(Batch batch, float x, float y, float xScale, float yScale, float rotation) {
-		draw(batch, x, y, xOffset, yOffset, getMinWidth(), getMinHeight(), xScale, yScale, rotation);
+		draw(batch, x, y, originX, originY, getMinWidth(), getMinHeight(), xScale, yScale, rotation);
 	}
 
 	public void draw(Batch batch, float x, float y, float originX, float originY, float width, float height, float scaleX,
@@ -86,8 +86,8 @@ public class AnimatedSprite extends BaseDrawable {
 	}
 
 	public void setOffset(float xOffset, float yOffset) {
-		this.xOffset = xOffset;
-		this.yOffset = yOffset;
+		this.originX = xOffset;
+		this.originY = yOffset;
 	}
 
 	public int size() {

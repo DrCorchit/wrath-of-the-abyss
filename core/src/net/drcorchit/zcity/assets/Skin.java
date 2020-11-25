@@ -1,5 +1,6 @@
 package net.drcorchit.zcity.assets;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -29,10 +30,12 @@ public class Skin {
 			float x = JsonUtils.getFloat(sprite, "x", 0);
 			float y = JsonUtils.getFloat(sprite, "y", 0);
 			float angle = JsonUtils.getFloat(sprite, "angle", 0);
+			Color blend = JsonUtils.getColor(sprite, "blend", Color.WHITE);
 
 			Texture texture = LocalAssets.getInstance().getTexture(texturePath);
 			AnimatedSprite animatedSprite = Textures.asSpriteList(texture).asSprite();
 			animatedSprite.setOffset(x, y);
+			animatedSprite.setBlend(blend);
 			addSprite(jointName, animatedSprite, angle);
 		}
 	}
@@ -45,7 +48,17 @@ public class Skin {
 		sprites.add(new SkinSprite(sprite, jointName, angle));
 	}
 
-	private class SkinSprite {
+	public void draw(Skeleton skeleton, float x, float y) {
+		sprites.forEach(spr -> {
+			spr.sprite.updateFrame();
+			Skeleton.Joint joint = skeleton.getJoint(spr.jointName);
+			FloatPair jointPos = joint.getRootRelativePosition().add(x, y);
+			float rotation = joint.getAbsoluteAngle() + spr.angle;
+			spr.draw(jointPos.key, jointPos.val, skeleton.scale, rotation);
+		});
+	}
+
+	private static class SkinSprite {
 		private final String jointName;
 		private final AnimatedSprite sprite;
 		private final float angle;
@@ -59,15 +72,5 @@ public class Skin {
 		public void draw(float sprX, float sprY, float scale, float rotation) {
 			sprite.drawScaled(ZCityGame.draw().getBatch(), sprX, sprY, scale, scale, rotation);
 		}
-	}
-
-	public void draw(Skeleton skeleton, float x, float y) {
-		sprites.forEach(spr -> {
-			spr.sprite.updateFrame();
-			Skeleton.Joint joint = skeleton.getJoint(spr.jointName);
-			FloatPair jointPos = joint.getRootRelativePosition().add(x, y);
-			float rotation = joint.getAbsoluteAngle() + spr.angle;
-			spr.draw(jointPos.key, jointPos.val, skeleton.scale, rotation);
-		});
 	}
 }

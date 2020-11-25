@@ -28,13 +28,20 @@
       "joint": "root",
       "texture": "skins/0/torso.png",
       "x": 21,
-      "y": 12
+      "y": 20
     },
     {
       "joint": "neck",
-      "texture": "skins/0/head.png",
-      "x": 18,
-      "y": 20
+      "texture": "skins/0/head_2.png",
+      "x": 8,
+      "y": -1
+    },
+    {
+      "joint": "neck",
+      "texture": "skins/0/hair.png",
+      "x": 24,
+      "y": 26,
+      "blend": "#ff8000"
     },
     {
       "joint": "right_hip",

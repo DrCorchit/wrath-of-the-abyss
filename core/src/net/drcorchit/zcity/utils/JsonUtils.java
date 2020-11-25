@@ -274,8 +274,8 @@ public class JsonUtils {
 		return in.has(key) ? in.getAsJsonObject(key) : new JsonObject();
 	}
 
-	public static Color getColor(JsonObject in, String key) {
-		if (!in.has(key) || in.get(key).isJsonNull()) throw new IllegalArgumentException();
+	public static Color getColor(JsonObject in, String key, Color def) {
+		if (!in.has(key) || in.get(key).isJsonNull()) return def;
 		JsonElement ele = in.get(key);
 		if (ele.isJsonObject()) {
 			return readColor(ele.getAsJsonObject());
