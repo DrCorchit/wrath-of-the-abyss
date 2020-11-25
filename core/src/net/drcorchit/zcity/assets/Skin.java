@@ -33,6 +33,9 @@ public class Skin {
 			Color blend = JsonUtils.getColor(sprite, "blend", Color.WHITE);
 
 			Texture texture = LocalAssets.getInstance().getTexture(texturePath);
+			if (texture == null) {
+				throw new NullPointerException("Could not load texture: "+texturePath);
+			}
 			AnimatedSprite animatedSprite = Textures.asSpriteList(texture).asSprite();
 			animatedSprite.setOffset(x, y);
 			animatedSprite.setBlend(blend);

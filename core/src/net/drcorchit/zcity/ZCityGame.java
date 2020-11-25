@@ -2,16 +2,12 @@ package net.drcorchit.zcity;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import net.drcorchit.zcity.assets.*;
 import net.drcorchit.zcity.input.KeyboardInfo;
 import net.drcorchit.zcity.input.MouseInfo;
 import net.drcorchit.zcity.utils.Draw;
-import net.drcorchit.zcity.utils.Surface;
 
 public class ZCityGame extends ApplicationAdapter {
 	private static ZCityGame instance;
@@ -52,7 +48,7 @@ public class ZCityGame extends ApplicationAdapter {
 		//skeleton.getJoint("left_shoulder").setAngle(90);
 		//skeleton.getJoint("right_shoulder").setAngle(-90);
 
-		skin = Skins.loadSkin("0.json");
+		skin = Skins.loadSkin("2.json");
 		mouse.setH(Gdx.graphics.getHeight());
 	}
 
