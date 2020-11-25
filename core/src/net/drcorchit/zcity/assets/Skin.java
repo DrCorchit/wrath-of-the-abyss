@@ -7,8 +7,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.drcorchit.zcity.ZCityGame;
 import net.drcorchit.zcity.utils.AnimatedSprite;
-import net.drcorchit.zcity.utils.FloatPair;
 import net.drcorchit.zcity.utils.JsonUtils;
+import net.drcorchit.zcity.utils.MathUtils;
+import net.drcorchit.zcity.utils.Vector2;
 
 import java.util.ArrayList;
 
@@ -34,7 +35,7 @@ public class Skin {
 
 			Texture texture = LocalAssets.getInstance().getTexture(texturePath);
 			if (texture == null) {
-				throw new NullPointerException("Could not load texture: "+texturePath);
+				throw new NullPointerException("Could not load texture: " + texturePath);
 			}
 			AnimatedSprite animatedSprite = Textures.asSpriteList(texture).asSprite();
 			animatedSprite.setOffset(x, y);
@@ -52,12 +53,25 @@ public class Skin {
 	}
 
 	public void draw(Skeleton skeleton, float x, float y) {
+		draw(skeleton, new Vector2(x, y));
+	}
+
+	public void draw(Skeleton skeleton, Vector2 position) {
 		sprites.forEach(spr -> {
 			spr.sprite.updateFrame();
 			Skeleton.Joint joint = skeleton.getJoint(spr.jointName);
-			FloatPair jointPos = joint.getRootRelativePosition().add(x, y);
+			Vector2 jointPos = joint.getRootRelativePosition().add(position);
 			float rotation = joint.getAbsoluteAngle() + spr.angle;
-			spr.draw(jointPos.key, jointPos.val, skeleton.scale, rotation);
+			float xScale = skeleton.scale;
+			float yScale = skeleton.scale;
+
+			if (skeleton.flipped) {
+				jointPos = jointPos.mirrorAroundLine(position, 90);
+				rotation = MathUtils.mirrorAroundAxis(rotation, 0);
+				xScale *= -1;
+			}
+
+			spr.draw(jointPos.key, jointPos.val, xScale, yScale, rotation);
 		});
 	}
 
@@ -72,8 +86,8 @@ public class Skin {
 			this.angle = angle;
 		}
 
-		public void draw(float sprX, float sprY, float scale, float rotation) {
-			sprite.drawScaled(ZCityGame.draw().getBatch(), sprX, sprY, scale, scale, rotation);
+		public void draw(float sprX, float sprY, float xScale, float yScale, float rotation) {
+			sprite.drawScaled(ZCityGame.draw().getBatch(), sprX, sprY, xScale, yScale, rotation);
 		}
 	}
 }

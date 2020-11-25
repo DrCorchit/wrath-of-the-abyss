@@ -48,6 +48,12 @@ public class MathUtils {
 		else  return Math.max(0, value - decel);
 	}
 
+	//mirrors an angle around an axis
+	public static float mirrorAroundAxis(float angle, float axis) {
+		float dif = axis - angle;
+		return (float) mod(angle + dif * 2, 360);
+	}
+
 	@SafeVarargs
 	@Nonnull
 	public static <T extends Number> T max(T... nums) {

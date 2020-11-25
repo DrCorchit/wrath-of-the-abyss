@@ -37,29 +37,29 @@
       "y": 20
     },
     {
+      "joint": "root",
+      "texture": "skins/torsos/harness_upper_brown.png",
+      "x": 18,
+      "y": -21
+    },
+    {
       "joint": "neck",
       "texture": "skins/heads/head_2.png",
       "x": 9,
       "y": 0
     },
     {
-      "joint": "root",
-      "texture": "skins/torsos/red_top.png",
-      "x": 17,
-      "y": -1
-    },
-    {
       "joint": "neck",
       "texture": "skins/heads/hair_long.png",
       "x": 21,
       "y": 24,
-      "blend": "#ffff00"
+      "blend": "#ff6000"
     },
     {
       "joint": "root",
-      "texture": "skins/torsos/cloth.png",
-      "x": 19,
-      "y": 68
+      "texture": "skins/torsos/harness_lower_brown.png",
+      "x": 16,
+      "y": 20
     },
     {
       "joint": "right_hip",

@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import net.drcorchit.zcity.assets.*;
+import net.drcorchit.zcity.assets.animation.Animation;
+import net.drcorchit.zcity.assets.animation.Animations;
 import net.drcorchit.zcity.input.KeyboardInfo;
 import net.drcorchit.zcity.input.MouseInfo;
 import net.drcorchit.zcity.utils.Draw;
@@ -25,7 +27,7 @@ public class ZCityGame extends ApplicationAdapter {
 		return instance.draw;
 	}
 
-	private Skeleton skeleton;
+	private Skeleton skeleton, skeleton2;
 	private Skin skin;
 
 	public ZCityGame() {
@@ -44,11 +46,14 @@ public class ZCityGame extends ApplicationAdapter {
 		LocalAssets.getInstance().load();
 
 		skeleton = Skeletons.human_female.copy();
-		skeleton.scale = 1f;
+		skeleton.scale = 4f;
+		skeleton2 = Skeletons.human_female.copy();
+		skeleton2.scale = 1f;
+		skeleton2.flipped = true;
 		//skeleton.getJoint("left_shoulder").setAngle(90);
 		//skeleton.getJoint("right_shoulder").setAngle(-90);
 
-		skin = Skins.loadSkin("2.json");
+		skin = Skins.loadSkin("3.json");
 		mouse.setH(Gdx.graphics.getHeight());
 	}
 
@@ -69,11 +74,13 @@ public class ZCityGame extends ApplicationAdapter {
 		float x = 960;
 		float y = 540;
 		skin.draw(skeleton, x, y);
+		skin.draw(skeleton2, x + 400, y);
 		//skeleton.draw(x, y);
 
 		float angle = (float) Math.toDegrees(Math.atan2(mouse.y  -y, mouse.x - x));
 		//skeleton.getJoint("right_shoulder").setAngle(angle);
-		Animations.jogging.apply(skeleton,5f);
+		skeleton.animate(Animations.jogging, 5f);
+		skeleton2.animate(Animations.jogging, 5f);
 		batch.end();
 	}
 

@@ -5,8 +5,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.drcorchit.zcity.ZCityGame;
+import net.drcorchit.zcity.assets.animation.Animation;
+import net.drcorchit.zcity.assets.animation.AnimationState;
 import net.drcorchit.zcity.utils.Draw;
-import net.drcorchit.zcity.utils.FloatPair;
+import net.drcorchit.zcity.utils.Vector2;
 import net.drcorchit.zcity.utils.JsonUtils;
 import net.drcorchit.zcity.utils.MathUtils;
 
@@ -17,20 +19,28 @@ import java.util.HashMap;
 
 public class Skeleton {
 
+	private AnimationState animator;
+	//mirrors the skeleton around the vertical axis
+	public boolean flipped;
 	public float scale, horizontalOffset, verticalOffset;
 	@Nonnull
 	public final Joint root;
 	private final HashMap<String, Joint> joints;
 
-	public Skeleton() {
-		root = new Joint("root", null, 0, 0);
+	public Skeleton(JsonObject info) {
+		animator = new AnimationState();
+		scale = JsonUtils.getFloat(info, "scale", 1);
+		horizontalOffset = JsonUtils.getFloat(info, "x_offset", 0);
+		horizontalOffset = JsonUtils.getFloat(info, "y_offset", 0);
 		joints = new HashMap<>();
+		root = recursivelyLoadJoints(info, null);
 		joints.put(root.name, root);
-		scale = 1;
 	}
 
 	//deep copy constructor
 	private Skeleton(Skeleton other) {
+		animator = new AnimationState();
+		flipped = other.flipped;
 		scale = other.scale;
 		horizontalOffset = other.horizontalOffset;
 		verticalOffset = other.horizontalOffset;
@@ -39,13 +49,9 @@ public class Skeleton {
 		joints.put(root.name, root);
 	}
 
-	public Skeleton(JsonObject info) {
-		scale = JsonUtils.getFloat(info, "scale", 1);
-		horizontalOffset = JsonUtils.getFloat(info, "x_offset", 0);
-		horizontalOffset = JsonUtils.getFloat(info, "y_offset", 0);
-		joints = new HashMap<>();
-		root = recursivelyLoadJoints(info, null);
-		joints.put(root.name, root);
+	public void animate(Animation animation, float tweening) {
+		animator.setAnimation(animation);
+		animator.apply(this, tweening);
 	}
 
 	private Joint recursivelyCopyJoints(Joint base, Joint parent) {
@@ -76,7 +82,7 @@ public class Skeleton {
 	}
 
 	public void draw(float x, float y) {
-		root.draw(new FloatPair(x, y));
+		root.draw(new Vector2(x, y));
 	}
 
 	public class Joint {
@@ -149,15 +155,11 @@ public class Skeleton {
 			this.angle = (float) MathUtils.mod(angle, 360.0);
 		}
 
-		public float getAngle() {
-			return angle;
-		}
-
 		public float getAbsoluteAngle() {
 			return parent == null ? angle : parent.getAbsoluteAngle() + angle;
 		}
 
-		public FloatPair getRootRelativePosition() {
+		public Vector2 getRootRelativePosition() {
 			if (parent == null) {
 				return getParentRelativePosition();
 			} else {
@@ -165,7 +167,7 @@ public class Skeleton {
 			}
 		}
 
-		public FloatPair getParentRelativePosition() {
+		public Vector2 getParentRelativePosition() {
 			float distance, angle;
 			if (parent == null) {
 				distance = (float) Math.hypot(horizontalOffset, verticalOffset);
@@ -177,32 +179,20 @@ public class Skeleton {
 
 			float x = (float) (scale * distance * Math.cos(Math.toRadians(angle)));
 			float y = (float) (scale * distance * Math.sin(Math.toRadians(angle)));
-			return new FloatPair(x, y);
+			return new Vector2(x, y);
 		}
 
-		public Joint addJointCartesian(String name, float parentX, float parentY) {
-			float distance = (float) MathUtils.distance(0, 0, parentX, parentY);
-			float angle = (float) Math.toDegrees(Math.atan2(parentY, parentX));
-			return addJointPolar(name, distance, angle);
-		}
-
-		public Joint addJointPolar(String name, float distanceFromParent, float angleFromParent) {
-			Joint child = new Joint(name, this, distanceFromParent, angleFromParent);
-			return addJoint(child);
-		}
-
-		private Joint addJoint(Joint child) {
+		private void addJoint(Joint child) {
 			if (joints.containsKey(child.name)) {
 				throw new IllegalArgumentException("A joint already exists with that name: " + name);
 			}
 			joints.put(child.name, child);
 			children.add(child);
-			return child;
 		}
 
-		private void draw(FloatPair parentPos) {
+		private void draw(Vector2 parentPos) {
 			Draw draw = ZCityGame.getInstance().draw;
-			FloatPair myPos = parentPos.add(getParentRelativePosition());
+			Vector2 myPos = parentPos.add(getParentRelativePosition());
 			Sprites.white.draw(draw.getBatch(), myPos.key, myPos.val);
 			draw.drawLine(parentPos.key, parentPos.val, myPos.key, myPos.val, 2, Color.RED);
 			children.forEach(child -> child.draw(myPos));
