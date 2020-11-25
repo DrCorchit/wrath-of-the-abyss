@@ -1,9 +1,13 @@
 package net.drcorchit.zcity.assets;
 
 import com.badlogic.gdx.graphics.Color;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.drcorchit.zcity.ZCityGame;
 import net.drcorchit.zcity.utils.Draw;
 import net.drcorchit.zcity.utils.FloatPair;
+import net.drcorchit.zcity.utils.JsonUtils;
 import net.drcorchit.zcity.utils.MathUtils;
 
 import javax.annotation.Nonnull;
@@ -13,7 +17,7 @@ import java.util.HashMap;
 
 public class Skeleton {
 
-	public float scale;
+	public float scale, horizontalOffset, verticalOffset;
 	@Nonnull
 	public final Joint root;
 	private final HashMap<String, Joint> joints;
@@ -23,6 +27,44 @@ public class Skeleton {
 		joints = new HashMap<>();
 		joints.put(root.name, root);
 		scale = 1;
+	}
+
+	//deep copy constructor
+	private Skeleton(Skeleton other) {
+		scale = other.scale;
+		horizontalOffset = other.horizontalOffset;
+		verticalOffset = other.horizontalOffset;
+		joints = new HashMap<>();
+		root = recursivelyCopyJoints(other.root, null);
+		joints.put(root.name, root);
+	}
+
+	public Skeleton(JsonObject info) {
+		scale = JsonUtils.getFloat(info, "scale", 1);
+		horizontalOffset = JsonUtils.getFloat(info, "x_offset", 0);
+		horizontalOffset = JsonUtils.getFloat(info, "y_offset", 0);
+		joints = new HashMap<>();
+		root = recursivelyLoadJoints(info, null);
+		joints.put(root.name, root);
+	}
+
+	private Joint recursivelyCopyJoints(Joint base, Joint parent) {
+		Joint newJoint = new Joint(base, parent);
+		base.children.forEach(child -> newJoint.addJoint(recursivelyCopyJoints(child, newJoint)));
+		return newJoint;
+	}
+
+	private Joint recursivelyLoadJoints(JsonObject base, Joint parent) {
+		Joint newJoint = new Joint(base, parent);
+		JsonArray children = JsonUtils.getArray(base, "children");
+		for (JsonElement ele : children) {
+			newJoint.addJoint(recursivelyLoadJoints(ele.getAsJsonObject(), newJoint));
+		}
+		return newJoint;
+	}
+
+	public Skeleton copy() {
+		return new Skeleton(this);
 	}
 
 	public Joint getJoint(String name) {
@@ -57,6 +99,38 @@ public class Skeleton {
 			angle = 0;
 		}
 
+		private Joint(Joint other, @Nullable Joint parent) {
+			this.name = other.name;
+			this.parent = parent;
+			children = new ArrayList<>();
+			this.distanceFromParent = other.distanceFromParent;
+			this.angleFromParent = other.angleFromParent;
+			this.angle = other.angle;
+		}
+
+		private Joint(JsonObject info, @Nullable Joint parent) {
+			this.name = parent == null ? "root" : info.get("name").getAsString();
+			this.parent = parent;
+			children = new ArrayList<>();
+			if (info.has("x") && info.has("y")) {
+				float x = info.get("x").getAsFloat();
+				float y = info.get("y").getAsFloat();
+				float r = (float) Math.hypot(x, y);
+				float theta = (float) Math.toDegrees(Math.atan2(y, x));
+				distanceFromParent = r;
+				angleFromParent = theta;
+			} else if (info.has("r") && info.has("theta")) {
+				float r = info.get("r").getAsFloat();
+				float theta = info.get("theta").getAsFloat();
+				distanceFromParent = r;
+				angleFromParent = theta;
+			} else {
+				distanceFromParent = 0;
+				angleFromParent = 0;
+			}
+			this.angle = 0;
+		}
+
 		public void approachAngle(float angle, float tweening) {
 			angle = (float) MathUtils.mod(angle, 360.0);
 			if (angle - this.angle > 180) angle -= 360;
@@ -65,7 +139,6 @@ public class Skeleton {
 			float maxAngle = this.angle + tweening;
 			float minAngle = this.angle - tweening;
 			setAngle(MathUtils.clamp(minAngle, angle, maxAngle));
-			System.out.printf("joint %s %.1f < %.1f < %.1f -> %.1f\n", name, minAngle, angle, maxAngle, this.angle);
 		}
 
 		public void incrementAngle(float angle) {
@@ -86,21 +159,25 @@ public class Skeleton {
 
 		public FloatPair getRootRelativePosition() {
 			if (parent == null) {
-				return new FloatPair(0f, 0f);
+				return getParentRelativePosition();
 			} else {
 				return parent.getRootRelativePosition().add(getParentRelativePosition());
 			}
 		}
 
 		public FloatPair getParentRelativePosition() {
+			float distance, angle;
 			if (parent == null) {
-				return new FloatPair(0f, 0f);
+				distance = (float) Math.hypot(horizontalOffset, verticalOffset);
+				angle = (float) Math.toDegrees(Math.atan2(verticalOffset, horizontalOffset)) + this.angle;
 			} else {
-				float angle = getAbsoluteAngle() + angleFromParent - this.angle;
-				float x = (float) (scale * distanceFromParent * Math.cos(Math.toRadians(angle)));
-				float y = (float) (scale * distanceFromParent * Math.sin(Math.toRadians(angle)));
-				return new FloatPair(x, y);
+				distance = distanceFromParent;
+				angle = getAbsoluteAngle() + angleFromParent - this.angle;
 			}
+
+			float x = (float) (scale * distance * Math.cos(Math.toRadians(angle)));
+			float y = (float) (scale * distance * Math.sin(Math.toRadians(angle)));
+			return new FloatPair(x, y);
 		}
 
 		public Joint addJointCartesian(String name, float parentX, float parentY) {
@@ -110,10 +187,14 @@ public class Skeleton {
 		}
 
 		public Joint addJointPolar(String name, float distanceFromParent, float angleFromParent) {
-			if (joints.containsKey(name)) {
-				throw new IllegalArgumentException("A joint already exists with that name: "+name);
-			}
 			Joint child = new Joint(name, this, distanceFromParent, angleFromParent);
+			return addJoint(child);
+		}
+
+		private Joint addJoint(Joint child) {
+			if (joints.containsKey(child.name)) {
+				throw new IllegalArgumentException("A joint already exists with that name: " + name);
+			}
 			joints.put(child.name, child);
 			children.add(child);
 			return child;
@@ -131,27 +212,5 @@ public class Skeleton {
 		public String toString() {
 			return parent == null ? name : parent.toString() + ":" + name;
 		}
-	}
-
-	public static Skeleton newFemaleSkeleton() {
-		Skeleton output = new Skeleton();
-		Joint neck = output.root.addJointCartesian("neck", -3, 52);
-
-		Joint leftShoulder = output.root.addJointCartesian("left_shoulder", 10, 43);
-		Joint leftElbow = leftShoulder.addJointCartesian("left_elbow", 0, -24);
-		Joint leftHand = leftElbow.addJointCartesian("left_hand", 7, -34);
-
-		Joint rightShoulder = output.root.addJointCartesian("right_shoulder", -20, 40);
-		Joint rightElbow = rightShoulder.addJointCartesian("right_elbow", 0, -22);
-		Joint rightHand = rightElbow.addJointCartesian("right_hand", 10, -33);
-
-		Joint leftHip = output.root.addJointCartesian("left_hip", 7f, -11f);
-		Joint leftKnee = leftHip.addJointCartesian("left_knee", 0, -35);
-		Joint leftAnkle = leftKnee.addJointCartesian("left_ankle", -2, -57);
-
-		Joint rightHip = output.root.addJointCartesian("right_hip", -7, -15);
-		Joint rightKnee = rightHip.addJointCartesian("right_knee", -9, -32);
-		Joint rightAnkle = rightKnee.addJointCartesian("right_ankle", -3, -56);
-		return output;
 	}
 }

@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.drcorchit.zcity.utils.IOUtils;
 import net.drcorchit.zcity.utils.JsonUtils;
+import net.drcorchit.zcity.utils.MathUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,25 +16,41 @@ public class Animations {
 
 	private static final File ANIMATION_FOLDER = IOUtils.getFileAsChildOfWorkingDir("resources/animations");
 	public static final Animation windmill = loadLoop("windmill.json");
+	public static final Animation jogging = loadLoop("jogging.json");
 
 	public interface Animation {
-		default void update(Skeleton skeleton) {
-			update(skeleton, 360);
+		float getDefaultSpeed();
+
+		default Frame update() {
+			return update(getDefaultSpeed());
 		}
 
-		void update(Skeleton skeleton, float tweening);
+		Frame update(float speed);
+
+		default void apply(Skeleton skeleton, float tweening) {
+			apply(skeleton, getDefaultSpeed(), tweening);
+		}
+
+		default void apply(Skeleton skeleton, float speed, float tweening) {
+			update(speed).apply(skeleton, tweening * (speed / getDefaultSpeed()));
+		}
 	}
 
 	public static class LoopingAnimation implements Animation {
 		private final ImmutableList<Frame> frames;
-		private float index, speed;
+		private final float speed;
+		private float index;
 
 		@Override
-		public void update(Skeleton skeleton, float tweening) {
+		public float getDefaultSpeed() {
+			return speed;
+		}
+
+		@Override
+		public Frame update(float speed) {
 			int frameIndex = (int) (index % frames.size());
-			Frame current = frames.get(frameIndex);
-			current.apply(skeleton, tweening);
-			index += speed;
+			index = (float) MathUtils.mod(index + speed, frames.size());
+			return frames.get(frameIndex);
 		}
 
 		public LoopingAnimation(JsonObject info) {
@@ -61,9 +78,18 @@ public class Animations {
 		}
 
 		private void apply(Skeleton skeleton, float tweening) {
-			angles.forEach((jointName, angle) -> {
-				Skeleton.Joint joint = skeleton.getJoint(jointName);
-				joint.approachAngle(angle, tweening);
+			angles.forEach((jointName, value) -> {
+				switch (jointName) {
+					case "x_offset":
+						skeleton.horizontalOffset = value;
+						break;
+					case "y_offset":
+						skeleton.verticalOffset = value;
+						break;
+					default:
+						Skeleton.Joint joint = skeleton.getJoint(jointName);
+						joint.approachAngle(value, tweening);
+				}
 			});
 		}
 	}

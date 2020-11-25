@@ -1,73 +1,73 @@
 package net.drcorchit.zcity.assets;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.Texture;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.drcorchit.zcity.ZCityGame;
 import net.drcorchit.zcity.utils.AnimatedSprite;
 import net.drcorchit.zcity.utils.FloatPair;
-import net.drcorchit.zcity.utils.Pair;
+import net.drcorchit.zcity.utils.JsonUtils;
 
 import java.util.ArrayList;
 
 public class Skin {
 
-	private Skeleton skeleton;
-	private ArrayList<SkinSprite> sprites;
+	private final ArrayList<SkinSprite> sprites;
 
-	public Skin(Skeleton skeleton) {
-		this.skeleton = skeleton;
+	public Skin() {
 		sprites = new ArrayList<>();
 	}
 
-	public static Skin newFemaleSkin(Skeleton skeleton) {
-		Skin output = new Skin(skeleton);
+	public Skin(JsonObject info) {
+		this();
+		JsonArray sprites = JsonUtils.getArray(info, "sprites");
+		for (JsonElement ele : sprites) {
+			JsonObject sprite = ele.getAsJsonObject();
+			String jointName = sprite.get("joint").getAsString();
+			String texturePath = sprite.get("texture").getAsString();
+			float x = JsonUtils.getFloat(sprite, "x", 0);
+			float y = JsonUtils.getFloat(sprite, "y", 0);
+			float angle = JsonUtils.getFloat(sprite, "angle", 0);
 
-		output.addSprite("left_shoulder", Sprites.leftArm0);
-		output.addSprite("left_elbow", Sprites.leftForearm0);
-		output.addSprite("left_hip", Sprites.leftThigh0);
-		output.addSprite("left_knee", Sprites.leftCalf0);
-
-		output.addSprite("root", Sprites.torso0);
-		output.addSprite("neck", Sprites.head0);
-
-		output.addSprite("right_hip", Sprites.rightThigh0);
-		output.addSprite("right_knee", Sprites.rightCalf0);
-		output.addSprite("right_shoulder", Sprites.rightArm0);
-		output.addSprite("right_elbow", Sprites.rightForearm0);
-		return output;
+			Texture texture = LocalAssets.getInstance().getTexture(texturePath);
+			AnimatedSprite animatedSprite = Textures.asSpriteList(texture).asSprite();
+			animatedSprite.setOffset(x, y);
+			addSprite(jointName, animatedSprite, angle);
+		}
 	}
 
 	public void addSprite(String jointName, AnimatedSprite sprite) {
-		Skeleton.Joint target = skeleton.getJoint(jointName);
-		sprites.add(new SkinSprite(sprite, target, 0, 0, 0));
+		addSprite(jointName, sprite, 0);
+	}
+
+	public void addSprite(String jointName, AnimatedSprite sprite, float angle) {
+		sprites.add(new SkinSprite(sprite, jointName, angle));
 	}
 
 	private class SkinSprite {
-		private final Skeleton.Joint joint;
+		private final String jointName;
 		private final AnimatedSprite sprite;
-		private final float r, theta, angle;
+		private final float angle;
 
-		private SkinSprite(AnimatedSprite sprite, Skeleton.Joint joint, float r, float theta, float angle) {
+		private SkinSprite(AnimatedSprite sprite, String jointName, float angle) {
 			this.sprite = sprite;
-			this.joint = joint;
-			this.r = r;
-			this.theta = theta;
+			this.jointName = jointName;
 			this.angle = angle;
 		}
 
-		public void draw(float sprX, float sprY, float rotation) {
-			sprite.drawScaled(ZCityGame.draw().getBatch(), sprX, sprY, skeleton.scale, skeleton.scale, rotation);
+		public void draw(float sprX, float sprY, float scale, float rotation) {
+			sprite.drawScaled(ZCityGame.draw().getBatch(), sprX, sprY, scale, scale, rotation);
 		}
 	}
 
-	public void draw(float x, float y) {
+	public void draw(Skeleton skeleton, float x, float y) {
 		sprites.forEach(spr -> {
-			FloatPair jointPos = spr.joint.getRootRelativePosition().add(x, y);
-			float jointAngle = spr.joint.getAbsoluteAngle();
-			float offsetAngle = jointAngle + spr.theta;
-			float sprX = (float) (jointPos.key + spr.r * Math.cos(Math.toRadians(offsetAngle)));
-			float sprY = (float) (jointPos.val + spr.r * Math.sin(Math.toRadians(offsetAngle)));
-			float rotation = spr.joint.getAbsoluteAngle() + spr.angle;
-			spr.draw(sprX, sprY, rotation);
+			spr.sprite.updateFrame();
+			Skeleton.Joint joint = skeleton.getJoint(spr.jointName);
+			FloatPair jointPos = joint.getRootRelativePosition().add(x, y);
+			float rotation = joint.getAbsoluteAngle() + spr.angle;
+			spr.draw(jointPos.key, jointPos.val, skeleton.scale, rotation);
 		});
 	}
 }

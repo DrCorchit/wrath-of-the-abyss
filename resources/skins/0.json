@@ -1,0 +1,64 @@
+{
+  "sprites": [
+    {
+      "joint": "left_shoulder",
+      "texture": "skins/0/arm_left.png",
+      "x": 6,
+      "y": 24
+    },
+    {
+      "joint": "left_elbow",
+      "texture": "skins/0/forearm_left.png",
+      "x": 2,
+      "y": 41
+    },
+    {
+      "joint": "left_hip",
+      "texture": "skins/0/thigh_left.png",
+      "x": 8,
+      "y": 39
+    },
+    {
+      "joint": "left_knee",
+      "texture": "skins/0/calf_left.png",
+      "x": 9,
+      "y": 62
+    },
+    {
+      "joint": "root",
+      "texture": "skins/0/torso.png",
+      "x": 21,
+      "y": 12
+    },
+    {
+      "joint": "neck",
+      "texture": "skins/0/head.png",
+      "x": 18,
+      "y": 20
+    },
+    {
+      "joint": "right_hip",
+      "texture": "skins/0/thigh_right.png",
+      "x": 14,
+      "y": 32
+    },
+    {
+      "joint": "right_knee",
+      "texture": "skins/0/calf_right.png",
+      "x": 10,
+      "y": 63
+    },
+    {
+      "joint": "right_shoulder",
+      "texture": "skins/0/arm_right.png",
+      "x": 4,
+      "y": 24
+    },
+    {
+      "joint": "right_elbow",
+      "texture": "skins/0/forearm_right.png",
+      "x": 1,
+      "y": 41
+    }
+  ]
+}

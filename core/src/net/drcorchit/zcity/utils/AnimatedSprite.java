@@ -23,8 +23,8 @@ public class AnimatedSprite extends BaseDrawable {
 		index = 0;
 		blend = Color.WHITE.cpy();
 		resetDims();
-		xOffset = 0;
-		yOffset = 0;
+		xOffset = frames.xOrigin;
+		yOffset = frames.yOrigin;
 	}
 
 	public void resetDims() {

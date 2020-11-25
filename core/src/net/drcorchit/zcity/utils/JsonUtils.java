@@ -250,6 +250,10 @@ public class JsonUtils {
 		return info.has(key) ? info.get(key).getAsLong() : def;
 	}
 
+	public static float getFloat(JsonObject in, String key, float def) {
+		return in.has(key) ? in.get(key).getAsFloat() : def;
+	}
+
 	public static double getDouble(JsonObject in, String key, double def) {
 		return in.has(key) ? in.get(key).getAsDouble() : def;
 	}

@@ -140,11 +140,11 @@ public class Styles {
 		ImageButton.ImageButtonStyle style = UI_SKIN.get(ImageButton.ImageButtonStyle.class);
 		ImageButton.ImageButtonStyle copy = new ImageButton.ImageButtonStyle(style);
 
-		AnimatedSprite up = Textures.asSprite(texture, frames);
+		AnimatedSprite up = Textures.asSpriteList(texture, frames, 1, 0, 0).asSprite();
 		up.setBlend(TECH_BLUE_LIGHT);
 		copy.imageUp = up;
 
-		AnimatedSprite down = Textures.asSprite(texture, frames);
+		AnimatedSprite down = Textures.asSpriteList(texture, frames, 1, 0, 0).asSprite();
 		down.setBlend(Color.WHITE);
 		copy.imageDown = down;
 		return copy;

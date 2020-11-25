@@ -47,12 +47,12 @@ public class ZCityGame extends ApplicationAdapter {
 
 		LocalAssets.getInstance().load();
 
-		skeleton = Skeleton.newFemaleSkeleton();
+		skeleton = Skeletons.human_female.copy();
 		skeleton.scale = 1;
 		//skeleton.getJoint("left_shoulder").setAngle(90);
 		//skeleton.getJoint("right_shoulder").setAngle(-90);
 
-		skin = Skin.newFemaleSkin(skeleton);
+		skin = Skins.loadSkin("0.json");
 		mouse.setH(Gdx.graphics.getHeight());
 	}
 
@@ -70,14 +70,14 @@ public class ZCityGame extends ApplicationAdapter {
 
 		batch.begin();
 
-		float x = 540;
-		float y = 200;
-		skin.draw(x, y);
-		skeleton.draw(x, y);
+		float x = 960;
+		float y = 540;
+		skin.draw(skeleton, x, y);
+		//skeleton.draw(x, y);
 
 		float angle = (float) Math.toDegrees(Math.atan2(mouse.y  -y, mouse.x - x));
 		//skeleton.getJoint("right_shoulder").setAngle(angle);
-		Animations.windmill.update(skeleton, .9f);
+		Animations.jogging.apply(skeleton,5f);
 		batch.end();
 	}
 

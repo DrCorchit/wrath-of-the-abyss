@@ -1,0 +1,85 @@
+{
+  "children": [
+    {
+      "name": "neck",
+      "x": -3,
+      "y": 52
+    },
+    {
+      "name": "left_shoulder",
+      "x": 10,
+      "y": 43,
+      "children": [
+        {
+          "name": "left_elbow",
+          "x": 0,
+          "y": -24,
+          "children": [
+            {
+              "name": "left_hand",
+              "x": 7,
+              "y": -34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right_shoulder",
+      "x": -20,
+      "y": 40,
+      "children": [
+        {
+          "name": "right_elbow",
+          "x": 0,
+          "y": -22,
+          "children": [
+            {
+              "name": "right_hand",
+              "x": 10,
+              "y": -33
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "left_hip",
+      "x": 7,
+      "y": -11,
+      "children": [
+        {
+          "name": "left_knee",
+          "x": 0,
+          "y": -35,
+          "children": [
+            {
+              "name": "left_ankle",
+              "x": -2,
+              "y": -57
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right_hip",
+      "x": -7,
+      "y": -15,
+      "children": [
+        {
+          "name": "right_knee",
+          "x": -9,
+          "y": -32,
+          "children": [
+            {
+              "name": "right_ankle",
+              "x": -3,
+              "y": -56
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
