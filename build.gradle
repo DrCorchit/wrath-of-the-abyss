@@ -22,7 +22,7 @@ allprojects {
 
     version = '1.0'
     ext {
-        appName = "zcity"
+        appName = "dungeonraiders"
         gdxVersion = '1.9.12'
         roboVMVersion = '2.3.11'
         box2DLightsVersion = '1.5'
