@@ -2,6 +2,7 @@ package net.drcorchit.zcity;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import net.drcorchit.zcity.assets.*;
@@ -28,7 +29,7 @@ public class ZCityGame extends ApplicationAdapter {
 	}
 
 	private Skeleton skeleton, skeleton2;
-	private Skin skin;
+	private Skin skin1, skin2;
 
 	public ZCityGame() {
 		super();
@@ -46,14 +47,15 @@ public class ZCityGame extends ApplicationAdapter {
 		LocalAssets.getInstance().load();
 
 		skeleton = Skeletons.human_female.copy();
-		skeleton.scale = 4f;
+		skeleton.scale = 1f;
 		skeleton2 = Skeletons.human_female.copy();
 		skeleton2.scale = 1f;
-		skeleton2.flipped = true;
+		//skeleton2.flipped = true;
 		//skeleton.getJoint("left_shoulder").setAngle(90);
 		//skeleton.getJoint("right_shoulder").setAngle(-90);
 
-		skin = Skins.loadSkin("3.json");
+		skin1 = Skins.loadSkin("3.json");
+		skin2 = Skins.loadSkin("4.json");
 		mouse.setH(Gdx.graphics.getHeight());
 	}
 
@@ -66,21 +68,23 @@ public class ZCityGame extends ApplicationAdapter {
 	public void render() {
 		act();
 
-		Gdx.gl.glClearColor(0, 1, 0, 1);
+		Gdx.gl.glClearColor(.2f, .2f, .2f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.begin();
 
 		float x = 960;
-		float y = 540;
-		skin.draw(skeleton, x, y);
-		skin.draw(skeleton2, x + 400, y);
+		float y = 720;
+		skin1.draw(skeleton, x, y);
+		skin2.draw(skeleton2, x + 200, y);
 		//skeleton.draw(x, y);
 
+		draw.drawLine(0, mouse.y, 1920, mouse.y, 1, Color.GREEN);
+		draw.drawLine(mouse.x, 0, mouse.x, 1080, 1, Color.GREEN);
 		float angle = (float) Math.toDegrees(Math.atan2(mouse.y  -y, mouse.x - x));
 		//skeleton.getJoint("right_shoulder").setAngle(angle);
-		skeleton.animate(Animations.jogging, 5f);
-		skeleton2.animate(Animations.jogging, 5f);
+		//skeleton.animate(Animations.jogging, 5f);
+		//skeleton2.animate(Animations.jogging, 5f);
 		batch.end();
 	}
 

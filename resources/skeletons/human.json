@@ -65,7 +65,7 @@
     {
       "name": "right_hip",
       "x": -7,
-      "y": -15,
+      "y": -16,
       "children": [
         {
           "name": "right_knee",
