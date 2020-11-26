@@ -66,8 +66,8 @@ public class Skin {
 			float yScale = skeleton.scale;
 
 			if (skeleton.flipped) {
-				jointPos = jointPos.mirrorAroundLine(position, 90);
-				rotation = MathUtils.mirrorAroundAxis(rotation, 0);
+				jointPos = MathUtils.mirrorPoint(jointPos, position, 90);
+				rotation = MathUtils.mirrorAngle(rotation, 0);
 				xScale *= -1;
 			}
 

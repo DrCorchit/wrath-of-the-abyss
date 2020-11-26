@@ -3,14 +3,48 @@ package net.drcorchit.zcity.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 public class Draw {
+
+	private static final String VERTEX_SHADER = "attribute vec4 a_position;\n" +
+			"attribute vec4 a_color;\n" +
+			"attribute vec2 a_texCoord;\n" +
+			"uniform mat4 u_worldView;\n" +
+			"varying vec4 v_color;\n" +
+			"varying vec2 v_texCoords;\n" +
+			"void main()\n" +
+			"{\n" +
+			"   v_color =  vec4(1, 1, 1, 1);\n" +
+			"   v_texCoords = a_texCoord;\n" +
+			"   gl_Position =  u_worldView * a_position;\n" +
+			"}\n";
+
+	private static final String FRAGMENT_SHADER = "#ifdef GL_ES\n" +
+			"precision mediump float;\n" +
+			"#endif\n" +
+			"varying vec4 v_color;\n" +
+			"varying vec2 v_texCoords;\n" +
+			"uniform sampler2D u_texture;\n" +
+			"void main()\n" +
+			"{\n" +
+			"vec4 texColor = texture2D(u_texture, v_texCoords);\n" +
+			" gl_FragColor = texColor;\n" +
+			"}";
+
+	private static final ShaderProgram shader = new ShaderProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+	private static final Viewport view = new ScreenViewport();
 
 	//Aids in drawing utilities
 	private final PolygonSpriteBatch batch;
@@ -152,6 +186,43 @@ public class Draw {
 		shape.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 		batch.begin();
+	}
+
+	//FIXME: https://stackoverflow.com/questions/28290428/implementing-trapezoidal-sprites-in-libgdx
+	//1, 2
+	//3, 4
+	public void drawPrimitive(TextureRegion region, Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4) {
+		float[] vertices = new float[20];
+		float bottomWidth = (p1.key - p2.key) / (p3.key - p4.key);
+
+		float color = Color.WHITE.toFloatBits();
+		int index = 0;
+
+		vertices[index++] = p1.key;
+		vertices[index++] = p1.val;
+		vertices[index++] = color;
+		vertices[index++] = 0;
+		vertices[index++] = 0;
+
+		vertices[index++] = p2.key;
+		vertices[index++] = p2.val;
+		vertices[index++] = color;
+		vertices[index++] = 1;
+		vertices[index++] = 0;
+
+		vertices[index++] = p4.key;
+		vertices[index++] = p4.val;
+		vertices[index++] = color;
+		vertices[index++] = 1;
+		vertices[index++] = 1;
+
+		vertices[index++] = p3.key;
+		vertices[index++] = p3.val;
+		vertices[index++] = color;
+		vertices[index++] = 0;
+		vertices[index++] = 1;
+
+		batch.draw(region.getTexture(), vertices, 0, 20);
 	}
 
 	public Pair<Float, Float> drawText(float x, float y, BitmapFont font, String text) {

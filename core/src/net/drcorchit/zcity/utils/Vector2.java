@@ -2,7 +2,7 @@ package net.drcorchit.zcity.utils;
 
 public class Vector2 extends Pair<Float, Float> {
 
-	public Vector2(Float key, Float value) {
+	public Vector2(float key, float value) {
 		super(key, value);
 	}
 

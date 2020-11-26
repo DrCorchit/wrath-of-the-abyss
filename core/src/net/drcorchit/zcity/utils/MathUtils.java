@@ -38,6 +38,10 @@ public class MathUtils {
 		return Math.atan2(y, x);
 	}
 
+	public static double lerp(double p, double q, double factor) {
+		return p + factor * (q - p);
+	}
+
 	public static <T extends Number> T clamp(T min, T val, T max) {
 		return val.doubleValue() > max.doubleValue() ? max : val.doubleValue() < min.doubleValue() ? min : val;
 	}
@@ -49,9 +53,20 @@ public class MathUtils {
 	}
 
 	//mirrors an angle around an axis
-	public static float mirrorAroundAxis(float angle, float axis) {
+	public static float mirrorAngle(float angle, float axis) {
 		float dif = axis - angle;
 		return (float) mod(angle + dif * 2, 360);
+	}
+
+	public static Vector2 mirrorPoint(Vector2 point, Vector2 reflectionOrigin, float reflectionAngle) {
+		float internalAngle = reflectionOrigin.angle(point) - reflectionAngle;
+		float leg = point.subtract(reflectionOrigin).length();
+		float theta = reflectionAngle - 90;
+		float r = (float) (Math.sin(Math.toRadians(internalAngle)) * leg);
+
+		float x = (float) (point.key + 2 * r * Math.cos(Math.toRadians(theta)));
+		float y = (float) (point.val + 2 * r * Math.sin(Math.toRadians(theta)));
+		return new Vector2(x, y);
 	}
 
 	@SafeVarargs

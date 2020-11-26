@@ -4,7 +4,9 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.drcorchit.zcity.assets.*;
 import net.drcorchit.zcity.assets.animation.Animations;
 import net.drcorchit.zcity.input.KeyboardInfo;
@@ -27,8 +29,10 @@ public class ZCityGame extends ApplicationAdapter {
 		return instance.draw;
 	}
 
-	private Skeleton skeleton, skeleton2;
-	private Skin skin1, skin2;
+	private Skeleton[] skeletons;
+	private Skin[] skins;
+	private Texture tex;
+	private TextureRegion texReg;
 
 	public ZCityGame() {
 		super();
@@ -45,17 +49,15 @@ public class ZCityGame extends ApplicationAdapter {
 
 		LocalAssets.getInstance().load();
 
-		skeleton = Skeletons.human_female.copy();
-		skeleton.scale = 1f;
-		skeleton2 = Skeletons.human_female.copy();
-		skeleton2.scale = 1f;
-		//skeleton2.flipped = true;
-		//skeleton.getJoint("left_shoulder").setAngle(90);
-		//skeleton.getJoint("right_shoulder").setAngle(-90);
-
-		skin1 = Skins.loadSkin("0.json");
-		skin2 = Skins.loadSkin("4.json");
+		skeletons = new Skeleton[5];
+		skins = new Skin[5];
+		for (int i = 0; i < 5; i++) {
+			skeletons[i] = Skeletons.human_female.copy();
+			skins[i] = Skins.loadSkin(i + ".json");
+		}
 		mouse.setH(Gdx.graphics.getHeight());
+		tex = new Texture("badlogic.jpg");
+		texReg = new TextureRegion(tex);
 	}
 
 	public void act() {
@@ -72,18 +74,20 @@ public class ZCityGame extends ApplicationAdapter {
 
 		batch.begin();
 
-		float x = 960;
+		//draw.drawPrimitive(texReg, new Vector2(300, 500), new Vector2(500, 500), new Vector2(0, 0), new Vector2(250, 300));
+
+		float x = 150;
 		float y = 720;
-		skin1.draw(skeleton, x, y);
-		skin2.draw(skeleton2, x + 200, y);
-		//skeleton.draw(x, y);
+		for (int i = 0; i < 5; i++) {
+			Skeleton skeleton = skeletons[i];
+			skins[i].draw(skeleton, x, y);
+			skeleton.animate(Animations.jogging, 5f);
+			//skeleton.draw(x, y);
+			x += 150;
+		}
 
 		draw.drawLine(0, mouse.y, 1920, mouse.y, 1, Color.GREEN);
 		draw.drawLine(mouse.x, 0, mouse.x, 1080, 1, Color.GREEN);
-		float angle = (float) Math.toDegrees(Math.atan2(mouse.y  -y, mouse.x - x));
-		//skeleton.getJoint("right_shoulder").setAngle(angle);
-		skeleton.animate(Animations.jogging, 5f);
-		skeleton2.animate(Animations.jogging, 5f);
 		batch.end();
 	}
 

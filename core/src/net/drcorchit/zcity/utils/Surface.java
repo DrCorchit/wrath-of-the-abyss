@@ -11,26 +11,30 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import net.drcorchit.zcity.ZCityGame;
+
+import javax.annotation.Nullable;
 
 public class Surface {
+
 	private final Batch batch;
 	private final FrameBuffer buffer;
 	private final int width, height;
 	private boolean batchWasDrawing;
 
-	public Surface(Batch batch) {
-		this(batch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+	public Surface() {
+		this(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
-	public Surface(Batch batch, int width, int height) {
-		this.batch = batch;
+	public Surface(int width, int height) {
+		this.batch = ZCityGame.draw().getBatch();
 		this.width = width;
 		this.height = height;
-		buffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+		buffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
 	}
 
 	public Surface clear() {
-		return clear(Color.BLACK);
+		return clear(new Color(0, 0, 0, 0));
 	}
 
 	public Surface clear(Color color) {
@@ -39,6 +43,7 @@ public class Surface {
 		return this;
 	}
 
+	@CanIgnoreReturnValue
 	public Surface begin() {
 		if (batch.isDrawing()) {
 			batch.end();
@@ -60,16 +65,25 @@ public class Surface {
 	}
 
 	@CanIgnoreReturnValue
-	public Surface drawTexture(int x, int y, TextureRegion texture) {
-		float w = texture.getRegionWidth();
-		float h = texture.getRegionHeight();
-		y = height - y;
-		batch.draw(texture, x, y, 0, 0, w, h, 1, -1, 0);
-		return this;
+	public Surface drawTexture(int x, int y, Texture texture) {
+		return draw(new TextureRegionDrawable(texture), x, y);
 	}
 
 	@CanIgnoreReturnValue
-	public Surface drawToSelf(TextureRegion region, float x, float y, int originX, int originY, float scaleX, float scaleY, float angle, Color color) {
+	public Surface drawTexture(TextureRegion texture, int x, int y) {
+		return draw(new TextureRegionDrawable(texture), x, y);
+	}
+
+	public Surface draw(TextureRegionDrawable drawable, float x, float y) {
+		return drawScaled(drawable, x, y, 0, 0, 1, 1, 0, Color.WHITE);
+	}
+
+	public Surface draw(AnimatedSprite sprite, float x, float y) {
+		return drawScaled(sprite.getCurrentTexture(), x, y, sprite.getOriginX(), sprite.getOriginY(), 1, 1, 0, sprite.getBlend());
+	}
+
+	@CanIgnoreReturnValue
+	public Surface drawScaled(TextureRegionDrawable drawable, float x, float y, float originX, float originY, float scaleX, float scaleY, float angle, Color color) {
 		float ox = originX * scaleX;
 		float oy = originY * scaleY;
 		if (angle != 0) {
@@ -80,27 +94,28 @@ public class Surface {
 			oy = (float) (radius * Math.sin(angleOfRotation + angleToOrigin));
 		}
 
-		float w = region.getRegionWidth();
-		float h = region.getRegionHeight();
-		//float w = drawable.getMinWidth();
-		//float h = drawable.getMinHeight();
+		//float w = region.getRegionWidth();
+		//float h = region.getRegionHeight();
+		float w = drawable.getMinWidth();
+		float h = drawable.getMinHeight();
 		float actualX = x - ox;
-		float actualY = this.height - y + oy;
+		float actualY = y - oy;
 
 		Color temp = batch.getColor().cpy();
 		batch.setColor(color);
-		//drawable.draw(batch, actualX, actualY, 0, 0, w, h, scaleX, -scaleY, -angle);
-		batch.draw(region, actualX, actualY, 0, 0, width, height, scaleX, -scaleY, -angle);
+		drawable.draw(batch, actualX, actualY, 0, 0, w, h, scaleX, scaleY, angle);
+		//batch.draw(region, actualX, actualY, 0, 0, width, height, scaleX, -scaleY, -angle);
 		batch.setColor(temp);
 		return this;
 	}
 
 	public Sprite createSprite() {
 		Texture texture = buffer.getColorBufferTexture();
-		Sprite sprite = new Sprite(texture, width, height);
-		float yOffset = -Gdx.graphics.getHeight();
-		sprite.setOrigin(0, yOffset);
-		return sprite;
+		Sprite output = new Sprite(texture, width, height);
+		//flips the sprite along the y axis, to correct for
+		//frame buffer's inverted y axis
+		output.setScale(1, -1);
+		return output;
 	}
 
 	public void draw(float x, float y) {
@@ -111,17 +126,10 @@ public class Surface {
 		draw(x, y, new Color(1, 1, 1, alpha));
 	}
 
-	public void draw(float x, float y, Color blend) {
-		Texture texture = buffer.getColorBufferTexture();
-		TextureRegion output = new TextureRegion(texture, width, height);
-
-		if (blend != null && !blend.equals(batch.getColor())) {
-			Color oldColor = batch.getColor().cpy();
-			batch.setColor(blend);
-			batch.draw(output, x, y + Gdx.graphics.getHeight());
-			batch.setColor(oldColor);
-		} else {
-			batch.draw(output, x, y + Gdx.graphics.getHeight());
-		}
+	public void draw(float x, float y, @Nullable Color blend) {
+		Sprite temp = createSprite();
+		temp.setPosition(x, y);
+		if (blend != null) temp.setColor(blend);
+		temp.draw(batch);
 	}
 }

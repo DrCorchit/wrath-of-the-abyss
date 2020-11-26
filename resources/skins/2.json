@@ -32,6 +32,12 @@
     },
     {
       "joint": "root",
+      "texture": "skins/torsos/cloth_back.png",
+      "x": 22,
+      "y": 66
+    },
+    {
+      "joint": "root",
       "texture": "skins/torsos/torso.png",
       "x": 21,
       "y": 20
@@ -53,7 +59,7 @@
       "texture": "skins/heads/hair_long.png",
       "x": 21,
       "y": 24,
-      "blend": "#ffff00"
+      "blend": "#ffe000"
     },
     {
       "joint": "root",

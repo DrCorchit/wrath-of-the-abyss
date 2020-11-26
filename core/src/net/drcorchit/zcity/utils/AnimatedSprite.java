@@ -41,6 +41,18 @@ public class AnimatedSprite extends BaseDrawable {
 		}
 	}
 
+	public float getOriginX() {
+		return originX;
+	}
+
+	public float getOriginY() {
+		return originY;
+	}
+
+	public Color getBlend() {
+		return blend;
+	}
+
 	private TextureRegion getNextFrame() {
 		TextureRegion output = frames.get((int) index);
 		index += speed;

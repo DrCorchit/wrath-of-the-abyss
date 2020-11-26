@@ -14,15 +14,23 @@
     },
     {
       "joint": "left_hip",
-      "texture": "skins/legs/thigh_left_thigh_boot.png",
+      "texture": "skins/legs/thigh_left.png",
       "x": 8,
       "y": 39
     },
     {
+      "joint": "left_hip",
+      "texture": "skins/legs/thigh_left_thigh_boot_white.png",
+      "x": 8,
+      "y": 39,
+      "blend": "#600080"
+    },
+    {
       "joint": "left_knee",
-      "texture": "skins/legs/calf_left_thigh_boot.png",
+      "texture": "skins/legs/calf_left_thigh_boot_white.png",
       "x": 9,
-      "y": 65
+      "y": 65,
+      "blend": "#600080"
     },
     {
       "joint": "root",
@@ -52,15 +60,23 @@
     },
     {
       "joint": "right_hip",
-      "texture": "skins/legs/thigh_right_thigh_boot.png",
+      "texture": "skins/legs/thigh_right.png",
       "x": 14,
       "y": 32
     },
     {
+      "joint": "right_hip",
+      "texture": "skins/legs/thigh_right_thigh_boot_white.png",
+      "x": 14,
+      "y": 32,
+      "blend": "#600080"
+    },
+    {
       "joint": "right_knee",
-      "texture": "skins/legs/calf_right_thigh_boot.png",
+      "texture": "skins/legs/calf_right_thigh_boot_white.png",
       "x": 11,
-      "y": 66
+      "y": 66,
+      "blend": "#600080"
     },
     {
       "joint": "right_shoulder",
