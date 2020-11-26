@@ -38,23 +38,16 @@
     },
     {
       "joint": "neck",
-      "texture": "skins/heads/head_3.png",
+      "texture": "skins/heads/head_2.png",
       "x": 9,
       "y": 0
-    },
-    {
-      "joint": "root",
-      "texture": "skins/torsos/tank_top.png",
-      "x": 17,
-      "y": -11,
-      "blend": "#505050"
     },
     {
       "joint": "neck",
       "texture": "skins/heads/hair_short.png",
       "x": 14,
       "y": 2,
-      "blend": "#ffe080"
+      "blend": "#fff0c0"
     },
     {
       "joint": "right_hip",
