@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 
 import javax.annotation.Nullable;
 
@@ -26,7 +27,7 @@ public class Surface {
 	}
 
 	public Surface(int width, int height) {
-		this.batch = net.drcorchit.dungeonraiders.DungeonRaidersGame.draw().getBatch();
+		this.batch = DungeonRaidersGame.getDraw().getBatch();
 		this.width = width;
 		this.height = height;
 		buffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);

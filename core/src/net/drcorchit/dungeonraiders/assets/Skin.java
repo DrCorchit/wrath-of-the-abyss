@@ -20,6 +20,10 @@ public class Skin {
 		sprites = new ArrayList<>();
 	}
 
+	private Skin(Skin other) {
+		sprites = new ArrayList<>(other.sprites);
+	}
+
 	public Skin(JsonObject info) {
 		this();
 		JsonArray sprites = JsonUtils.getArray(info, "sprites");
@@ -43,6 +47,10 @@ public class Skin {
 		}
 	}
 
+	public Skin copy() {
+		return new Skin(this);
+	}
+
 	public void addSprite(String jointName, AnimatedSprite sprite) {
 		addSprite(jointName, sprite, 0);
 	}
@@ -57,7 +65,6 @@ public class Skin {
 
 	public void draw(Skeleton skeleton, Vector2 position) {
 		sprites.forEach(spr -> {
-			spr.sprite.updateFrame();
 			Skeleton.Joint joint = skeleton.getJoint(spr.jointName);
 			Vector2 jointPos = joint.getRootRelativePosition().add(position);
 			float rotation = joint.getAbsoluteAngle() + spr.angle;
@@ -70,8 +77,12 @@ public class Skin {
 				xScale *= -1;
 			}
 
-			spr.draw(jointPos.key, jointPos.val, xScale, yScale, rotation);
+			spr.draw(jointPos.x, jointPos.y, xScale, yScale, rotation);
 		});
+	}
+
+	public void update(float factor) {
+		sprites.forEach(spr -> spr.sprite.updateFrame(factor));
 	}
 
 	private static class SkinSprite {
@@ -86,7 +97,7 @@ public class Skin {
 		}
 
 		public void draw(float sprX, float sprY, float xScale, float yScale, float rotation) {
-			sprite.drawScaled(net.drcorchit.dungeonraiders.DungeonRaidersGame.draw().getBatch(), sprX, sprY, xScale, yScale, rotation);
+			sprite.drawScaled(net.drcorchit.dungeonraiders.DungeonRaidersGame.getDraw().getBatch(), sprX, sprY, xScale, yScale, rotation);
 		}
 	}
 }

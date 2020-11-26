@@ -1,28 +1,46 @@
 package net.drcorchit.dungeonraiders.assets.animation;
 
-import net.drcorchit.dungeonraiders.assets.Skeleton;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class AnimationState {
 
+	@NotNull
 	private Animation animation;
-	private float frame;
+	private float frameIndex;
 
-	public void setAnimation(Animation animation) {
-		if (animation != this.animation) frame = 0;
+	public AnimationState(@Nonnull Animation animation) {
 		this.animation = animation;
 	}
 
-	public void apply(Skeleton skeleton) {
-		apply(skeleton, animation.getDefaultSpeed(), 360);
+	@NotNull
+	public Animation getAnimation() {
+		return animation;
 	}
 
-	public void apply(Skeleton skeleton, float tweening) {
-		apply(skeleton, animation.getDefaultSpeed(), tweening);
+	public void setAnimation(@NotNull Animation animation) {
+		if (animation != this.animation) frameIndex = 0;
+		this.animation = animation;
 	}
 
-	public void apply(Skeleton skeleton, float speed, float tweening) {
-		tweening *= speed / animation.getDefaultSpeed();
-		animation.getFrame(frame).apply(skeleton, tweening);
-		frame += speed;
+	public Frame getNextFrame() {
+		return getNextFrame(animation.getDefaultSpeed());
+	}
+
+	public Frame getNextFrame(float speed) {
+		Frame output = animation.getFrame(frameIndex);
+		frameIndex += speed;
+		return output;
+	}
+
+	public MutableFrame getNextFrameLerped() {
+		return getNextFrameLerped(animation.getDefaultSpeed());
+	}
+
+	public MutableFrame getNextFrameLerped(float speed) {
+		MutableFrame output = animation.getFrameLerped(frameIndex);
+		frameIndex += speed;
+		return output;
 	}
 }

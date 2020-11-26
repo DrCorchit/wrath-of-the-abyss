@@ -7,7 +7,11 @@ public class Pose implements Animation {
 	private final Frame frame;
 
 	public Pose(JsonObject info) {
-		frame = new Frame(info);
+		frame = new ImmutableFrame(info);
+	}
+
+	public Pose(Frame frame) {
+		this.frame = frame;
 	}
 
 	@Override

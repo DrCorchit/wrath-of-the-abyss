@@ -151,8 +151,8 @@ public class AnimatedSprite extends BaseDrawable {
 		return new TextureRegionDrawable(frames.get(index));
 	}
 
-	public void updateFrame() {
-		index += speed;
-		if (index >= frames.length()) index -= frames.length();
+	public void updateFrame(float factor) {
+		index += speed * factor;
+		index = (float) MathUtils.mod(index, frames.length());
 	}
 }

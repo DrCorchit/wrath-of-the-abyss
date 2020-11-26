@@ -193,31 +193,31 @@ public class Draw {
 	//3, 4
 	public void drawPrimitive(TextureRegion region, Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4) {
 		float[] vertices = new float[20];
-		float bottomWidth = (p1.key - p2.key) / (p3.key - p4.key);
+		float bottomWidth = (p1.x - p2.x) / (p3.x - p4.x);
 
 		float color = Color.WHITE.toFloatBits();
 		int index = 0;
 
-		vertices[index++] = p1.key;
-		vertices[index++] = p1.val;
+		vertices[index++] = p1.x;
+		vertices[index++] = p1.y;
 		vertices[index++] = color;
 		vertices[index++] = 0;
 		vertices[index++] = 0;
 
-		vertices[index++] = p2.key;
-		vertices[index++] = p2.val;
+		vertices[index++] = p2.x;
+		vertices[index++] = p2.y;
 		vertices[index++] = color;
 		vertices[index++] = 1;
 		vertices[index++] = 0;
 
-		vertices[index++] = p4.key;
-		vertices[index++] = p4.val;
+		vertices[index++] = p4.x;
+		vertices[index++] = p4.y;
 		vertices[index++] = color;
 		vertices[index++] = 1;
 		vertices[index++] = 1;
 
-		vertices[index++] = p3.key;
-		vertices[index++] = p3.val;
+		vertices[index++] = p3.x;
+		vertices[index++] = p3.y;
 		vertices[index++] = color;
 		vertices[index++] = 0;
 		vertices[index++] = 1;

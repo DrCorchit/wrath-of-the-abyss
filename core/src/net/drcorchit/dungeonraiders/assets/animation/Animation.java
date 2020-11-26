@@ -7,8 +7,8 @@ public interface Animation {
 
 	Frame getFrame(float index);
 
-	//allows lerping between frames for sparse animations
-	default Frame getLerpedFrame(float index) {
+	//allows lerping between frames for smoother animations
+	default MutableFrame getFrameLerped(float index) {
 		int whole = (int) index;
 		float part = index - whole;
 		Frame f1 = getFrame(whole);

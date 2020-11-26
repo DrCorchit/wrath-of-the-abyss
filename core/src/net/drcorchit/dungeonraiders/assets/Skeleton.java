@@ -4,12 +4,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.drcorchit.dungeonraiders.assets.animation.Animation;
-import net.drcorchit.dungeonraiders.assets.animation.AnimationState;
+import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 import net.drcorchit.dungeonraiders.utils.Draw;
-import net.drcorchit.dungeonraiders.utils.Vector2;
 import net.drcorchit.dungeonraiders.utils.JsonUtils;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
+import net.drcorchit.dungeonraiders.utils.Vector2;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 
 public class Skeleton {
 
-	private AnimationState animator;
 	//mirrors the skeleton around the vertical axis
 	public boolean flipped;
 	public float scale, horizontalOffset, verticalOffset;
@@ -27,7 +25,6 @@ public class Skeleton {
 	private final HashMap<String, Joint> joints;
 
 	public Skeleton(JsonObject info) {
-		animator = new AnimationState();
 		scale = JsonUtils.getFloat(info, "scale", 1);
 		horizontalOffset = JsonUtils.getFloat(info, "x_offset", 0);
 		horizontalOffset = JsonUtils.getFloat(info, "y_offset", 0);
@@ -38,7 +35,6 @@ public class Skeleton {
 
 	//deep copy constructor
 	private Skeleton(Skeleton other) {
-		animator = new AnimationState();
 		flipped = other.flipped;
 		scale = other.scale;
 		horizontalOffset = other.horizontalOffset;
@@ -46,11 +42,6 @@ public class Skeleton {
 		joints = new HashMap<>();
 		root = recursivelyCopyJoints(other.root, null);
 		joints.put(root.name, root);
-	}
-
-	public void animate(Animation animation, float tweening) {
-		animator.setAnimation(animation);
-		animator.apply(this, tweening);
 	}
 
 	private Joint recursivelyCopyJoints(Joint base, Joint parent) {
@@ -94,15 +85,6 @@ public class Skeleton {
 
 		private final ArrayList<Joint> children;
 		private float angle;
-
-		private Joint(String name, @Nullable Joint parent, float distanceFromParent, float angleFromParent) {
-			this.name = name;
-			this.parent = parent;
-			children = new ArrayList<>();
-			this.distanceFromParent = distanceFromParent;
-			this.angleFromParent = angleFromParent;
-			angle = 0;
-		}
 
 		private Joint(Joint other, @Nullable Joint parent) {
 			this.name = other.name;
@@ -190,10 +172,10 @@ public class Skeleton {
 		}
 
 		private void draw(Vector2 parentPos) {
-			Draw draw = net.drcorchit.dungeonraiders.DungeonRaidersGame.getInstance().draw;
+			Draw draw = DungeonRaidersGame.getDraw();
 			Vector2 myPos = parentPos.add(getParentRelativePosition());
-			Sprites.white.draw(draw.getBatch(), myPos.key, myPos.val);
-			draw.drawLine(parentPos.key, parentPos.val, myPos.key, myPos.val, 2, Color.RED);
+			Sprites.white.draw(draw.getBatch(), myPos.x, myPos.y);
+			draw.drawLine(parentPos.x, parentPos.y, myPos.x, myPos.y, 2, Color.RED);
 			children.forEach(child -> child.draw(myPos));
 		}
 

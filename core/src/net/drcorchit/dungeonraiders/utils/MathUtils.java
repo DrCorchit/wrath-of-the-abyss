@@ -9,7 +9,7 @@ public class MathUtils {
 	};
 
 	public static String ordinalSuffix(int i) {
-		return ORDINAL_SUFFIXES[(int) mod(i, 10)];
+		return ORDINAL_SUFFIXES[mod(i, 10)];
 	}
 
 	public static String ordinal(int i) {
@@ -58,14 +58,13 @@ public class MathUtils {
 		return (float) mod(angle + dif * 2, 360);
 	}
 
-	public static Vector2 mirrorPoint(Vector2 point, Vector2 reflectionOrigin, float reflectionAngle) {
-		float internalAngle = reflectionOrigin.angle(point) - reflectionAngle;
-		float leg = point.subtract(reflectionOrigin).length();
+	public static Vector2 mirrorPoint(Vector2 point, Vector2 origin, float reflectionAngle) {
+		float internalAngle = origin.angle(point) - reflectionAngle;
+		float leg = point.distance(origin);
 		float theta = reflectionAngle - 90;
 		float r = (float) (Math.sin(Math.toRadians(internalAngle)) * leg);
-
-		float x = (float) (point.key + 2 * r * Math.cos(Math.toRadians(theta)));
-		float y = (float) (point.val + 2 * r * Math.sin(Math.toRadians(theta)));
+		float x = (float) (point.x + 2 * r * Math.cos(Math.toRadians(theta)));
+		float y = (float) (point.y + 2 * r * Math.sin(Math.toRadians(theta)));
 		return new Vector2(x, y);
 	}
 

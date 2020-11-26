@@ -4,11 +4,14 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.drcorchit.dungeonraiders.assets.*;
+import net.drcorchit.dungeonraiders.assets.animation.AnimationState;
 import net.drcorchit.dungeonraiders.assets.animation.Animations;
+import net.drcorchit.dungeonraiders.assets.animation.Frame;
+import net.drcorchit.dungeonraiders.entities.actors.Block;
+import net.drcorchit.dungeonraiders.entities.actors.Player;
+import net.drcorchit.dungeonraiders.entities.stages.PhysicsStage;
 import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.input.MouseInfo;
 import net.drcorchit.dungeonraiders.utils.Draw;
@@ -21,18 +24,18 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 	}
 
 	private PolygonSpriteBatch batch;
-	public Draw draw;
-	private final MouseInfo mouse;
-	private final KeyboardInfo keyboard;
+	private PhysicsStage stage;
+	private Draw draw;
+	public final MouseInfo mouse;
+	public final KeyboardInfo keyboard;
 
-	public static Draw draw() {
+	public static Draw getDraw() {
 		return instance.draw;
 	}
 
 	private Skeleton[] skeletons;
 	private Skin[] skins;
-	private Texture tex;
-	private TextureRegion texReg;
+	private AnimationState state;
 
 	public DungeonRaidersGame() {
 		super();
@@ -46,49 +49,28 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 		batch = new PolygonSpriteBatch();
 		batch.enableBlending();
 		draw = new Draw(batch);
-
 		LocalAssets.getInstance().load();
 
-		skeletons = new Skeleton[5];
-		skins = new Skin[5];
-		for (int i = 0; i < 5; i++) {
-			skeletons[i] = Skeletons.human_female.copy();
-			skins[i] = Skins.loadSkin(i + ".json");
-		}
+		stage = new PhysicsStage();
+		stage.addActor(new Player(stage, Skeletons.human_female, Skins.punk, 500, 500, 30, 220));
+		stage.addActor(new Block(stage, 500, 200, 40, 40));
 		mouse.setH(Gdx.graphics.getHeight());
-		tex = new Texture("badlogic.jpg");
-		texReg = new TextureRegion(tex);
 	}
 
 	public void act() {
 		mouse.update();
 		keyboard.update();
+		stage.act();
+	}
+
+	public void draw() {
+		stage.draw();
 	}
 
 	@Override
 	public void render() {
 		act();
-
-		Gdx.gl.glClearColor(.2f, .2f, .2f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		batch.begin();
-
-		//draw.drawPrimitive(texReg, new Vector2(300, 500), new Vector2(500, 500), new Vector2(0, 0), new Vector2(250, 300));
-
-		float x = 150;
-		float y = 720;
-		for (int i = 0; i < 5; i++) {
-			Skeleton skeleton = skeletons[i];
-			skins[i].draw(skeleton, x, y);
-			skeleton.animate(Animations.jogging, 5f);
-			//skeleton.draw(x, y);
-			x += 150;
-		}
-
-		draw.drawLine(0, mouse.y, 1920, mouse.y, 1, Color.GREEN);
-		draw.drawLine(mouse.x, 0, mouse.x, 1080, 1, Color.GREEN);
-		batch.end();
+		draw();
 	}
 
 	@Override

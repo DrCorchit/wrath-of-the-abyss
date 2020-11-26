@@ -3,20 +3,18 @@ package net.drcorchit.dungeonraiders.assets.animation;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.drcorchit.dungeonraiders.assets.animation.Animation;
-import net.drcorchit.dungeonraiders.assets.animation.Frame;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 
 public class LoopingAnimation implements Animation {
-	private final ImmutableList<Frame> frames;
+	private final ImmutableList<ImmutableFrame> frames;
 	private final float speed;
 
 	public LoopingAnimation(JsonObject info) {
 		speed = info.get("speed").getAsFloat();
 
 		JsonArray framesInfo = info.getAsJsonArray("frames");
-		ImmutableList.Builder<Frame> builder = ImmutableList.builder();
-		framesInfo.forEach(ele -> builder.add(new Frame(ele.getAsJsonObject())));
+		ImmutableList.Builder<ImmutableFrame> builder = ImmutableList.builder();
+		framesInfo.forEach(ele -> builder.add(new ImmutableFrame(ele.getAsJsonObject())));
 		frames = builder.build();
 	}
 
@@ -31,7 +29,7 @@ public class LoopingAnimation implements Animation {
 	}
 
 	@Override
-	public Frame getFrame(float index) {
+	public ImmutableFrame getFrame(float index) {
 		int adjustedIndex = (int) MathUtils.mod(index, length());
 		return frames.get(adjustedIndex);
 	}
