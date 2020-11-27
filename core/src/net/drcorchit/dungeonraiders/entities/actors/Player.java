@@ -10,7 +10,7 @@ import net.drcorchit.dungeonraiders.utils.Vector;
 
 public class Player extends PuppetActor {
 
-	private static final float MAX_SPEED = 6, JUMP = 5, MOVE = 1, FRICTION = 1;
+	private static final float MAX_SPEED = 6, JUMP = 10, MOVE = .5f, FRICTION = .2f;
 
 	private final KeyboardInfo keys = getGame().keyboard;
 
@@ -33,7 +33,12 @@ public class Player extends PuppetActor {
 			skeleton.flipped = false;
 			hSpeed += MOVE;
 		} else if (grounded) {
-			hSpeed += Math.signum(hSpeed) * -FRICTION;
+			//apply friction
+			if (hSpeed > 0) {
+				hSpeed = Math.max(0, hSpeed - FRICTION);
+			} else if (hSpeed < 0) {
+				hSpeed = Math.min(0, hSpeed + FRICTION);
+			}
 		}
 
 		if (jumped && grounded) {
@@ -41,17 +46,16 @@ public class Player extends PuppetActor {
 		}
 
 		hSpeed = MathUtils.clamp(-MAX_SPEED, hSpeed, MAX_SPEED);
-
 		setVelocity(new Vector(hSpeed, vSpeed));
 
-		if (isGrounded()) {
+		if (grounded) {
 			if (hSpeed == 0 && keys.vert == 0) {
 				animator.setAnimation(Animations.stand);
 			} else {
 				animator.setAnimation(Animations.jog);
 			}
 		} else {
-			animator.setAnimation(Animations.jump);
+			animator.setAnimation(Animations.jump2);
 		}
 
 		setZRelative(keys.vert);

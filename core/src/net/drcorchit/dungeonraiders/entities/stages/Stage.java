@@ -12,21 +12,25 @@ public abstract class Stage extends Entity {
 
 	public static final float EXPECTED_DELTA_TIME = 1 / 30f;
 
-	private final ArrayList<Actor> actors = new ArrayList<>();
+	private final ArrayList<Actor<?>> actors = new ArrayList<>();
 
-	public void addActor(Actor actor) {
+	public void addActor(Actor<?> actor) {
 		actors.add(actor);
 	}
 
-	public void destroyActor(Actor actor) {
+	public void destroyActor(Actor<?> actor) {
 		actors.remove(actor);
 	}
 
 	public void act() {
 		float delta = Gdx.graphics.getDeltaTime();
 		//System.out.println(delta);
-		float factor = Math.min(EXPECTED_DELTA_TIME/delta, 1);
+		float factor = Math.min(EXPECTED_DELTA_TIME / delta, 1);
 		//System.out.println(factor);
+		float fps = factor / EXPECTED_DELTA_TIME;
+		if (factor < .9f) {
+			System.out.println("FPS: " + fps);
+		}
 		act(factor);
 	}
 
@@ -47,7 +51,7 @@ public abstract class Stage extends Entity {
 		getBatch().end();
 	}
 
-	public Iterable<Actor> getActors() {
+	public Iterable<Actor<?>> getActors() {
 		return actors;
 	}
 }

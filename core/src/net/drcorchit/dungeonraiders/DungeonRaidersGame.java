@@ -51,13 +51,16 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 		LocalAssets.getInstance().load();
 
 		stage = new DungeonStage();
-		stage.addActor(new Player(stage, Skeletons.human_female, Skins.punk, 500, 500, 30, 220));
-		stage.addActor(new Block(stage, 500, 200, 40, 40));
-		stage.addActor(new Block(stage, 540, 200, 40, 40));
+		stage.addActor(new Player(stage, Skeletons.human_female, Skins.punk, 500, 500, 40, 220));
+
+		for (int i = 0; i < 30; i++) {
+			float x = 500 + i * 40;
+			stage.addActor(new Block(stage, x, 200, 40, 40));
+		}
 		mouse.setH(Gdx.graphics.getHeight());
 
 		skeleton = Skeletons.human_female;
-		skin = Skins.harness;
+		skin = Skins.purple;
 		AnimationState state = new AnimationState(Animations.jog);
 		stage.addActor(new Actor(stage, 1200, 540) {
 			@Override

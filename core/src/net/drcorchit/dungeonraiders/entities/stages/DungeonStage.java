@@ -32,7 +32,7 @@ public class DungeonStage extends Stage {
 	private HashMap<Vector, Room> rooms;
 
 	public DungeonStage() {
-		gravity = new Vector(0, -.1f);
+		gravity = new Vector(0, -.4f);
 		friction = 1;
 	}
 

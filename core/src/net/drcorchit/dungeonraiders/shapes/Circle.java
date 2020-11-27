@@ -103,4 +103,11 @@ public class Circle extends AbstractShape {
 
 		return c.containsPoint(p1) || c.containsPoint(p2);
 	}
+
+	@Override
+	public String toString() {
+		return "Circle{" +
+				"radius=" + radius +
+				'}';
+	}
 }

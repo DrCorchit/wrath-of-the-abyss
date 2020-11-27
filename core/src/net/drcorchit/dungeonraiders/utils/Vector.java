@@ -1,5 +1,7 @@
 package net.drcorchit.dungeonraiders.utils;
 
+import java.util.Objects;
+
 public class Vector {
 
 	public static final Vector ZERO = new Vector(0, 0);
@@ -93,5 +95,23 @@ public class Vector {
 		float x = (float) (this.x + 2 * r * Math.cos(Math.toRadians(theta)));
 		float y = (float) (this.y + 2 * r * Math.sin(Math.toRadians(theta)));
 		return new Vector(x, y);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("[%f,%f]", x, y);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Vector)) return false;
+		Vector vector = (Vector) o;
+		return vector.x == x && vector.y == y;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(x, y);
 	}
 }

@@ -73,13 +73,21 @@ public class Rectangle extends AbstractShape {
 	public static boolean collides(Rectangle r1, Rectangle r2) {
 		Vector r11 = r1.getLocation().subtract(r1.width / 2, r1.height / 2);
 		Vector r12 = r1.getLocation().add(r1.width / 2, r1.height / 2);
-		Vector r21 = r1.getLocation().subtract(r2.width / 2, r2.height / 2);
-		Vector r22 = r1.getLocation().add(r2.width / 2, r2.height / 2);
+		Vector r21 = r2.getLocation().subtract(r2.width / 2, r2.height / 2);
+		Vector r22 = r2.getLocation().add(r2.width / 2, r2.height / 2);
 		return (r11.x < r22.x && r12.x > r21.x && r11.y < r22.y && r12.y > r21.y);
 	}
 
 	@Override
 	public Rectangle createVirtualCopyAt(Vector location) {
 		return new Rectangle(() -> location, width, height);
+	}
+
+	@Override
+	public String toString() {
+		return "Rectangle{" +
+				"width=" + width +
+				", height=" + height +
+				'}';
 	}
 }

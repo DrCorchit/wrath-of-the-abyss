@@ -1,0 +1,11 @@
+{
+  "root": -15,
+  "left_shoulder": 35,
+  "left_elbow": 15,
+  "right_shoulder": -35,
+  "right_elbow": 45,
+  "left_hip": 60,
+  "left_knee": -100,
+  "right_hip": 30,
+  "right_knee": -40
+}

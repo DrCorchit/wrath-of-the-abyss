@@ -15,7 +15,7 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 	//z position in the DungeonStage
 	private float z;
 	private Shape shape;
-	private Vector velocity;
+	private Vector velocity, offset;
 
 	public PhysicsActor(DungeonStage stage, boolean isFixed, float x, float y) {
 		super(stage, x, y);
@@ -30,12 +30,18 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 		return shape;
 	}
 
+	private Vector getColliderPosition() {
+		return getPosition().add(offset);
+	}
+
 	public void setShapeAsRectangle(float x, float y, float w, float h) {
-		shape = new Rectangle(() -> getPosition().add(x, y), w, h);
+		offset = new Vector(x, y);
+		shape = new Rectangle(this::getColliderPosition, w, h);
 	}
 
 	public void setShapeAsCircle(float x, float y, float r) {
-		shape = new Circle(() -> getPosition().add(x, y), r);
+		offset = new Vector(x, y);
+		shape = new Circle(this::getColliderPosition, r);
 	}
 
 	public void cancelVelocity() {
@@ -77,20 +83,24 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 				Vector gravity = stage.getGravity().multiply(factor);
 				addVelocity(gravity);
 
-				boolean stopped = !moveToContact(velocity.multiply(factor));
+				moveToContact(velocity.multiply(factor));
+				boolean stopped = !canMoveInDirection(velocity);
 
 				if (stopped) {
 					Vector gravComponent = velocity.project(gravity);
 
 					if (isGrounded()) {
 						//set the velocity in the gravity direction to 0
-						velocity.subtract(gravComponent);
+						setVelocity(velocity.subtract(gravComponent));
 					} else {
 						setVelocity(gravComponent);
 					}
 				}
 			} else {
 				moveToContact(velocity.multiply(factor));
+				if (!canMoveInDirection(velocity)) {
+					cancelVelocity();
+				}
 			}
 		}
 	}
@@ -118,11 +128,11 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 	public boolean canOccupyPosition(Vector position) {
 		if (shape == NoShape.INSTANCE) return true;
 
-		for (Actor actor : stage.getActors()) {
+		for (Actor<?> actor : stage.getActors()) {
 			if (actor instanceof PhysicsActor) {
 				PhysicsActor sa = (PhysicsActor) actor;
 				if (collidesWith(sa)) {
-					boolean temp = shape.wouldCollideWith(position, sa.shape);
+					boolean temp = shape.wouldCollideWith(position.add(offset), sa.shape);
 					if (temp) return false;
 				}
 			}
@@ -131,35 +141,40 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 	}
 
 	public boolean canMoveInDirection(Vector direction) {
-		return canOccupyPosition(getPosition().add(direction.normalize()));
+		Vector testPos = getPosition().add(direction.normalize().multiply(.01f));
+		return canOccupyPosition(testPos);
 	}
 
 	//returns true if the full range of motion was completed.
-	public boolean moveToContact(Vector direction) {
-		if (direction.length() == 0) return true;
+	public Vector moveToContact(Vector direction) {
+		Vector oldPos = getPosition();
+		if (direction.length() == 0) return Vector.ZERO;
 		if (shape.getMinimalRadius() > direction.length()) {
-			return moveToContactBinary(direction);
+			moveToContactBinary(direction);
 		} else {
 			Vector step = direction.normalize().multiply(shape.getMinimalRadius());
 			double numSteps = direction.length() / shape.getMinimalRadius();
 			float lastStepLength = (float) MathUtils.fractionalPart(numSteps);
-			Vector lastStep = step.multiply(lastStepLength);
+			boolean doLast = true;
 
 			//break the movement down into smaller steps of (at most) length = shape.getMinimalRadius()
 			for (int i = 0; i < numSteps; i++) {
 				if (!setPositionRelative(step)) {
-					moveToContactBinary(step);
-					return false;
+					doLast &= moveToContactBinary(step);
 				}
 			}
 
-			return moveToContactBinary(lastStep);
+			if (doLast) {
+				Vector lastStep = step.multiply(lastStepLength);
+				moveToContactBinary(lastStep);
+			}
 		}
+
+		return getPosition().subtract(oldPos);
 	}
 
-	//returns true if the full range of motion was completed.
 	private boolean moveToContactBinary(Vector direction) {
-		if (direction.length() < 0.5f) return true;
+		if (direction.length() < 0.01f) return true;
 		if (setPositionRelative(direction)) {
 			return true;
 		} else {
@@ -167,7 +182,7 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 			//try to move halfway
 			setPositionRelative(half);
 			//try to move the remaining half (or the first half)
-			moveToContact(half);
+			moveToContactBinary(half);
 			return false;
 		}
 	}
