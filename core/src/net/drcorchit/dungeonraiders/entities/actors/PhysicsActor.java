@@ -1,6 +1,7 @@
 package net.drcorchit.dungeonraiders.entities.actors;
 
 import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
+import net.drcorchit.dungeonraiders.entities.stages.Room;
 import net.drcorchit.dungeonraiders.shapes.Circle;
 import net.drcorchit.dungeonraiders.shapes.NoShape;
 import net.drcorchit.dungeonraiders.shapes.Rectangle;
@@ -128,14 +129,8 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 	public boolean canOccupyPosition(Vector position) {
 		if (shape == NoShape.INSTANCE) return true;
 
-		for (Actor<?> actor : stage.getActors()) {
-			if (actor instanceof PhysicsActor) {
-				PhysicsActor sa = (PhysicsActor) actor;
-				if (collidesWith(sa)) {
-					boolean temp = shape.wouldCollideWith(position.add(offset), sa.shape);
-					if (temp) return false;
-				}
-			}
+		for (Room room : stage.getRelevantRooms(this)) {
+			if (room.getLayer(z).collidesWith(shape.move(position))) return false;
 		}
 		return true;
 	}

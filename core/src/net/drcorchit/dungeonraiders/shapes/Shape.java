@@ -5,13 +5,11 @@ import net.drcorchit.dungeonraiders.utils.Vector;
 
 public interface Shape {
 
-	Vector getLocation();
+	Vector getPosition();
 
 	boolean containsPoint(Vector point);
 
 	boolean collidesWith(Shape other);
-
-	boolean wouldCollideWith(Vector location, Shape other);
 
 	float getArea();
 
@@ -21,6 +19,10 @@ public interface Shape {
 
 	//the distance from the center of the shape to its furthest point
 	float getMaximalRadius();
+
+	Shape move(Vector offset);
+
+	Shape scale(float scale);
 
 	void draw(Color color);
 

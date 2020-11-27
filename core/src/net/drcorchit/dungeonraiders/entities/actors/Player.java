@@ -58,7 +58,8 @@ public class Player extends PuppetActor {
 			animator.setAnimation(Animations.jump2);
 		}
 
-		setZRelative(keys.vert);
+		//move in z direction
+		setZRelative(-keys.vert);
 	}
 
 	@Override

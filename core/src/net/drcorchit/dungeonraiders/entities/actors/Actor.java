@@ -4,7 +4,7 @@ import net.drcorchit.dungeonraiders.entities.Entity;
 import net.drcorchit.dungeonraiders.entities.stages.Stage;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
-public abstract class Actor<T extends Stage> extends Entity implements Comparable<Actor> {
+public abstract class Actor<T extends Stage> extends Entity implements Comparable<Actor<?>> {
 
 	//stage is generic because certain actors depend on stage-specific properties
 	protected final T stage;

@@ -1,7 +1,6 @@
 package net.drcorchit.dungeonraiders.shapes;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;
@@ -20,14 +19,15 @@ public class Rectangle extends AbstractShape {
 
 	@Override
 	public boolean containsPoint(Vector point) {
-		Vector relativePos = point.subtract(getLocation());
+		Vector relativePos = point.subtract(getPosition());
 		float w2 = width / 2, h2 = height / 2;
 		return relativePos.x > -w2 && relativePos.x < w2 && relativePos.y > -h2 && relativePos.y < h2;
 	}
 
 	@Override
 	public boolean collidesWith(Shape other) {
-		if (getLocation().distance(other.getLocation()) > getMaximalRadius() + other.getMaximalRadius()) {
+		if (other == null || other instanceof NoShape) return false;
+		if (getPosition().distance(other.getPosition()) > getMaximalRadius() + other.getMaximalRadius()) {
 			//the shapes are too far away;
 			return false;
 		}
@@ -64,23 +64,28 @@ public class Rectangle extends AbstractShape {
 	}
 
 	@Override
+	public Rectangle move(Vector location) {
+		return new Rectangle(() -> location, width, height);
+	}
+
+	@Override
+	public Shape scale(float scale) {
+		return new Rectangle(this::getPosition, width * scale, height * scale);
+	}
+
+	@Override
 	public void draw(Color color) {
 		//llc = lower left corner
-		Vector llc = getLocation().subtract(width/2, height/2);
+		Vector llc = getPosition().subtract(width/2, height/2);
 		DungeonRaidersGame.getDraw().drawRectangle(llc.x, llc.y, width, height, color);
 	}
 
 	public static boolean collides(Rectangle r1, Rectangle r2) {
-		Vector r11 = r1.getLocation().subtract(r1.width / 2, r1.height / 2);
-		Vector r12 = r1.getLocation().add(r1.width / 2, r1.height / 2);
-		Vector r21 = r2.getLocation().subtract(r2.width / 2, r2.height / 2);
-		Vector r22 = r2.getLocation().add(r2.width / 2, r2.height / 2);
+		Vector r11 = r1.getPosition().subtract(r1.width / 2, r1.height / 2);
+		Vector r12 = r1.getPosition().add(r1.width / 2, r1.height / 2);
+		Vector r21 = r2.getPosition().subtract(r2.width / 2, r2.height / 2);
+		Vector r22 = r2.getPosition().add(r2.width / 2, r2.height / 2);
 		return (r11.x < r22.x && r12.x > r21.x && r11.y < r22.y && r12.y > r21.y);
-	}
-
-	@Override
-	public Rectangle createVirtualCopyAt(Vector location) {
-		return new Rectangle(() -> location, width, height);
 	}
 
 	@Override

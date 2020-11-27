@@ -13,13 +13,7 @@ public abstract class AbstractShape implements Shape {
 	}
 
 	@Override
-	public final Vector getLocation() {
+	public final Vector getPosition() {
 		return positionGetter.get();
-	}
-
-	public abstract Shape createVirtualCopyAt(Vector location);
-
-	public boolean wouldCollideWith(Vector location, Shape other) {
-		return createVirtualCopyAt(location).collidesWith(other);
 	}
 }

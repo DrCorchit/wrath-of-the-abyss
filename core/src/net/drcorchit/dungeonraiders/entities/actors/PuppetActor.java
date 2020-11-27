@@ -51,7 +51,7 @@ public abstract class PuppetActor extends PhysicsActor {
 	public void draw(Vector position) {
 		float actualScale = skeleton.scale;
 		skeleton.scale = getZScale();
-		getShape().draw(Color.RED);
+		//getShape().draw(Color.RED);
 		skin.draw(skeleton, position);
 		//skeleton.draw(position);
 		skeleton.scale = actualScale;

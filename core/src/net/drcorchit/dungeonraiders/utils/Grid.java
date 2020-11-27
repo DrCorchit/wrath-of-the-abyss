@@ -1,10 +1,14 @@
 package net.drcorchit.dungeonraiders.utils;
 
+import com.google.common.collect.Iterators;
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.Array;
+import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class Grid<T> {
+public class Grid<T> implements Iterable<T> {
 
 	private final T[][] grid;
 
@@ -18,11 +22,11 @@ public class Grid<T> {
 		grid[i][j] = value;
 	}
 
-	public void forEach(Consumer<T> action) {
-		forEach((i, j) -> action.accept(get(i, j)));
+	public void forEachCell(Consumer<T> action) {
+		forEachCell((i, j) -> action.accept(get(i, j)));
 	}
 
-	public void forEach(BiConsumer<Integer, Integer> action) {
+	public void forEachCell(BiConsumer<Integer, Integer> action) {
 		for (int j = 0; j < getHeight(); j++) {
 			for (int i = 0; i < getWidth(); i++) {
 				action.accept(i, j);
@@ -54,5 +58,13 @@ public class Grid<T> {
 
 	public int getHeight() {
 		return grid[0].length;
+	}
+
+	@NotNull
+	@Override
+	public Iterator<T> iterator() {
+		Iterator<T[]> rowIterator = Iterators.forArray(grid);
+		Iterator<Iterator<T>> rowColumnIterator = Iterators.transform(rowIterator, Iterators::forArray);
+		return Iterators.concat(rowColumnIterator);
 	}
 }

@@ -12,7 +12,7 @@ public class NoShape implements Shape {
 	}
 
 	@Override
-	public Vector getLocation() {
+	public Vector getPosition() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -23,11 +23,6 @@ public class NoShape implements Shape {
 
 	@Override
 	public boolean collidesWith(Shape other) {
-		return false;
-	}
-
-	@Override
-	public boolean wouldCollideWith(Vector location, Shape other) {
 		return false;
 	}
 
@@ -49,6 +44,16 @@ public class NoShape implements Shape {
 	@Override
 	public float getMaximalRadius() {
 		return 0;
+	}
+
+	@Override
+	public Shape move(Vector offset) {
+		return INSTANCE;
+	}
+
+	@Override
+	public Shape scale(float scale) {
+		return INSTANCE;
 	}
 
 	@Override

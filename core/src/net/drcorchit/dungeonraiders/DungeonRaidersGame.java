@@ -10,6 +10,8 @@ import net.drcorchit.dungeonraiders.entities.actors.Actor;
 import net.drcorchit.dungeonraiders.entities.actors.Block;
 import net.drcorchit.dungeonraiders.entities.actors.Player;
 import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
+import net.drcorchit.dungeonraiders.entities.stages.Room;
+import net.drcorchit.dungeonraiders.entities.stages.Stage;
 import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.input.MouseInfo;
 import net.drcorchit.dungeonraiders.utils.Draw;
@@ -53,16 +55,20 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 		stage = new DungeonStage();
 		stage.addActor(new Player(stage, Skeletons.human_female, Skins.punk, 500, 500, 40, 220));
 
-		for (int i = 0; i < 30; i++) {
+		Room room = new Room(stage, 1, 1, 1);
+		Room.Layer layer = room.getLayer(0);
+		for (int i = 0; i < 16; i++) {
 			float x = 500 + i * 40;
-			stage.addActor(new Block(stage, x, 200, 40, 40));
+			layer.placeSquare(i, 0);
 		}
+		stage.addRoom(room);
+
 		mouse.setH(Gdx.graphics.getHeight());
 
 		skeleton = Skeletons.human_female;
 		skin = Skins.purple;
 		AnimationState state = new AnimationState(Animations.jog);
-		stage.addActor(new Actor(stage, 1200, 540) {
+		stage.addActor(new Actor<Stage>(stage, 1200, 540) {
 			@Override
 			public void draw(Vector position) {
 				skin.draw(skeleton, position);

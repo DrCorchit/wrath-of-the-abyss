@@ -9,13 +9,11 @@ import java.util.function.Supplier;
 
 public class Circle extends AbstractShape {
 
-	private final Supplier<Vector> locationGetter;
 	public final float radius;
 	private final Rectangle boundingRectangle;
 
 	public Circle(Supplier<Vector> locationGetter, float radius) {
 		super(locationGetter);
-		this.locationGetter = locationGetter;
 		this.radius = radius;
 		boundingRectangle = new Rectangle(locationGetter, 2 * radius, 2 * radius);
 	}
@@ -25,19 +23,14 @@ public class Circle extends AbstractShape {
 	}
 
 	@Override
-	public Circle createVirtualCopyAt(Vector location) {
-		return new Circle(() -> location, radius);
-	}
-
-	@Override
 	public boolean containsPoint(Vector point) {
-		Vector relativePos = point.subtract(getLocation());
+		Vector relativePos = point.subtract(getPosition());
 		return relativePos.length() < radius;
 	}
 
 	@Override
 	public boolean collidesWith(Shape other) {
-		if (getLocation().distance(other.getLocation()) > getMaximalRadius() + other.getMaximalRadius()) {
+		if (getPosition().distance(other.getPosition()) > getMaximalRadius() + other.getMaximalRadius()) {
 			//the shapes are too far away;
 			return false;
 		}
@@ -74,20 +67,30 @@ public class Circle extends AbstractShape {
 	}
 
 	@Override
+	public Circle move(Vector location) {
+		return new Circle(() -> location, radius);
+	}
+
+	@Override
+	public Shape scale(float scale) {
+		return new Circle(this::getPosition, radius * scale);
+	}
+
+	@Override
 	public void draw(Color color) {
-		Vector position = getLocation();
+		Vector position = getPosition();
 		DungeonRaidersGame.getDraw().drawCircle(position.x, position.y, radius, color);
 	}
 
 	public static boolean collides(Circle c1, Circle c2) {
-		return c1.getLocation().distance(c2.getLocation()) < c1.radius + c2.radius;
+		return c1.getPosition().distance(c2.getPosition()) < c1.radius + c2.radius;
 	}
 
 	public static boolean collides(Circle c, Rectangle r) {
 		if (!Rectangle.collides(c.boundingRectangle, r)) return false;
 		//This might not be pixel perfect
-		Vector cloc = c.getLocation();
-		Vector rloc = r.getLocation();
+		Vector cloc = c.getPosition();
+		Vector rloc = r.getPosition();
 		Vector rBottomLeft = new Vector(rloc.x - r.width/2, rloc.y - r.height/2);
 		Vector rTopRight = new Vector(rloc.x + r.width/2, rloc.y + r.height/2);
 
