@@ -15,7 +15,7 @@ public class Block extends PhysicsActor {
 	}
 
 	@Override
-	public void act(float factor) {
+	public void actInner(float factor) {
 		sprite.updateFrame(factor);
 	}
 

@@ -2,7 +2,6 @@ package net.drcorchit.dungeonraiders.entities.actors;
 
 import net.drcorchit.dungeonraiders.entities.Entity;
 import net.drcorchit.dungeonraiders.entities.stages.Stage;
-import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector2;
 
 public abstract class Actor<T extends Stage> extends Entity implements Comparable<Actor<?>> {
@@ -21,7 +20,7 @@ public abstract class Actor<T extends Stage> extends Entity implements Comparabl
 		stage.destroyActor(this);
 	}
 
-	public Vector2 getDirectionVector() {
+	public Vector2 getVelocity() {
 		return position.subtract(lastPosition);
 	}
 

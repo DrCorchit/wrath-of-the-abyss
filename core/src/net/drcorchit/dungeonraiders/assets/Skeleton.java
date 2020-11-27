@@ -71,8 +71,8 @@ public class Skeleton {
 		return output;
 	}
 
-	public void draw(float x, float y) {
-		root.draw(new Vector2(x, y));
+	public void draw(Vector2 v) {
+		root.draw(v);
 	}
 
 	public class Joint {

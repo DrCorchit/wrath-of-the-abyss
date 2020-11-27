@@ -26,8 +26,15 @@ public abstract class PhysicsActor extends Actor<PhysicsStage> {
 		shape.dispose();
 	}
 
+	public Vector2 getVelocity() {
+		return Vector2.fromLibGDX(body.getLinearVelocity());
+	}
+
+	public abstract void actInner(float factor);
+
 	@Override
 	public void act(float factor) {
+		actInner(factor);
 		setPosition(Vector2.fromLibGDX(body.getPosition()));
 	}
 }

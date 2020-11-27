@@ -37,13 +37,10 @@ public abstract class PuppetActor extends PhysicsActor {
 	public void act(float factor) {
 		float speed = animator.getAnimation().getDefaultSpeed() * factor;
 		nextFrame = animator.getNextFrameLerped(speed);
-		actInner(factor);
+		super.act(factor);
 		nextFrame.apply(skeleton, DEFAULT_TWEENING * factor);
 		skin.update(factor);
-		super.act(factor);
 	}
-
-	public abstract void actInner(float factor);
 
 	@Override
 	public void draw(Vector2 position) {

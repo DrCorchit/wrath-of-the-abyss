@@ -20,7 +20,8 @@ public class PhysicsStage extends Stage {
 	@Override
 	public void act() {
 		float delta = Gdx.graphics.getDeltaTime();
-		float factor = Math.min(delta/EXPECTED_DELTA_TIME, 1);
+		//factor goes down as delta time gets shorter
+		float factor = Math.min(EXPECTED_DELTA_TIME/delta, 1);
 		act(factor);
 	}
 

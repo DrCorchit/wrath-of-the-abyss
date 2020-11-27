@@ -27,8 +27,21 @@ public class Player extends PuppetActor {
 	public void actInner(float factor) {
 		Vector2 velocity = Vector2.fromLibGDX(body.getLinearVelocity());
 		int horiz = horiz();
-		if (velocity.length() < MAX_SPEED) {
-			body.applyForceToCenter(horiz * 100, 0, true);
+
+		switch (horiz) {
+			case -1:
+			case 1:
+				if (velocity.x < MAX_SPEED) {
+					body.applyLinearImpulse(new Vector2(body.getMass() * horiz * 10, 0).toLibGDX(), body.getPosition(), true);
+				}
+				break;
+			default:
+				body.setLinearVelocity(0, velocity.y);
+				break;
+		}
+
+		if (velocity.x > MAX_SPEED) {
+			//body.setLinearDamping(1);
 		}
 
 		if (horiz == -1) {
@@ -38,7 +51,8 @@ public class Player extends PuppetActor {
 		}
 
 		if (vert() == 1) {
-			body.applyForceToCenter(0, 1000, true);
+			//body.applyForceToCenter(0, body.getMass(), true);
+			body.setLinearVelocity(0, 100);
 		}
 
 		velocity = Vector2.fromLibGDX(body.getLinearVelocity());

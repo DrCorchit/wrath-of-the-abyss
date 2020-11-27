@@ -24,6 +24,7 @@ public abstract class Stage extends Entity {
 
 	public void act() {
 		float delta = Gdx.graphics.getDeltaTime();
+		System.out.println(delta);
 		float factor = Math.min(EXPECTED_DELTA_TIME/delta, 1);
 		act(factor);
 	}
