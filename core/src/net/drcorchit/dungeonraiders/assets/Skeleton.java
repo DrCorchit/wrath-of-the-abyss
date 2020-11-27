@@ -8,7 +8,7 @@ import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 import net.drcorchit.dungeonraiders.utils.Draw;
 import net.drcorchit.dungeonraiders.utils.JsonUtils;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
-import net.drcorchit.dungeonraiders.utils.Vector2;
+import net.drcorchit.dungeonraiders.utils.Vector;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -71,7 +71,7 @@ public class Skeleton {
 		return output;
 	}
 
-	public void draw(Vector2 v) {
+	public void draw(Vector v) {
 		root.draw(v);
 	}
 
@@ -140,7 +140,7 @@ public class Skeleton {
 			return parent == null ? angle : parent.getAbsoluteAngle() + angle;
 		}
 
-		public Vector2 getRootRelativePosition() {
+		public Vector getRootRelativePosition() {
 			if (parent == null) {
 				return getParentRelativePosition();
 			} else {
@@ -148,7 +148,7 @@ public class Skeleton {
 			}
 		}
 
-		public Vector2 getParentRelativePosition() {
+		public Vector getParentRelativePosition() {
 			float distance, angle;
 			if (parent == null) {
 				distance = (float) Math.hypot(horizontalOffset, verticalOffset);
@@ -160,7 +160,7 @@ public class Skeleton {
 
 			float x = (float) (scale * distance * Math.cos(Math.toRadians(angle)));
 			float y = (float) (scale * distance * Math.sin(Math.toRadians(angle)));
-			return new Vector2(x, y);
+			return new Vector(x, y);
 		}
 
 		private void addJoint(Joint child) {
@@ -171,9 +171,9 @@ public class Skeleton {
 			children.add(child);
 		}
 
-		private void draw(Vector2 parentPos) {
+		private void draw(Vector parentPos) {
 			Draw draw = DungeonRaidersGame.getDraw();
-			Vector2 myPos = parentPos.add(getParentRelativePosition());
+			Vector myPos = parentPos.add(getParentRelativePosition());
 			Sprites.white.draw(draw.getBatch(), myPos.x, myPos.y);
 			draw.drawLine(parentPos.x, parentPos.y, myPos.x, myPos.y, 2, Color.RED);
 			children.forEach(child -> child.draw(myPos));

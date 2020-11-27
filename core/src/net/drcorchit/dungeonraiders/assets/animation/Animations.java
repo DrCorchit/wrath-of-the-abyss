@@ -12,7 +12,7 @@ public class Animations {
 	private static final File ANIMATION_FOLDER = IOUtils.getFileAsChildOfWorkingDir("resources/animations");
 	public static final Animation stand = loadPose("stand.json");
 	public static final Animation jump = loadPose("jump.json");
-	public static final Animation jogging = loadLoop("jogging.json");
+	public static final Animation jog = loadLoop("jogging.json");
 
 	private static LoopingAnimation loadLoop(String file) {
 		try {

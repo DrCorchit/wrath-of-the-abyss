@@ -3,64 +3,62 @@ package net.drcorchit.dungeonraiders.entities.actors;
 import net.drcorchit.dungeonraiders.assets.Skeleton;
 import net.drcorchit.dungeonraiders.assets.Skin;
 import net.drcorchit.dungeonraiders.assets.animation.Animations;
-import net.drcorchit.dungeonraiders.entities.stages.PhysicsStage;
-import net.drcorchit.dungeonraiders.utils.Vector2;
+import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
+import net.drcorchit.dungeonraiders.input.KeyboardInfo;
+import net.drcorchit.dungeonraiders.utils.MathUtils;
+import net.drcorchit.dungeonraiders.utils.Vector;
 
 public class Player extends PuppetActor {
 
-	private static final float MAX_SPEED = 10;
-	private static final float STAND_ANIMATION_MAX_SPEED = .00001f;
+	private static final float MAX_SPEED = 6, JUMP = 5, MOVE = 1, FRICTION = 1;
 
-	public Player(PhysicsStage stage, Skeleton skeleton, Skin skin, float x, float y, float w, float h) {
+	private final KeyboardInfo keys = getGame().keyboard;
+
+	public Player(DungeonStage stage, Skeleton skeleton, Skin skin, float x, float y, float w, float h) {
 		super(stage, skeleton, skin, x, y, w, h);
-	}
-
-	private int horiz() {
-		return getGame().keyboard.horiz;
-	}
-
-	private int vert() {
-		return getGame().keyboard.vert;
 	}
 
 	@Override
 	public void actInner(float factor) {
-		Vector2 velocity = Vector2.fromLibGDX(body.getLinearVelocity());
-		int horiz = horiz();
-
-		switch (horiz) {
-			case -1:
-			case 1:
-				if (velocity.x < MAX_SPEED) {
-					body.applyLinearImpulse(new Vector2(body.getMass() * horiz * 10, 0).toLibGDX(), body.getPosition(), true);
-				}
-				break;
-			default:
-				body.setLinearVelocity(0, velocity.y);
-				break;
-		}
-
-		if (velocity.x > MAX_SPEED) {
-			//body.setLinearDamping(1);
-		}
+		int horiz = keys.horiz;
+		boolean jumped = keys.space.isPressed();
+		boolean grounded = isGrounded();
+		float hSpeed = getVelocity().x;
+		float vSpeed = getVelocity().y;
 
 		if (horiz == -1) {
 			skeleton.flipped = true;
+			hSpeed -= MOVE;
 		} else if (horiz == 1) {
 			skeleton.flipped = false;
+			hSpeed += MOVE;
+		} else if (grounded) {
+			hSpeed += Math.signum(hSpeed) * -FRICTION;
 		}
 
-		if (vert() == 1) {
-			//body.applyForceToCenter(0, body.getMass(), true);
-			body.setLinearVelocity(0, 100);
+		if (jumped && grounded) {
+			vSpeed += JUMP;
 		}
 
-		velocity = Vector2.fromLibGDX(body.getLinearVelocity());
+		hSpeed = MathUtils.clamp(-MAX_SPEED, hSpeed, MAX_SPEED);
 
-		if (velocity.length() < STAND_ANIMATION_MAX_SPEED) {
-			animator.setAnimation(Animations.stand);
+		setVelocity(new Vector(hSpeed, vSpeed));
+
+		if (isGrounded()) {
+			if (hSpeed == 0 && keys.vert == 0) {
+				animator.setAnimation(Animations.stand);
+			} else {
+				animator.setAnimation(Animations.jog);
+			}
 		} else {
-			animator.setAnimation(Animations.jogging);
+			animator.setAnimation(Animations.jump);
 		}
+
+		setZRelative(keys.vert);
+	}
+
+	@Override
+	public boolean collidesWith(PhysicsActor other) {
+		return other instanceof Block;
 	}
 }

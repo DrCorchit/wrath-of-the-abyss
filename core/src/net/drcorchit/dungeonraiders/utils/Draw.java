@@ -191,7 +191,7 @@ public class Draw {
 	//FIXME: https://stackoverflow.com/questions/28290428/implementing-trapezoidal-sprites-in-libgdx
 	//1, 2
 	//3, 4
-	public void drawPrimitive(TextureRegion region, Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4) {
+	public void drawPrimitive(TextureRegion region, Vector p1, Vector p2, Vector p3, Vector p4) {
 		float[] vertices = new float[20];
 		float bottomWidth = (p1.x - p2.x) / (p3.x - p4.x);
 

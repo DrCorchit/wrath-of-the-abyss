@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import net.drcorchit.dungeonraiders.utils.AnimatedSprite;
 import net.drcorchit.dungeonraiders.utils.JsonUtils;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
-import net.drcorchit.dungeonraiders.utils.Vector2;
+import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.ArrayList;
 
@@ -60,13 +60,13 @@ public class Skin {
 	}
 
 	public void draw(Skeleton skeleton, float x, float y) {
-		draw(skeleton, new Vector2(x, y));
+		draw(skeleton, new Vector(x, y));
 	}
 
-	public void draw(Skeleton skeleton, Vector2 position) {
+	public void draw(Skeleton skeleton, Vector position) {
 		sprites.forEach(spr -> {
 			Skeleton.Joint joint = skeleton.getJoint(spr.jointName);
-			Vector2 jointPos = joint.getRootRelativePosition().add(position);
+			Vector jointPos = joint.getRootRelativePosition().add(position);
 			float rotation = joint.getAbsoluteAngle() + spr.angle;
 			float xScale = skeleton.scale;
 			float yScale = skeleton.scale;

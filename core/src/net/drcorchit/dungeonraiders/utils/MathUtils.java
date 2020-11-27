@@ -16,6 +16,10 @@ public class MathUtils {
 		return i + ordinalSuffix(i);
 	}
 
+	public static double fractionalPart(Number n) {
+		return n.doubleValue() - n.intValue();
+	}
+
 	public static int mod(int value, int divisor) {
 		int i = value % divisor;
 		return i < 0 ? i + divisor : i;
@@ -58,14 +62,14 @@ public class MathUtils {
 		return (float) mod(angle + dif * 2, 360);
 	}
 
-	public static Vector2 mirrorPoint(Vector2 point, Vector2 origin, float reflectionAngle) {
+	public static Vector mirrorPoint(Vector point, Vector origin, float reflectionAngle) {
 		float internalAngle = origin.angle(point) - reflectionAngle;
 		float leg = point.distance(origin);
 		float theta = reflectionAngle - 90;
 		float r = (float) (Math.sin(Math.toRadians(internalAngle)) * leg);
 		float x = (float) (point.x + 2 * r * Math.cos(Math.toRadians(theta)));
 		float y = (float) (point.y + 2 * r * Math.sin(Math.toRadians(theta)));
-		return new Vector2(x, y);
+		return new Vector(x, y);
 	}
 
 	@SafeVarargs

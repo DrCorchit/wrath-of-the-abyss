@@ -1,26 +1,42 @@
 package net.drcorchit.dungeonraiders.entities.actors;
 
-import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.graphics.Color;
 import net.drcorchit.dungeonraiders.assets.Textures;
-import net.drcorchit.dungeonraiders.entities.stages.PhysicsStage;
+import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
+import net.drcorchit.dungeonraiders.entities.stages.Stage;
 import net.drcorchit.dungeonraiders.utils.AnimatedSprite;
-import net.drcorchit.dungeonraiders.utils.Vector2;
+import net.drcorchit.dungeonraiders.utils.Vector;
 
 public class Block extends PhysicsActor {
 
-	AnimatedSprite sprite = Textures.asSpriteList(Textures.wall).asSprite();
+	private final AnimatedSprite sprite = Textures.asSpriteList(Textures.wall).asSprite();
+	private final float width, height;
 
-	public Block(PhysicsStage stage, float x, float y, float w, float h) {
-		super(stage, BodyDef.BodyType.StaticBody, x, y, w, h);
+	public Block(DungeonStage stage, float x, float y, float w, float h) {
+		super(stage, true, x, y);
+		this.width = w;
+		this.height = h;
+		setShapeAsRectangle(0, 0, w, h);
 	}
 
 	@Override
-	public void actInner(float factor) {
-		sprite.updateFrame(factor);
+	public void draw(Vector position) {
+		getShape().draw(Color.WHITE);
+		//sprite.draw(getBatch(), position.x - width/2, position.y - width/2, width, height);
 	}
 
 	@Override
-	public void draw(Vector2 position) {
-		sprite.draw(getBatch(), position.x - width/2, position.y - width/2, width, height);
+	public void act(float delta) {
+
+	}
+
+	@Override
+	public boolean collidesWith(PhysicsActor other) {
+		return true;
+	}
+
+	@Override
+	public boolean canOccupyPosition(Vector position) {
+		return true;
 	}
 }

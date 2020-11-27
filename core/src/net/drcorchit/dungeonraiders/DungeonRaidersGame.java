@@ -2,22 +2,18 @@ package net.drcorchit.dungeonraiders;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import net.drcorchit.dungeonraiders.assets.*;
 import net.drcorchit.dungeonraiders.assets.animation.AnimationState;
 import net.drcorchit.dungeonraiders.assets.animation.Animations;
-import net.drcorchit.dungeonraiders.assets.animation.Frame;
 import net.drcorchit.dungeonraiders.entities.actors.Actor;
 import net.drcorchit.dungeonraiders.entities.actors.Block;
 import net.drcorchit.dungeonraiders.entities.actors.Player;
-import net.drcorchit.dungeonraiders.entities.stages.PhysicsStage;
-import net.drcorchit.dungeonraiders.entities.stages.Stage;
+import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.input.MouseInfo;
 import net.drcorchit.dungeonraiders.utils.Draw;
-import net.drcorchit.dungeonraiders.utils.Vector2;
+import net.drcorchit.dungeonraiders.utils.Vector;
 
 public class DungeonRaidersGame extends ApplicationAdapter {
 	private static DungeonRaidersGame instance;
@@ -27,7 +23,7 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 	}
 
 	private PolygonSpriteBatch batch;
-	private PhysicsStage stage;
+	private DungeonStage stage;
 	private Draw draw;
 	public final MouseInfo mouse;
 	public final KeyboardInfo keyboard;
@@ -54,7 +50,7 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 		draw = new Draw(batch);
 		LocalAssets.getInstance().load();
 
-		stage = new PhysicsStage();
+		stage = new DungeonStage();
 		stage.addActor(new Player(stage, Skeletons.human_female, Skins.punk, 500, 500, 30, 220));
 		stage.addActor(new Block(stage, 500, 200, 40, 40));
 		stage.addActor(new Block(stage, 540, 200, 40, 40));
@@ -62,10 +58,10 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 
 		skeleton = Skeletons.human_female;
 		skin = Skins.harness;
-		AnimationState state = new AnimationState(Animations.jogging);
-		stage.addActor(new Actor<Stage>(stage, 1200, 540) {
+		AnimationState state = new AnimationState(Animations.jog);
+		stage.addActor(new Actor(stage, 1200, 540) {
 			@Override
-			public void draw(Vector2 position) {
+			public void draw(Vector position) {
 				skin.draw(skeleton, position);
 			}
 
