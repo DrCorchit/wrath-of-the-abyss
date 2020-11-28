@@ -98,4 +98,8 @@ public class MathUtils {
 		}
 		return output;
 	}
+
+	public static boolean getBit(int input, int place) {
+		return (input >> place & 1) == 1;
+	}
 }

@@ -13,8 +13,8 @@ import net.drcorchit.dungeonraiders.utils.*;
 
 public class Room extends DungeonActor<DungeonStage> {
 
-	private static final int ROOM_BLOCK_SIZE = 16;
-	private static final float SIZE = ROOM_BLOCK_SIZE * DungeonStage.BLOCK_SIZE;
+	public static final int SIZE = 16;
+	public static final float PIXEL_SIZE = SIZE * DungeonStage.BLOCK_SIZE;
 
 	private final Layer[] layers;
 	private final int lastlayerIndex;
@@ -30,7 +30,7 @@ public class Room extends DungeonActor<DungeonStage> {
 			layers[i] = new Layer(layerZ);
 		}
 
-		setViewBoundsToRectangle(SIZE / 2, SIZE / 2, SIZE, SIZE);
+		setViewBoundsToRectangle(PIXEL_SIZE / 2, PIXEL_SIZE / 2, PIXEL_SIZE, PIXEL_SIZE);
 	}
 
 	public Layer getLayer(int index) {
@@ -69,7 +69,7 @@ public class Room extends DungeonActor<DungeonStage> {
 		public AnimatedSprite floorSprite, wallSprite;
 		private final Surface surface, maskSurface;
 		public final float z;
-		public final Grid<Shape> grid = new Grid<>(Shape.class, ROOM_BLOCK_SIZE, ROOM_BLOCK_SIZE);
+		public final Grid<Shape> grid = new Grid<>(Shape.class, SIZE, SIZE);
 
 		public Layer(float z) {
 			super(Room.this.stage, Room.this.getPosition());
