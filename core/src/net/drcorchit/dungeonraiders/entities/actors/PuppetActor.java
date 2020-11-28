@@ -52,7 +52,7 @@ public abstract class PuppetActor extends PhysicsActor {
 		Vector projectedPosition = stage.projectZPosition(position.add(skeletonOffset), getZ());
 
 		skeleton.scale = projectedScale;
-		getShape().move(position.add(getColliderOffset())).draw(Color.YELLOW);
+		getCollider().move(position.add(getColliderOffset())).draw(Color.YELLOW);
 		skin.draw(skeleton, projectedPosition);
 		//skeleton.draw(skeletonPosition);
 		skeleton.scale = originalScale;

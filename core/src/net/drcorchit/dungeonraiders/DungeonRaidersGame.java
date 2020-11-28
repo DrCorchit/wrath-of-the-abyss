@@ -7,11 +7,9 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import net.drcorchit.dungeonraiders.assets.*;
 import net.drcorchit.dungeonraiders.assets.animation.AnimationState;
 import net.drcorchit.dungeonraiders.assets.animation.Animations;
-import net.drcorchit.dungeonraiders.entities.actors.Actor;
 import net.drcorchit.dungeonraiders.entities.actors.Player;
 import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.entities.stages.Room;
-import net.drcorchit.dungeonraiders.entities.stages.Stage;
 import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.input.MouseInfo;
 import net.drcorchit.dungeonraiders.utils.Direction;
@@ -62,9 +60,10 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 				Skeletons.human_female,
 				Skins.punk,
 				new Vector(500, 500),
-				new Vector(0, 110),
-				new Vector(0, 300));
-		player.setShapeAsRectangle(0, 95, 40, 190);
+				new Vector(0, 110));
+		player.setColliderToRectangle(0, 95, 40, 190);
+		player.setCameraOffset(new Vector(0, 300));
+		player.setViewBoundsToRectangle(0, 95, 400, 400);
 		stage.addActor(player);
 
 		Room room = new Room(stage, new Vector(90, 90), 2);
@@ -92,17 +91,6 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 		skeleton = Skeletons.human_female;
 		skin = Skins.purple;
 		AnimationState state = new AnimationState(Animations.jog);
-		stage.addActor(new Actor<Stage>(stage, new Vector(1200, 540)) {
-			@Override
-			public void draw(Vector position) {
-				skin.draw(skeleton, position);
-			}
-
-			@Override
-			public void act(float factor) {
-				state.getNextFrame(factor).apply(skeleton, 5f);
-			}
-		});
 	}
 
 	public void act() {

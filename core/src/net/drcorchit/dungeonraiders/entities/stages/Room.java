@@ -1,23 +1,22 @@
 package net.drcorchit.dungeonraiders.entities.stages;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import net.drcorchit.dungeonraiders.assets.Sprites;
 import net.drcorchit.dungeonraiders.assets.Textures;
-import net.drcorchit.dungeonraiders.entities.actors.Actor;
+import net.drcorchit.dungeonraiders.entities.actors.DungeonActor;
+import net.drcorchit.dungeonraiders.entities.actors.PhysicsActor;
 import net.drcorchit.dungeonraiders.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.shapes.Shape;
 import net.drcorchit.dungeonraiders.shapes.Square;
 import net.drcorchit.dungeonraiders.utils.*;
 
-public class Room extends Actor<DungeonStage> {
+public class Room extends DungeonActor {
 
 	private static final int ROOM_BLOCK_SIZE = 16;
 	private static final float SIZE = ROOM_BLOCK_SIZE * DungeonStage.BLOCK_SIZE;
 
 	private final Layer[] layers;
 	private final int lastlayerIndex;
-	private final Rectangle rectangle;
 
 	public Room(DungeonStage stage, Vector position, int numLayers) {
 		super(stage, position);
@@ -30,12 +29,7 @@ public class Room extends Actor<DungeonStage> {
 			layers[i] = new Layer(layerZ);
 		}
 
-		rectangle = new Square(() -> getPosition().add(SIZE / 2, SIZE / 2), ROOM_BLOCK_SIZE * DungeonStage.BLOCK_SIZE);
-		depth = -1;
-	}
-
-	public Rectangle getRectangle() {
-		return rectangle;
+		setViewBoundsToRectangle(SIZE / 2, SIZE / 2, SIZE, SIZE);
 	}
 
 	public Layer getLayer(int index) {
@@ -52,13 +46,32 @@ public class Room extends Actor<DungeonStage> {
 		//currently no-op
 	}
 
-	public class Layer {
+	@Override
+	public float getDepth() {
+		return -10000;
+	}
+
+	@Override
+	public boolean collidesWith(DungeonActor other) {
+		return false;
+	}
+
+	public void draw(Vector pos) {
+		//rectangle.move(pos.add(SIZE / 2, SIZE / 2)).draw(Color.RED);
+		//draw from back to front
+		for (int i = lastlayerIndex; i >= 0; i--) {
+			layers[i].draw(pos);
+		}
+	}
+
+	public class Layer extends DungeonActor {
 		public AnimatedSprite floorSprite, wallSprite;
 		private final Surface surface, maskSurface;
 		public final float z;
 		public final Grid<Shape> blocks = new Grid<>(Shape.class, ROOM_BLOCK_SIZE, ROOM_BLOCK_SIZE);
 
 		public Layer(float z) {
+			super(Room.this.stage, Room.this.getPosition());
 			this.z = z;
 			floorSprite = Sprites.getSprite(Textures.FLOOR);
 			wallSprite = Sprites.getSprite(Textures.WALL);
@@ -75,6 +88,22 @@ public class Room extends Actor<DungeonStage> {
 		public void placeSquare(int i, int j) {
 			Rectangle r = new Square(() -> getCellLocation(i, j), DungeonStage.BLOCK_SIZE);
 			blocks.set(i, j, r);
+		}
+
+		@Override
+		public void act(float factor) {
+			//No-op
+		}
+
+
+		@Override
+		public float getDepth() {
+			return -z;
+		}
+
+		@Override
+		public boolean collidesWith(DungeonActor other) {
+			return other instanceof PhysicsActor;
 		}
 
 		public void draw(Vector roomPos) {
@@ -132,7 +161,6 @@ public class Room extends Actor<DungeonStage> {
 						getDraw().drawPrimitive(Textures.FLOOR, nearC3, nearC4, farC3, farC4);
 					}
 
-					//getDraw().drawPrimitive(Textures.wall, nearC1, nearC2, nearC3, nearC4);
 					maskSurface.begin();
 					getBatch().setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
 					Sprites.WHITE_TILE.drawScaled(getBatch(), nearC3.x, nearC3.y, nearScale, nearScale, 0);
@@ -146,24 +174,15 @@ public class Room extends Actor<DungeonStage> {
 			maskSurface.createSprite().draw(getBatch());
 			getBatch().setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			surface.end();
-
-			//negativeSurface.createSprite().draw(getBatch());
 			surface.createSprite().draw(getBatch());
 		}
 
+		@Deprecated
 		public boolean collidesWith(Shape s1) {
 			for (Shape s2 : blocks) {
 				if (s2 != null && s1.collidesWith(s2)) return true;
 			}
 			return false;
-		}
-	}
-
-	public void draw(Vector pos) {
-		//rectangle.move(pos.add(SIZE / 2, SIZE / 2)).draw(Color.RED);
-		//draw from back to front
-		for (int i = lastlayerIndex; i >= 0; i--) {
-			layers[i].draw(pos);
 		}
 	}
 }

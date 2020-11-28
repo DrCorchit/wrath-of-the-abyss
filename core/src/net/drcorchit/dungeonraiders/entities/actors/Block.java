@@ -15,12 +15,12 @@ public class Block extends PhysicsActor {
 		super(stage, true, new Vector(x, y));
 		this.width = w;
 		this.height = h;
-		setShapeAsRectangle(0, 0, w, h);
+		setColliderToRectangle(0, 0, w, h);
 	}
 
 	@Override
 	public void draw(Vector position) {
-		getShape().draw(Color.WHITE);
+		getCollider().draw(Color.WHITE);
 		//sprite.draw(getBatch(), position.x - width/2, position.y - width/2, width, height);
 	}
 
@@ -30,7 +30,7 @@ public class Block extends PhysicsActor {
 	}
 
 	@Override
-	public boolean collidesWith(PhysicsActor other) {
+	public boolean collidesWith(DungeonActor other) {
 		return true;
 	}
 

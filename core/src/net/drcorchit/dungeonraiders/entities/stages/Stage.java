@@ -1,6 +1,7 @@
 package net.drcorchit.dungeonraiders.entities.stages;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import net.drcorchit.dungeonraiders.entities.Entity;
 import net.drcorchit.dungeonraiders.entities.actors.Actor;
@@ -12,27 +13,34 @@ import java.util.Collections;
 
 public abstract class Stage extends Entity {
 
-	public static final float VIEW_BUFFER = 100;
 	public static final float EXPECTED_DELTA_TIME = 1 / 60f;
 
 	private final ArrayList<Actor<?>> actors = new ArrayList<>();
-	private Vector viewPosition, viewDims;
+	private Vector viewPosition;
+	//vector from view pos to view center
+	private final Vector viewOffset;
+	public final Rectangle viewBounds;
 
 	protected Stage() {
 		viewPosition = new Vector(0, 0);
-		viewDims = new Vector(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		viewBounds = new Rectangle(this::getViewCenter, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		viewOffset = new Vector(viewBounds.width/2, viewBounds.height/2);
 	}
 
 	public Vector getViewPosition() {
 		return viewPosition;
 	}
 
-	public void centerViewOn(Vector v) {
-		viewPosition = v.subtract(viewDims.multiply(.5f));
+	public void setViewPosition(Vector v) {
+		viewPosition = v;
+	}
+
+	public void setViewCenter(Vector center) {
+		viewPosition = center.subtract(viewOffset);
 	}
 
 	public Vector getViewCenter() {
-		return viewPosition.add(viewDims.multiply(.5f));
+		return viewPosition.add(viewOffset);
 	}
 
 	public void addActor(Actor<?> actor) {
@@ -67,8 +75,9 @@ public abstract class Stage extends Entity {
 
 		getBatch().begin();
 		for (Actor<?> actor : actors) {
-			if (isActorInView(actor)) {
+			if (actor.isInView()) {
 				Vector adjustedPos = actor.getPosition().subtract(viewPosition);
+				//actor.getViewBounds(adjustedPos).draw(Color.GREEN);
 				actor.draw(adjustedPos);
 			}
 		}
@@ -77,10 +86,5 @@ public abstract class Stage extends Entity {
 
 	public Iterable<Actor<?>> getActors() {
 		return actors;
-	}
-
-	//TODO make this an instance method of Actor
-	public boolean isActorInView(Actor<?> actor) {
-		return new Rectangle(this::getViewCenter, viewDims.x + VIEW_BUFFER, viewDims.y + VIEW_BUFFER).containsPoint(actor.getPosition());
 	}
 }

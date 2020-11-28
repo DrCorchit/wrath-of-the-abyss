@@ -2,7 +2,7 @@ package net.drcorchit.dungeonraiders.entities.stages;
 
 import com.badlogic.gdx.graphics.Texture;
 import net.drcorchit.dungeonraiders.assets.Textures;
-import net.drcorchit.dungeonraiders.entities.actors.PhysicsActor;
+import net.drcorchit.dungeonraiders.entities.actors.DungeonActor;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.HashMap;
@@ -63,9 +63,10 @@ public class DungeonStage extends Stage {
 		return diff.multiply(getZScale(z)).add(center);
 	}
 
-	public Set<Room> getOverlappedRooms(PhysicsActor actor) {
+	@Deprecated
+	public Set<Room> getOverlappedRooms(DungeonActor actor) {
 		return rooms.values().stream().filter(
-				room -> actor.getShape().collidesWith(room.getRectangle())
+				room -> actor.getCollider().collidesWith(room.getViewBounds())
 		).collect(Collectors.toSet());
 	}
 }

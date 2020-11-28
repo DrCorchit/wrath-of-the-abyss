@@ -12,22 +12,29 @@ import net.drcorchit.dungeonraiders.utils.Vector;
 
 public class Player extends PuppetActor {
 
-	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 10, JUMP = 10, MOVE = .5f, FRICTION = .2f;
+	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 20, JUMP = 10, MOVE = .5f, FRICTION = .2f;
 
 	private final KeyboardInfo keys = getGame().keyboard;
-	private final Vector cameraOffset;
+	private Vector cameraOffset;
 
 	public Player(DungeonStage stage,
 				  Skeleton skeleton,
 				  Skin skin,
 				  Vector position,
-				  Vector skeletonOffset,
-				  Vector cameraOffset) {
+				  Vector skeletonOffset) {
 		super(stage,
 				skeleton,
 				skin,
 				position,
 				skeletonOffset);
+		this.cameraOffset = Vector.ZERO;
+	}
+
+	public Vector getCameraOffset() {
+		return cameraOffset;
+	}
+
+	public void setCameraOffset(Vector cameraOffset) {
 		this.cameraOffset = cameraOffset;
 	}
 
@@ -76,14 +83,14 @@ public class Player extends PuppetActor {
 		}
 
 		//set camera
-		stage.centerViewOn(getPosition().add(cameraOffset));
+		stage.setViewCenter(getPosition().add(cameraOffset));
 		DungeonRaidersGame.getInstance().debugInfoMap.put("player z", getZ());
 		int zLayer = Room.getLayerIndex(getZ());
 		DungeonRaidersGame.getInstance().debugInfoMap.put("z layers", zLayer);
 	}
 
 	@Override
-	public boolean collidesWith(PhysicsActor other) {
-		return other instanceof Block;
+	public boolean collidesWith(DungeonActor other) {
+		return other instanceof Room.Layer;
 	}
 }
