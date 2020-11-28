@@ -88,30 +88,30 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 
 	@Override
 	public void act(float factor) {
+		if (!canOccupyPosition(getPosition(), z)) {
+			System.out.println("Stuck in a wall");
+		}
+
 		if (!isFixed) {
 			if (!isGrounded()) {
 				Vector gravity = stage.getGravity().multiply(factor);
 				addVelocity(gravity);
-
-				moveToContact(velocity.multiply(factor));
-				boolean stopped = !canMoveInDirection(velocity);
-
-				if (stopped) {
-					Vector gravComponent = velocity.project(gravity);
-
-					if (isGrounded()) {
-						//set the velocity in the gravity direction to 0
-						setVelocity(velocity.subtract(gravComponent));
-					} else {
-						setVelocity(gravComponent);
-					}
-				}
-			} else {
-				moveToContact(velocity.multiply(factor));
-				if (!canMoveInDirection(velocity)) {
-					cancelVelocity();
-				}
 			}
+
+			Vector gravNorm = stage.getGravity().normalize();
+			Vector antiGravNorm = gravNorm.rotateDegrees(90);
+			Vector grav = velocity.project(gravNorm);
+			Vector antiGrav = velocity.project(antiGravNorm);
+
+			if (!moveToContact(grav.multiply(factor))) {
+				grav = Vector.ZERO;
+			}
+
+			if (!moveToContact(antiGrav.multiply(factor))) {
+				antiGrav = Vector.ZERO;
+			}
+
+			velocity = grav.add(antiGrav);
 		}
 	}
 

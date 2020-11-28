@@ -1,13 +1,14 @@
 package net.drcorchit.dungeonraiders.entities.stages;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import net.drcorchit.dungeonraiders.assets.Sprites;
 import net.drcorchit.dungeonraiders.assets.Textures;
 import net.drcorchit.dungeonraiders.entities.actors.Actor;
 import net.drcorchit.dungeonraiders.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.shapes.Shape;
 import net.drcorchit.dungeonraiders.shapes.Square;
-import net.drcorchit.dungeonraiders.utils.Grid;
-import net.drcorchit.dungeonraiders.utils.MathUtils;
-import net.drcorchit.dungeonraiders.utils.Vector;
+import net.drcorchit.dungeonraiders.utils.*;
 
 public class Room extends Actor<DungeonStage> {
 
@@ -52,11 +53,17 @@ public class Room extends Actor<DungeonStage> {
 	}
 
 	public class Layer {
+		public AnimatedSprite floorSprite, wallSprite;
+		private final Surface surface, maskSurface;
 		public final float z;
 		public final Grid<Shape> blocks = new Grid<>(Shape.class, ROOM_BLOCK_SIZE, ROOM_BLOCK_SIZE);
 
 		public Layer(float z) {
 			this.z = z;
+			floorSprite = Sprites.getSprite(Textures.FLOOR);
+			wallSprite = Sprites.getSprite(Textures.WALL);
+			surface = new Surface();
+			maskSurface = new Surface();
 		}
 
 		public Vector getCellLocation(int i, int j) {
@@ -75,6 +82,16 @@ public class Room extends Actor<DungeonStage> {
 			float nearScale = DungeonStage.getZScale(z + DungeonStage.BLOCK_SIZE);
 			float farSize = DungeonStage.BLOCK_SIZE * nearScale / 2;
 			float nearSize = DungeonStage.BLOCK_SIZE * farScale / 2;
+
+			surface.begin();
+			surface.clear();
+			Vector projectedPos = stage.projectZPosition(roomPos, z + DungeonStage.BLOCK_SIZE);
+			wallSprite.drawTiled(getBatch(), projectedPos.x, projectedPos.y);
+			surface.end();
+
+			maskSurface.begin();
+			maskSurface.clear();
+			maskSurface.end();
 
 			blocks.forEachCell((i, j) -> {
 				Shape shape = blocks.get(i, j);
@@ -97,27 +114,41 @@ public class Room extends Actor<DungeonStage> {
 
 					//top
 					if (farC1.y > nearC1.y) {
-						getDraw().drawPrimitive(Textures.wall2, farC1, farC2, nearC1, nearC2);
+						getDraw().drawPrimitive(Textures.FLOOR, farC1, farC2, nearC1, nearC2);
 					}
 
 					//left
 					if (farC1.x < nearC1.x) {
-						getDraw().drawPrimitive(Textures.wall2, farC1, nearC1, farC3, nearC3);
+						getDraw().drawPrimitive(Textures.FLOOR, farC1, nearC1, farC3, nearC3);
 					}
 
 					//right
 					if (farC4.x > nearC4.x) {
-						getDraw().drawPrimitive(Textures.wall2, nearC2, farC2, nearC4, farC4);
+						getDraw().drawPrimitive(Textures.FLOOR, nearC2, farC2, nearC4, farC4);
 					}
 
 					//bottom
 					if (farC4.y < nearC4.y) {
-						getDraw().drawPrimitive(Textures.wall2, nearC3, nearC4, farC3, farC4);
+						getDraw().drawPrimitive(Textures.FLOOR, nearC3, nearC4, farC3, farC4);
 					}
 
-					getDraw().drawPrimitive(Textures.wall, nearC1, nearC2, nearC3, nearC4);
+					//getDraw().drawPrimitive(Textures.wall, nearC1, nearC2, nearC3, nearC4);
+					maskSurface.begin();
+					getBatch().setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
+					Sprites.WHITE_TILE.drawScaled(getBatch(), nearC3.x, nearC3.y, nearScale, nearScale, 0);
+					getBatch().setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+					maskSurface.end();
 				}
 			});
+
+			surface.begin();
+			getBatch().setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+			maskSurface.createSprite().draw(getBatch());
+			getBatch().setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			surface.end();
+
+			//negativeSurface.createSprite().draw(getBatch());
+			surface.createSprite().draw(getBatch());
 		}
 
 		public boolean collidesWith(Shape s1) {

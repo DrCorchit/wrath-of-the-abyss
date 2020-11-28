@@ -174,7 +174,7 @@ public class Skeleton {
 		private void draw(Vector parentPos) {
 			Draw draw = DungeonRaidersGame.getDraw();
 			Vector myPos = parentPos.add(getParentRelativePosition());
-			Sprites.white.draw(draw.getBatch(), myPos.x, myPos.y);
+			Sprites.WHITE_POINT.draw(draw.getBatch(), myPos.x, myPos.y);
 			draw.drawLine(parentPos.x, parentPos.y, myPos.x, myPos.y, 2, Color.RED);
 			children.forEach(child -> child.draw(myPos));
 		}

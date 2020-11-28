@@ -43,9 +43,7 @@ public abstract class PuppetActor extends PhysicsActor {
 		skin.update(factor);
 	}
 
-	protected void actInner(float factor) {
-
-	}
+	protected abstract void actInner(float factor);
 
 	@Override
 	public void draw(Vector position) {

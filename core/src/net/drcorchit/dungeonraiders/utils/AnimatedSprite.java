@@ -1,7 +1,10 @@
 package net.drcorchit.dungeonraiders.utils;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -95,6 +98,22 @@ public class AnimatedSprite extends BaseDrawable {
 		batch.setColor(blend);
 		getCurrentTexture().draw(batch, x - originX, y - originY, originX, originY, width, height, scaleX, scaleY, rotation);
 		batch.setColor(temp);
+	}
+
+	public void drawTiled(Batch batch, float x, float y) {
+		TextureRegion region = getCurrentFrame();
+		float w = region.getRegionWidth();
+		float h = region.getRegionHeight();
+		float leftX = (float) (MathUtils.mod(x, w) - w);
+		float bottomY = (float) (MathUtils.mod(y, h) - h);
+		float rightX = Gdx.graphics.getWidth();
+		float topY = Gdx.graphics.getHeight();
+
+		for (float texX = leftX; texX < rightX; texX += w) {
+			for (float texY = bottomY; texY < topY; texY += h) {
+				batch.draw(region, texX, texY);
+			}
+		}
 	}
 
 	public void setOffset(float xOffset, float yOffset) {

@@ -8,7 +8,7 @@ import net.drcorchit.dungeonraiders.utils.Vector;
 
 public class Block extends PhysicsActor {
 
-	private final AnimatedSprite sprite = Textures.asSpriteList(Textures.wall).asSprite();
+	private final AnimatedSprite sprite = Textures.asSpriteList(Textures.WALL).asSprite();
 	private final float width, height;
 
 	public Block(DungeonStage stage, float x, float y, float w, float h) {

@@ -17,10 +17,9 @@ public class DungeonStage extends Stage {
 	public static final float MAX_Z = BLOCK_SIZE * 4;
 	//increase
 	public static final float CAMERA_Z = BLOCK_SIZE * 10;
-	private static final float FOREGROUND_SCALE = getZScale(2 * BLOCK_SIZE);
-	private static final float MIDGROUND_SCALE_BEGIN = getZScale(BLOCK_SIZE);
-	private static final float MIDGROUND_SCALE_END = getZScale(-BLOCK_SIZE);
-	private static final float BACKGROUND_SCALE = getZScale(-2 * BLOCK_SIZE);
+	public static final float FOREGROUND_Z = BLOCK_SIZE;
+	public static final float MIDGROUND_Z = BLOCK_SIZE * -1;
+	public static final float BACKGROUND_Z = BLOCK_SIZE * -4;
 
 	//converts z value to foreshortening scale factor
 	public static float getZScale(float z) {
@@ -29,8 +28,8 @@ public class DungeonStage extends Stage {
 
 	private Vector gravity;
 	private float friction;
-	private Texture foregroundWall = Textures.wall;
-	private Texture backgroundWall = Textures.wall;
+	private Texture foregroundWall = Textures.WALL;
+	private Texture backgroundWall = Textures.WALL;
 	private HashMap<Vector, Room> rooms;
 
 	public DungeonStage() {

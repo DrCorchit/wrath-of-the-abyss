@@ -9,22 +9,16 @@ public class SpriteList {
 	private final ImmutableList<TextureRegion> frames;
 	public final float originX, originY;
 
-	public static final SpriteList EMPTY = new SpriteList();
-
-	private SpriteList() {
-		frames = ImmutableList.of();
-		originX = 0;
-		originY = 0;
-	}
-
 	public SpriteList(Sprite sprite) {
 		frames = ImmutableList.of(sprite);
 		originX = sprite.getOriginX();
 		originY = sprite.getOriginY();
+		sprite.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 	}
 
 	public SpriteList(Texture texture, int framesHoriz, int framesVert, float originX, float originY) {
 		if (texture == null) throw new NullPointerException();
+		texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 		int w = texture.getWidth() / framesHoriz;
 		int h = texture.getHeight() / framesVert;
 

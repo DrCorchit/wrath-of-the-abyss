@@ -12,7 +12,7 @@ import net.drcorchit.dungeonraiders.utils.Vector;
 
 public class Player extends PuppetActor {
 
-	private static final float MAX_SPEED = 6, JUMP = 10, MOVE = .5f, FRICTION = .2f;
+	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 10, JUMP = 10, MOVE = .5f, FRICTION = .2f;
 
 	private final KeyboardInfo keys = getGame().keyboard;
 	private final Vector cameraOffset;
@@ -58,7 +58,8 @@ public class Player extends PuppetActor {
 			vSpeed += JUMP;
 		}
 
-		hSpeed = MathUtils.clamp(-MAX_SPEED, hSpeed, MAX_SPEED);
+		hSpeed = MathUtils.clamp(-MAX_H_SPEED, hSpeed, MAX_H_SPEED);
+		vSpeed = MathUtils.clamp(-MAX_V_SPEED, vSpeed, MAX_V_SPEED);
 		setVelocity(new Vector(hSpeed, vSpeed));
 
 		//move in z direction

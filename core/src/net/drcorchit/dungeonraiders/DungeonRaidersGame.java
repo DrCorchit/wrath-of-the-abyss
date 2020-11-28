@@ -78,9 +78,10 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 		//some steps
 		layer = room.getLayer(1);
 		for (int i = 0; i < 16; i++) {
-			layer.placeSquare(i, 1);
-			if (i > 7) {
-				layer.placeSquare(i, 2);
+			for (int j = 0; j < 16; j++) {
+				if (i > j) {
+					layer.placeSquare(i, j);
+				}
 			}
 		}
 
