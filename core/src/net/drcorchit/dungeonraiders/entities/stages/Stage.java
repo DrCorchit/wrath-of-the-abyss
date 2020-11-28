@@ -1,8 +1,8 @@
 package net.drcorchit.dungeonraiders.entities.stages;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 import net.drcorchit.dungeonraiders.entities.Entity;
 import net.drcorchit.dungeonraiders.entities.actors.Actor;
 import net.drcorchit.dungeonraiders.shapes.Rectangle;
@@ -16,6 +16,7 @@ public abstract class Stage extends Entity {
 	public static final float EXPECTED_DELTA_TIME = 1 / 60f;
 
 	private final ArrayList<Actor<?>> actors = new ArrayList<>();
+	private float fps;
 	private Vector viewPosition;
 	//vector from view pos to view center
 	private final Vector viewOffset;
@@ -25,6 +26,10 @@ public abstract class Stage extends Entity {
 		viewPosition = new Vector(0, 0);
 		viewBounds = new Rectangle(this::getViewCenter, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		viewOffset = new Vector(viewBounds.width/2, viewBounds.height/2);
+	}
+
+	public float getFps() {
+		return fps;
 	}
 
 	public Vector getViewPosition() {
@@ -54,7 +59,8 @@ public abstract class Stage extends Entity {
 	public void act() {
 		float delta = Gdx.graphics.getDeltaTime();
 		float factor = Math.min(delta/EXPECTED_DELTA_TIME, 1.1f);
-		float fps = 1/delta;
+		fps = 1/delta;
+		DungeonRaidersGame.getInstance().debugInfoMap.put("fps", fps);
 		if (Math.abs(delta/EXPECTED_DELTA_TIME) > 1.05f) {
 			System.out.println("FPS: " + fps + " factor: "+factor);
 		}

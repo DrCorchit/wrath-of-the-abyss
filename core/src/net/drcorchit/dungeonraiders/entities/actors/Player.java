@@ -10,7 +10,9 @@ import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
-public class Player extends PuppetActor {
+import java.util.TreeMap;
+
+public class Player extends PuppetActor<DungeonStage> {
 
 	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 20, JUMP = 10, MOVE = .5f, FRICTION = .2f;
 
@@ -84,13 +86,17 @@ public class Player extends PuppetActor {
 
 		//set camera
 		stage.setViewCenter(getPosition().add(cameraOffset));
-		DungeonRaidersGame.getInstance().debugInfoMap.put("player z", getZ());
+		TreeMap<String, Object> map = DungeonRaidersGame.getInstance().debugInfoMap;
+		map.put("player z", getZ());
 		int zLayer = Room.getLayerIndex(getZ());
-		DungeonRaidersGame.getInstance().debugInfoMap.put("z layers", zLayer);
+		map.put("z layer", zLayer);
+		map.put("x", getPosition().x);
+		map.put("y", getPosition().y);
+		map.put("velocity", getVelocity());
 	}
 
 	@Override
-	public boolean collidesWith(DungeonActor other) {
+	public boolean collidesWith(DungeonActor<?> other) {
 		return other instanceof Room.Layer;
 	}
 }

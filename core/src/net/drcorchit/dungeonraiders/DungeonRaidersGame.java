@@ -104,7 +104,7 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 		batch.begin();
 		StringBuilder builder = new StringBuilder();
 		debugInfoMap.forEach((key, val) -> builder.append(key).append(": ").append(val).append("\n"));
-		draw.drawText(0, 1080, Fonts.getDefaultFont(), builder.toString(), -1, Direction.SOUTHEAST, Color.GREEN);
+		draw.drawText(40, 1040, Fonts.getDefaultFont(), builder.toString(), -1, Direction.SOUTHEAST, Color.GREEN);
 		debugInfoMap.clear();
 		batch.end();
 	}

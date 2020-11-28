@@ -9,13 +9,13 @@ import net.drcorchit.dungeonraiders.shapes.Shape;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
-public abstract class DungeonActor extends Actor<DungeonStage> {
+public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 
 	private float z;
 	private Vector colliderOffset;
 	private Shape collider;
 
-	public DungeonActor(DungeonStage stage, Vector position) {
+	public DungeonActor(T stage, Vector position) {
 		super(stage, position);
 		z = 0;
 		colliderOffset = Vector.ZERO;
@@ -75,7 +75,7 @@ public abstract class DungeonActor extends Actor<DungeonStage> {
 	//players and enemies both collide with blocks
 	//players collide with enemies, but not with allies
 	//blocks collide with nothing
-	public abstract boolean collidesWith(DungeonActor other);
+	public abstract boolean collidesWith(DungeonActor<?> other);
 
 	@Override
 	boolean setPosition(Vector position) {

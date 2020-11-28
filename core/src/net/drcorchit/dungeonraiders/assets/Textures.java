@@ -15,7 +15,7 @@ public class Textures {
 
 		WHITE_POINT = initTexture("white.png");
 		WHITE_TILE = initTexture("white_tile.png");
-		FLOOR = initTexture("tiles_3_small.png");
+		FLOOR = initTexture("tiles_4_small.png");
 		WALL = initTexture("walls/dungeon.png");
 		WALL_2 = initTexture("walls/wall_2.jpg");
 	}

@@ -1,5 +1,6 @@
 package net.drcorchit.dungeonraiders.entities.stages;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import net.drcorchit.dungeonraiders.assets.Sprites;
 import net.drcorchit.dungeonraiders.assets.Textures;
@@ -10,7 +11,7 @@ import net.drcorchit.dungeonraiders.shapes.Shape;
 import net.drcorchit.dungeonraiders.shapes.Square;
 import net.drcorchit.dungeonraiders.utils.*;
 
-public class Room extends DungeonActor {
+public class Room extends DungeonActor<DungeonStage> {
 
 	private static final int ROOM_BLOCK_SIZE = 16;
 	private static final float SIZE = ROOM_BLOCK_SIZE * DungeonStage.BLOCK_SIZE;
@@ -52,7 +53,7 @@ public class Room extends DungeonActor {
 	}
 
 	@Override
-	public boolean collidesWith(DungeonActor other) {
+	public boolean collidesWith(DungeonActor<?> other) {
 		return false;
 	}
 
@@ -64,11 +65,11 @@ public class Room extends DungeonActor {
 		}
 	}
 
-	public class Layer extends DungeonActor {
+	public class Layer extends DungeonActor<DungeonStage> {
 		public AnimatedSprite floorSprite, wallSprite;
 		private final Surface surface, maskSurface;
 		public final float z;
-		public final Grid<Shape> blocks = new Grid<>(Shape.class, ROOM_BLOCK_SIZE, ROOM_BLOCK_SIZE);
+		public final Grid<Shape> grid = new Grid<>(Shape.class, ROOM_BLOCK_SIZE, ROOM_BLOCK_SIZE);
 
 		public Layer(float z) {
 			super(Room.this.stage, Room.this.getPosition());
@@ -87,7 +88,7 @@ public class Room extends DungeonActor {
 
 		public void placeSquare(int i, int j) {
 			Rectangle r = new Square(() -> getCellLocation(i, j), DungeonStage.BLOCK_SIZE);
-			blocks.set(i, j, r);
+			grid.set(i, j, r);
 		}
 
 		@Override
@@ -95,14 +96,13 @@ public class Room extends DungeonActor {
 			//No-op
 		}
 
-
 		@Override
 		public float getDepth() {
 			return -z;
 		}
 
 		@Override
-		public boolean collidesWith(DungeonActor other) {
+		public boolean collidesWith(DungeonActor<?> other) {
 			return other instanceof PhysicsActor;
 		}
 
@@ -122,8 +122,8 @@ public class Room extends DungeonActor {
 			maskSurface.clear();
 			maskSurface.end();
 
-			blocks.forEachCell((i, j) -> {
-				Shape shape = blocks.get(i, j);
+			grid.forEachCell((i, j) -> {
+				Shape shape = grid.get(i, j);
 				if (shape != null) {
 					Vector relativePos = getCellLocation(i, j).subtract(getPosition()).add(roomPos);
 					//shape.move(relativePos).draw(Color.BLUE);
@@ -141,25 +141,33 @@ public class Room extends DungeonActor {
 					Vector nearC3 = projectedPosNear.add(-nearSize, -nearSize);
 					Vector nearC4 = projectedPosNear.add(nearSize, -nearSize);
 
-					//top
-					if (farC1.y > nearC1.y) {
+					boolean drawTop = farC1.y > nearC1.y && (j == grid.getHeight()-1 || grid.get(i, j+1) == null);
+					boolean drawLeft = farC1.x < nearC1.x && (i == 0 || grid.get(i-1, j) == null);
+					boolean drawRight = farC4.x > nearC4.x && (i == grid.getWidth()-1 || grid.get(i+1, j) == null);
+					boolean drawBottom = farC4.y < nearC4.y && (j == 0 || grid.get(i, j-1) == null);
+
+					//*
+					if (drawTop) {
 						getDraw().drawPrimitive(Textures.FLOOR, farC1, farC2, nearC1, nearC2);
 					}
 
-					//left
-					if (farC1.x < nearC1.x) {
+					if (drawLeft) {
 						getDraw().drawPrimitive(Textures.FLOOR, farC1, nearC1, farC3, nearC3);
 					}
 
-					//right
-					if (farC4.x > nearC4.x) {
+					if (drawRight) {
 						getDraw().drawPrimitive(Textures.FLOOR, nearC2, farC2, nearC4, farC4);
 					}
 
-					//bottom
-					if (farC4.y < nearC4.y) {
+					if (drawBottom) {
 						getDraw().drawPrimitive(Textures.FLOOR, nearC3, nearC4, farC3, farC4);
 					}
+					//*/
+
+					if (drawTop) getDraw().drawLine(nearC1.x, nearC1.y, farC1.x, farC1.y, 1, Color.BLACK);
+					if (drawRight) getDraw().drawLine(nearC2.x, nearC2.y, farC2.x, farC2.y, 1, Color.BLACK);
+					if (drawLeft) getDraw().drawLine(nearC3.x, nearC3.y, farC3.x, farC3.y, 1, Color.BLACK);
+					if (drawBottom) getDraw().drawLine(nearC4.x, nearC4.y, farC4.x, farC4.y, 1, Color.BLACK);
 
 					maskSurface.begin();
 					getBatch().setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
@@ -179,7 +187,7 @@ public class Room extends DungeonActor {
 
 		@Deprecated
 		public boolean collidesWith(Shape s1) {
-			for (Shape s2 : blocks) {
+			for (Shape s2 : grid) {
 				if (s2 != null && s1.collidesWith(s2)) return true;
 			}
 			return false;

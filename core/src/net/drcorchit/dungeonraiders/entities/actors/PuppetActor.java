@@ -10,7 +10,7 @@ import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.utils.Vector;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class PuppetActor extends PhysicsActor {
+public abstract class PuppetActor<T extends DungeonStage> extends PhysicsActor<T> {
 
 	private static final float DEFAULT_TWEENING = 5;
 
@@ -24,7 +24,7 @@ public abstract class PuppetActor extends PhysicsActor {
 	@NotNull
 	protected MutableFrame nextFrame;
 
-	public PuppetActor(DungeonStage stage, Skeleton skeleton, Skin skin, Vector position, Vector skeletonOffset) {
+	public PuppetActor(T stage, Skeleton skeleton, Skin skin, Vector position, Vector skeletonOffset) {
 		super(stage, false, position);
 		animator = new AnimationState(NoopFrame.NOOP_ANIMATION);
 		this.skin = skin.copy();
@@ -52,7 +52,7 @@ public abstract class PuppetActor extends PhysicsActor {
 		Vector projectedPosition = stage.projectZPosition(position.add(skeletonOffset), getZ());
 
 		skeleton.scale = projectedScale;
-		getCollider().move(position.add(getColliderOffset())).draw(Color.YELLOW);
+		//getCollider().move(position.add(getColliderOffset())).draw(Color.YELLOW);
 		skin.draw(skeleton, projectedPosition);
 		//skeleton.draw(skeletonPosition);
 		skeleton.scale = originalScale;

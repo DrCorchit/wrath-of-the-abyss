@@ -3,14 +3,14 @@ package net.drcorchit.dungeonraiders.entities.actors;
 import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
-public abstract class PhysicsActor extends DungeonActor {
+public abstract class PhysicsActor<T extends DungeonStage> extends DungeonActor<T> {
 
 	//if true, actor's velocity is fixed at zero
 	private final boolean isFixed;
 	//z position in the DungeonStage
 	private Vector velocity;
 
-	public PhysicsActor(DungeonStage stage, boolean isFixed, Vector position) {
+	public PhysicsActor(T stage, boolean isFixed, Vector position) {
 		super(stage, position);
 		this.isFixed = isFixed;
 		velocity = Vector.ZERO;

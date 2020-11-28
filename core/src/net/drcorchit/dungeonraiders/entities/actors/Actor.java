@@ -27,10 +27,6 @@ public abstract class Actor<T extends Stage> extends Entity implements Comparabl
 		return getPosition().add(viewOffset);
 	}
 
-	public Vector getViewOffset() {
-		return viewOffset;
-	}
-
 	public void setViewBoundsToRectangle(float x, float y, float w, float h) {
 		viewOffset = new Vector(x, y);
 		viewBounds = new Rectangle(this::getViewPosition, w, h);
@@ -57,10 +53,6 @@ public abstract class Actor<T extends Stage> extends Entity implements Comparabl
 		return viewBounds.move(position.add(viewOffset));
 	}
 
-	public Shape getViewBounds(Vector position) {
-		return viewBounds.move(position.add(viewOffset));
-	}
-
 	//attempt to set the location of the actor. returns whether the operation succeeded
 	boolean setPosition(Vector position) {
 		this.position = position;
@@ -80,14 +72,6 @@ public abstract class Actor<T extends Stage> extends Entity implements Comparabl
 	public boolean isInView() {
 		if (viewBounds instanceof NoShape) {
 			return stage.viewBounds.containsPoint(getPosition());
-		} else {
-			return getViewBounds().collidesWith(stage.viewBounds);
-		}
-	}
-
-	public boolean isInView(Vector position) {
-		if (viewBounds instanceof NoShape) {
-			return stage.viewBounds.containsPoint(position);
 		} else {
 			return getViewBounds().collidesWith(stage.viewBounds);
 		}
