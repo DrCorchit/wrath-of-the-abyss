@@ -3,6 +3,7 @@ package net.drcorchit.dungeonraiders.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
@@ -186,6 +187,10 @@ public class Draw {
 		shape.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 		batch.begin();
+	}
+
+	public void drawPrimitive(Texture texture, Vector p1, Vector p2, Vector p3, Vector p4) {
+		drawPrimitive(new TextureRegion(texture), p1, p2, p3, p4);
 	}
 
 	//FIXME: https://stackoverflow.com/questions/28290428/implementing-trapezoidal-sprites-in-libgdx

@@ -15,7 +15,8 @@ public class DungeonStage extends Stage {
 	public static final float ACTOR_MIN_Z = -BLOCK_SIZE;
 	public static final float ACTOR_MAX_Z = BLOCK_SIZE;
 	public static final float MAX_Z = BLOCK_SIZE * 4;
-	public static final float CAMERA_Z = BLOCK_SIZE * 6;
+	//increase
+	public static final float CAMERA_Z = BLOCK_SIZE * 10;
 	private static final float FOREGROUND_SCALE = getZScale(2 * BLOCK_SIZE);
 	private static final float MIDGROUND_SCALE_BEGIN = getZScale(BLOCK_SIZE);
 	private static final float MIDGROUND_SCALE_END = getZScale(-BLOCK_SIZE);
@@ -56,13 +57,14 @@ public class DungeonStage extends Stage {
 	}
 
 	public Vector projectZPosition(Vector location, float z) {
+		Vector center = getViewCenter();
 		//find the vector from the view center to the location
-		Vector diff = location.subtract(getViewCenter());
+		Vector diff = location.subtract(center);
 		//multiply the diff by the zScale and add it to the original location
-		return diff.multiply(getZScale(z)).add(location);
+		return diff.multiply(getZScale(z)).add(center);
 	}
 
-	public Set<Room> getRelevantRooms(PhysicsActor actor) {
+	public Set<Room> getOverlappedRooms(PhysicsActor actor) {
 		return rooms.values().stream().filter(
 				room -> actor.getShape().collidesWith(room.getRectangle())
 		).collect(Collectors.toSet());

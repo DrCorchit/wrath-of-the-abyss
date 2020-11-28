@@ -7,7 +7,6 @@ import net.drcorchit.dungeonraiders.assets.animation.AnimationState;
 import net.drcorchit.dungeonraiders.assets.animation.MutableFrame;
 import net.drcorchit.dungeonraiders.assets.animation.NoopFrame;
 import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
-import net.drcorchit.dungeonraiders.entities.stages.Stage;
 import net.drcorchit.dungeonraiders.utils.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,16 +20,17 @@ public abstract class PuppetActor extends PhysicsActor {
 	protected final Skin skin;
 	@NotNull
 	protected final Skeleton skeleton;
+	protected final Vector skeletonOffset;
 	@NotNull
 	protected MutableFrame nextFrame;
 
-	public PuppetActor(DungeonStage stage, Skeleton skeleton, Skin skin, float x, float y, float w, float h) {
-		super(stage, false, x, y);
-		this.skeleton = skeleton.copy();
-		this.skin = skin.copy();
+	public PuppetActor(DungeonStage stage, Skeleton skeleton, Skin skin, Vector position, Vector skeletonOffset) {
+		super(stage, false, position);
 		animator = new AnimationState(NoopFrame.NOOP_ANIMATION);
+		this.skin = skin.copy();
+		this.skeleton = skeleton.copy();
+		this.skeletonOffset = skeletonOffset;
 		nextFrame = animator.getNextFrameLerped();
-		setShapeAsRectangle(0, 0, w, h);
 	}
 
 	@Override
@@ -49,11 +49,14 @@ public abstract class PuppetActor extends PhysicsActor {
 
 	@Override
 	public void draw(Vector position) {
-		float actualScale = skeleton.scale;
-		skeleton.scale = getZScale();
-		//getShape().draw(Color.RED);
-		skin.draw(skeleton, position);
-		//skeleton.draw(position);
-		skeleton.scale = actualScale;
+		float originalScale = skeleton.scale;
+		float projectedScale = getZScale() * originalScale;
+		Vector projectedPosition = stage.projectZPosition(position.add(skeletonOffset), getZ());
+
+		skeleton.scale = projectedScale;
+		getShape().move(position.add(getColliderOffset())).draw(Color.YELLOW);
+		skin.draw(skeleton, projectedPosition);
+		//skeleton.draw(skeletonPosition);
+		skeleton.scale = originalScale;
 	}
 }

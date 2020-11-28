@@ -1,6 +1,7 @@
 package net.drcorchit.dungeonraiders.utils;
 
 import javax.annotation.Nonnull;
+import java.util.function.Consumer;
 
 public class MathUtils {
 

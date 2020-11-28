@@ -6,7 +6,7 @@ import net.drcorchit.dungeonraiders.utils.SpriteList;
 
 public class Textures {
 
-	public static final Texture white, wall;
+	public static final Texture white, wall, wall2;
 
 	private static final Logger log;
 
@@ -15,6 +15,7 @@ public class Textures {
 
 		white = initTexture("white.png");
 		wall = initTexture("walls/dungeon.png");
+		wall2 = initTexture("walls/wall_2.jpg");
 	}
 
 	public static SpriteList asSpriteList(Texture texture) {

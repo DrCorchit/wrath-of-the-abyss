@@ -15,11 +15,11 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 	private final boolean isFixed;
 	//z position in the DungeonStage
 	private float z;
+	private Vector velocity, colliderOffset;
 	private Shape shape;
-	private Vector velocity, offset;
 
-	public PhysicsActor(DungeonStage stage, boolean isFixed, float x, float y) {
-		super(stage, x, y);
+	public PhysicsActor(DungeonStage stage, boolean isFixed, Vector position) {
+		super(stage, position);
 		this.isFixed = isFixed;
 		z = 0;
 		this.shape = NoShape.INSTANCE;
@@ -31,17 +31,21 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 		return shape;
 	}
 
-	private Vector getColliderPosition() {
-		return getPosition().add(offset);
+	public Vector getColliderPosition() {
+		return getPosition().add(colliderOffset);
+	}
+
+	public Vector getColliderOffset() {
+		return colliderOffset;
 	}
 
 	public void setShapeAsRectangle(float x, float y, float w, float h) {
-		offset = new Vector(x, y);
+		colliderOffset = new Vector(x, y);
 		shape = new Rectangle(this::getColliderPosition, w, h);
 	}
 
 	public void setShapeAsCircle(float x, float y, float r) {
-		offset = new Vector(x, y);
+		colliderOffset = new Vector(x, y);
 		shape = new Circle(this::getColliderPosition, r);
 	}
 
@@ -61,12 +65,17 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 		return velocity;
 	}
 
-	public void setZRelative(float amount) {
-		setZ(z + amount);
+	public boolean setZRelative(float amount) {
+		return setZ(z + amount);
 	}
 
-	public void setZ(float z) {
-		this.z = MathUtils.clamp(stage.getMinZ(), z, stage.getMaxZ());
+	public boolean setZ(float z) {
+		if (canOccupyPosition(getPosition(), z)) {
+			this.z = z;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public float getZ() {
@@ -127,10 +136,20 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 	}
 
 	public boolean canOccupyPosition(Vector position) {
+		return canOccupyPosition(position, z);
+	}
+
+	public boolean canOccupyPosition(Vector position, float z) {
 		if (shape == NoShape.INSTANCE) return true;
 
-		for (Room room : stage.getRelevantRooms(this)) {
-			if (room.getLayer(z).collidesWith(shape.move(position))) return false;
+		if (z < stage.getMinZ() || z > stage.getMaxZ()) {
+			return false;
+		}
+
+		for (Room room : stage.getOverlappedRooms(this)) {
+			int layerIndex = Room.getLayerIndex(z);
+			Room.Layer layer = room.getLayer(layerIndex);
+			if (layer.collidesWith(shape.move(position.add(colliderOffset)))) return false;
 		}
 		return true;
 	}
@@ -141,31 +160,55 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 	}
 
 	//returns true if the full range of motion was completed.
-	public Vector moveToContact(Vector direction) {
-		Vector oldPos = getPosition();
-		if (direction.length() == 0) return Vector.ZERO;
+	public boolean moveToContact(Vector direction) {
+		if (direction.length() == 0) return true;
+
 		if (shape.getMinimalRadius() > direction.length()) {
-			moveToContactBinary(direction);
+			return moveToContactBinary(direction);
 		} else {
 			Vector step = direction.normalize().multiply(shape.getMinimalRadius());
 			double numSteps = direction.length() / shape.getMinimalRadius();
 			float lastStepLength = (float) MathUtils.fractionalPart(numSteps);
-			boolean doLast = true;
 
 			//break the movement down into smaller steps of (at most) length = shape.getMinimalRadius()
 			for (int i = 0; i < numSteps; i++) {
 				if (!setPositionRelative(step)) {
-					doLast &= moveToContactBinary(step);
+					if (!moveToContactBinary(step)) return false;
 				}
 			}
 
-			if (doLast) {
-				Vector lastStep = step.multiply(lastStepLength);
-				moveToContactBinary(lastStep);
-			}
+			Vector lastStep = step.multiply(lastStepLength);
+			return moveToContactBinary(lastStep);
+		}
+	}
+
+	//returns true if the full range of motion was completed.
+	public boolean moveToContactZ(float amount) {
+		if (amount == 0) return true;
+
+		float targetZ = z + amount;
+		if (targetZ < stage.getMinZ() || targetZ > stage.getMaxZ()) {
+			targetZ = amount > 0 ? stage.getMaxZ() : stage.getMinZ();
+			moveToContactZ(targetZ - z);
+			return false;
 		}
 
-		return getPosition().subtract(oldPos);
+		int currentIndex = Room.getLayerIndex(z);
+		int endIndex = Room.getLayerIndex(z + amount);
+
+		if (currentIndex == endIndex) {
+			return setZRelative(amount);
+		} else {
+			float step = DungeonStage.BLOCK_SIZE * Math.signum(amount);
+			boolean temp = setZRelative(step);
+
+			if (temp) {
+				return moveToContactZ(amount - step);
+			} else {
+				moveToContactZBinary(amount);
+				return false;
+			}
+		}
 	}
 
 	private boolean moveToContactBinary(Vector direction) {
@@ -178,6 +221,19 @@ public abstract class PhysicsActor extends Actor<DungeonStage> {
 			setPositionRelative(half);
 			//try to move the remaining half (or the first half)
 			moveToContactBinary(half);
+			return false;
+		}
+	}
+
+	private boolean moveToContactZBinary(float amount) {
+		if (amount < 1f) return true;
+		if (setZRelative(amount)) {
+			return true;
+		} else {
+			//try to move halfway
+			setZRelative(amount / 2);
+			//try to move the remaining half (or the first half)
+			moveToContactZBinary(amount / 2);
 			return false;
 		}
 	}

@@ -13,22 +13,26 @@ import java.util.Collections;
 public abstract class Stage extends Entity {
 
 	public static final float VIEW_BUFFER = 100;
-	public static final float EXPECTED_DELTA_TIME = 1 / 30f;
+	public static final float EXPECTED_DELTA_TIME = 1 / 60f;
 
 	private final ArrayList<Actor<?>> actors = new ArrayList<>();
-	private Vector viewPos, viewDims;
+	private Vector viewPosition, viewDims;
 
 	protected Stage() {
-		viewPos = new Vector(0, 0);
+		viewPosition = new Vector(0, 0);
 		viewDims = new Vector(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
-	public void moveView(Vector v) {
-		viewPos = viewPos.add(v);
+	public Vector getViewPosition() {
+		return viewPosition;
+	}
+
+	public void centerViewOn(Vector v) {
+		viewPosition = v.subtract(viewDims.multiply(.5f));
 	}
 
 	public Vector getViewCenter() {
-		return viewPos.add(viewDims.multiply(.5f));
+		return viewPosition.add(viewDims.multiply(.5f));
 	}
 
 	public void addActor(Actor<?> actor) {
@@ -41,12 +45,10 @@ public abstract class Stage extends Entity {
 
 	public void act() {
 		float delta = Gdx.graphics.getDeltaTime();
-		//System.out.println(delta);
-		float factor = Math.min(EXPECTED_DELTA_TIME / delta, 1);
-		//System.out.println(factor);
-		float fps = factor / EXPECTED_DELTA_TIME;
-		if (factor < .9f) {
-			System.out.println("FPS: " + fps);
+		float factor = Math.min(delta/EXPECTED_DELTA_TIME, 1.1f);
+		float fps = 1/delta;
+		if (Math.abs(delta/EXPECTED_DELTA_TIME) > 1.05f) {
+			System.out.println("FPS: " + fps + " factor: "+factor);
 		}
 		act(factor);
 	}
@@ -66,7 +68,7 @@ public abstract class Stage extends Entity {
 		getBatch().begin();
 		for (Actor<?> actor : actors) {
 			if (isActorInView(actor)) {
-				Vector adjustedPos = actor.getPosition().subtract(viewPos);
+				Vector adjustedPos = actor.getPosition().subtract(viewPosition);
 				actor.draw(adjustedPos);
 			}
 		}

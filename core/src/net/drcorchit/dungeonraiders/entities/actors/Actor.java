@@ -11,10 +11,10 @@ public abstract class Actor<T extends Stage> extends Entity implements Comparabl
 	protected float depth;
 	private Vector lastPosition, position;
 
-	public Actor(T stage, float x, float y) {
+	public Actor(T stage, Vector initialPosition) {
 		this.stage = stage;
-		lastPosition = new Vector(x, y);
-		position = lastPosition;
+		lastPosition = initialPosition;
+		this.position = initialPosition;
 	}
 
 	public void destroy() {

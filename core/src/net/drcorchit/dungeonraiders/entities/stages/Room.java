@@ -1,6 +1,6 @@
 package net.drcorchit.dungeonraiders.entities.stages;
 
-import com.badlogic.gdx.graphics.Color;
+import net.drcorchit.dungeonraiders.assets.Textures;
 import net.drcorchit.dungeonraiders.entities.actors.Actor;
 import net.drcorchit.dungeonraiders.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.shapes.Shape;
@@ -15,18 +15,21 @@ public class Room extends Actor<DungeonStage> {
 	private static final float SIZE = ROOM_BLOCK_SIZE * DungeonStage.BLOCK_SIZE;
 
 	private final Layer[] layers;
+	private final int lastlayerIndex;
 	private final Rectangle rectangle;
 
-	public Room(DungeonStage stage, float x, float y, int numLayers) {
-		super(stage, x, y);
+	public Room(DungeonStage stage, Vector position, int numLayers) {
+		super(stage, position);
 		layers = new Layer[numLayers];
+		lastlayerIndex = numLayers - 1;
 
 		//initialize layers
 		for (int i = 0; i < numLayers; i++) {
-			layers[i] = new Layer(i * DungeonStage.BLOCK_SIZE);
+			float layerZ = -i * DungeonStage.BLOCK_SIZE;
+			layers[i] = new Layer(layerZ);
 		}
 
-		rectangle = new Square(() -> getPosition().add(SIZE/2, SIZE/2), ROOM_BLOCK_SIZE * DungeonStage.BLOCK_SIZE);
+		rectangle = new Square(() -> getPosition().add(SIZE / 2, SIZE / 2), ROOM_BLOCK_SIZE * DungeonStage.BLOCK_SIZE);
 		depth = -1;
 	}
 
@@ -35,13 +38,12 @@ public class Room extends Actor<DungeonStage> {
 	}
 
 	public Layer getLayer(int index) {
-		return layers[index];
+		return layers[MathUtils.clamp(0, index, lastlayerIndex)];
 	}
 
-	public Layer getLayer(float z) {
-		int index = (int) Math.floor(z / DungeonStage.BLOCK_SIZE);
-		index = MathUtils.clamp(0, index, layers.length - 1);
-		return layers[index];
+	public static int getLayerIndex(float z) {
+		int index = (int) Math.ceil(-z / DungeonStage.BLOCK_SIZE);
+		return Math.max(0, index);
 	}
 
 	@Override
@@ -68,16 +70,52 @@ public class Room extends Actor<DungeonStage> {
 			blocks.set(i, j, r);
 		}
 
-		public void draw(Vector pos) {
+		public void draw(Vector roomPos) {
+			float farScale = DungeonStage.getZScale(z);
+			float nearScale = DungeonStage.getZScale(z + DungeonStage.BLOCK_SIZE);
+			float farSize = DungeonStage.BLOCK_SIZE * nearScale / 2;
+			float nearSize = DungeonStage.BLOCK_SIZE * farScale / 2;
+
 			blocks.forEachCell((i, j) -> {
 				Shape shape = blocks.get(i, j);
 				if (shape != null) {
-					Vector relativePos = getCellLocation(i, j).subtract(getPosition()).add(pos);
-					shape.draw(Color.BLUE);
-					shape.move(relativePos).draw(Color.WHITE);
-					Vector projectedPos = stage.projectZPosition(relativePos, z);
-					Shape projectedShape = shape.move(projectedPos).scale(DungeonStage.getZScale(z));
-					//projectedShape.draw(Color.WHITE);
+					Vector relativePos = getCellLocation(i, j).subtract(getPosition()).add(roomPos);
+					//shape.move(relativePos).draw(Color.BLUE);
+					Vector projectedPosFar = stage.projectZPosition(relativePos, z);
+					Vector projectedPosNear = stage.projectZPosition(relativePos, z + DungeonStage.BLOCK_SIZE);
+					//there 8 corners of the cube:
+					//1 2
+					//3 4
+					Vector farC1 = projectedPosFar.add(-farSize, farSize);
+					Vector farC2 = projectedPosFar.add(farSize, farSize);
+					Vector farC3 = projectedPosFar.add(-farSize, -farSize);
+					Vector farC4 = projectedPosFar.add(farSize, -farSize);
+					Vector nearC1 = projectedPosNear.add(-nearSize, nearSize);
+					Vector nearC2 = projectedPosNear.add(nearSize, nearSize);
+					Vector nearC3 = projectedPosNear.add(-nearSize, -nearSize);
+					Vector nearC4 = projectedPosNear.add(nearSize, -nearSize);
+
+					//top
+					if (farC1.y > nearC1.y) {
+						getDraw().drawPrimitive(Textures.wall2, farC1, farC2, nearC1, nearC2);
+					}
+
+					//left
+					if (farC1.x < nearC1.x) {
+						getDraw().drawPrimitive(Textures.wall2, farC1, nearC1, farC3, nearC3);
+					}
+
+					//right
+					if (farC4.x > nearC4.x) {
+						getDraw().drawPrimitive(Textures.wall2, nearC2, farC2, nearC4, farC4);
+					}
+
+					//bottom
+					if (farC4.y < nearC4.y) {
+						getDraw().drawPrimitive(Textures.wall2, nearC3, nearC4, farC3, farC4);
+					}
+
+					getDraw().drawPrimitive(Textures.wall, nearC1, nearC2, nearC3, nearC4);
 				}
 			});
 		}
@@ -91,9 +129,10 @@ public class Room extends Actor<DungeonStage> {
 	}
 
 	public void draw(Vector pos) {
-		rectangle.move(pos.add(SIZE/2, SIZE/2)).draw(Color.RED);
-		for (Layer layer : layers) {
-			layer.draw(pos);
+		//rectangle.move(pos.add(SIZE / 2, SIZE / 2)).draw(Color.RED);
+		//draw from back to front
+		for (int i = lastlayerIndex; i >= 0; i--) {
+			layers[i].draw(pos);
 		}
 	}
 }
