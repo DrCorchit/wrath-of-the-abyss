@@ -1,40 +1,35 @@
 package net.drcorchit.dungeonraiders.entities.actors;
 
+import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
 import net.drcorchit.dungeonraiders.entities.Entity;
 import net.drcorchit.dungeonraiders.entities.stages.Stage;
-import net.drcorchit.dungeonraiders.shapes.Circle;
-import net.drcorchit.dungeonraiders.shapes.NoShape;
-import net.drcorchit.dungeonraiders.shapes.Rectangle;
-import net.drcorchit.dungeonraiders.shapes.Shape;
+import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
-public abstract class Actor<T extends Stage> extends Entity implements Comparable<Actor<?>> {
+import java.util.Collection;
+
+public abstract class Actor<T extends Stage> extends Entity {
 
 	//stage is generic because certain actors depend on stage-specific properties
 	protected final T stage;
 	private Vector lastPosition, position, viewOffset;
-	private Shape viewBounds;
+	private Rectangle viewBounds;
 
 	public Actor(T stage, Vector initialPosition) {
 		this.stage = stage;
 		lastPosition = initialPosition;
 		this.position = initialPosition;
 		this.viewOffset = Vector.ZERO;
-		this.viewBounds = NoShape.INSTANCE;
+		this.viewBounds = new Rectangle(this::getPosition, 100, 100);
 	}
 
 	public Vector getViewPosition() {
 		return getPosition().add(viewOffset);
 	}
 
-	public void setViewBoundsToRectangle(float x, float y, float w, float h) {
+	public void setViewBounds(float x, float y, float w, float h) {
 		viewOffset = new Vector(x, y);
 		viewBounds = new Rectangle(this::getViewPosition, w, h);
-	}
-
-	public void setViewBoundsToCircle(float x, float y, float r) {
-		viewOffset = new Vector(x, y);
-		viewBounds = new Circle(this::getViewPosition, r);
 	}
 
 	public void destroy() {
@@ -49,7 +44,7 @@ public abstract class Actor<T extends Stage> extends Entity implements Comparabl
 		return position;
 	}
 
-	public Shape getViewBounds() {
+	public Rectangle getViewBounds() {
 		return viewBounds.move(position.add(viewOffset));
 	}
 
@@ -67,25 +62,15 @@ public abstract class Actor<T extends Stage> extends Entity implements Comparabl
 		lastPosition = position;
 	}
 
-	public abstract float getDepth();
-
 	public boolean isInView() {
-		if (viewBounds instanceof NoShape) {
-			return stage.viewBounds.containsPoint(getPosition());
-		} else {
-			return getViewBounds().collidesWith(stage.viewBounds);
-		}
+		return getViewBounds().collidesWith(stage.viewBounds);
 	}
 
-	public abstract void draw(Vector position);
+	public abstract void act(float delta);
 
-	@Override
-	public void draw() {
-		draw(position);
-	}
+	public abstract Collection<RenderInstruction> draw(Vector position);
 
-	@Override
-	public int compareTo(Actor other) {
-		return Float.compare(getDepth(), other.getDepth());
+	public Collection<RenderInstruction> draw() {
+		return draw(position);
 	}
 }

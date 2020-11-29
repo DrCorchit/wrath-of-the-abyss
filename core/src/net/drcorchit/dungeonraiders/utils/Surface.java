@@ -27,7 +27,7 @@ public class Surface {
 	}
 
 	public Surface(int width, int height) {
-		this.batch = DungeonRaidersGame.getDraw().getBatch();
+		this.batch = DungeonRaidersGame.getDraw().batch;
 		this.width = width;
 		this.height = height;
 		buffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);

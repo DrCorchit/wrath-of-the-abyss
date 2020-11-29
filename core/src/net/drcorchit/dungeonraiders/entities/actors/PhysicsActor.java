@@ -35,6 +35,8 @@ public abstract class PhysicsActor<T extends DungeonStage> extends DungeonActor<
 	@Override
 	public void act(float factor) {
 		if (!isFixed) {
+			float initialY = getPosition().y;
+
 			if (!isGrounded()) {
 				Vector gravity = stage.getGravity().multiply(factor);
 				addVelocity(gravity);
@@ -45,16 +47,32 @@ public abstract class PhysicsActor<T extends DungeonStage> extends DungeonActor<
 			Vector grav = velocity.project(gravNorm);
 			Vector antiGrav = velocity.project(antiGravNorm);
 
+
+			float dif = getPosition().y - initialY;
+
 			if (!moveToContact(grav.multiply(factor))) {
 				grav = Vector.ZERO;
 			}
+
+			float dif2 = getPosition().y - initialY;
 
 			if (!moveToContact(antiGrav.multiply(factor))) {
 				antiGrav = Vector.ZERO;
 			}
 
 			velocity = grav.add(antiGrav);
+
+			float dif3 = getPosition().y - initialY;
+
+			System.out.printf("grav: %f vel.y :%f dif1: %f, dif2: %f, dif3: %f, factor: %f\n",
+					grav.y, velocity.y, dif, dif2, dif3, factor);
 		}
+	}
+
+	public abstract void prePhysicsAct(float factor);
+
+	public void postPhysicsAct(float factor) {
+		//Optional, default is No-op
 	}
 
 	public boolean isGrounded() {

@@ -3,18 +3,22 @@ package net.drcorchit.dungeonraiders.entities.stages;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import net.drcorchit.dungeonraiders.DungeonRaidersGame;
+import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
+import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.entities.Entity;
 import net.drcorchit.dungeonraiders.entities.actors.Actor;
-import net.drcorchit.dungeonraiders.shapes.Rectangle;
+import net.drcorchit.dungeonraiders.utils.Draw;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 public abstract class Stage extends Entity {
 
 	public static final float EXPECTED_DELTA_TIME = 1 / 60f;
 
+	public final Draw draw;
 	private final ArrayList<Actor<?>> actors = new ArrayList<>();
 	private float fps;
 	private Vector viewPosition;
@@ -23,9 +27,10 @@ public abstract class Stage extends Entity {
 	public final Rectangle viewBounds;
 
 	protected Stage() {
+		this.draw = DungeonRaidersGame.getDraw();
 		viewPosition = new Vector(0, 0);
 		viewBounds = new Rectangle(this::getViewCenter, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		viewOffset = new Vector(viewBounds.width/2, viewBounds.height/2);
+		viewOffset = new Vector(viewBounds.width / 2, viewBounds.height / 2);
 	}
 
 	public float getFps() {
@@ -41,7 +46,7 @@ public abstract class Stage extends Entity {
 	}
 
 	public void setViewCenter(Vector center) {
-		viewPosition = center.subtract(viewOffset);
+		setViewPosition(center.subtract(viewOffset));
 	}
 
 	public Vector getViewCenter() {
@@ -58,36 +63,36 @@ public abstract class Stage extends Entity {
 
 	public void act() {
 		float delta = Gdx.graphics.getDeltaTime();
-		float factor = Math.min(delta/EXPECTED_DELTA_TIME, 1.1f);
-		fps = 1/delta;
-		DungeonRaidersGame.getInstance().debugInfoMap.put("fps", fps);
-		if (Math.abs(delta/EXPECTED_DELTA_TIME) > 1.05f) {
-			System.out.println("FPS: " + fps + " factor: "+factor);
-		}
+		float factor = Math.min(delta / EXPECTED_DELTA_TIME, 1f);
+		fps = 1 / delta;
+		DungeonRaidersGame.getInstance().debugInfoMap.put("fps", getFps());
 		act(factor);
 	}
 
-	@Override
 	public void act(float factor) {
 		actors.forEach(actor -> actor.act(factor));
 		actors.forEach(Actor::updateLastPosition);
-		Collections.sort(actors);
 	}
 
-	@Override
-	public void draw() {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+	public Collection<RenderInstruction> draw() {
+		ArrayList<RenderInstruction> instructions = new ArrayList<>();
 
-		getBatch().begin();
 		for (Actor<?> actor : actors) {
 			if (actor.isInView()) {
 				Vector adjustedPos = actor.getPosition().subtract(viewPosition);
 				//actor.getViewBounds(adjustedPos).draw(Color.GREEN);
-				actor.draw(adjustedPos);
+				instructions.addAll(actor.draw(adjustedPos));
 			}
 		}
-		getBatch().end();
+
+		Collections.sort(instructions);
+
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		draw.batch.begin();
+		instructions.forEach(RenderInstruction::draw);
+		draw.batch.end();
+		return null;
 	}
 
 	public Iterable<Actor<?>> getActors() {

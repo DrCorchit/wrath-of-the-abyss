@@ -48,16 +48,12 @@ public class Draw {
 	private static final Viewport view = new ScreenViewport();
 
 	//Aids in drawing utilities
-	private final PolygonSpriteBatch batch;
+	public final PolygonSpriteBatch batch;
 	private final ShapeRenderer shape;
 
 	public Draw(PolygonSpriteBatch batch) {
 		this.batch = batch;
 		shape = new ShapeRenderer();
-	}
-
-	public PolygonSpriteBatch getBatch() {
-		return batch;
 	}
 
 	//For consistency, drawing util functions should have their args ordered like this

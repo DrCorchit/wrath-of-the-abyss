@@ -1,4 +1,4 @@
-package net.drcorchit.dungeonraiders.shapes;
+package net.drcorchit.dungeonraiders.drawing.shapes;
 
 import net.drcorchit.dungeonraiders.utils.Vector;
 

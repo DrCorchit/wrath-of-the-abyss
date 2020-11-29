@@ -12,6 +12,7 @@ import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.entities.stages.Room;
 import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.input.MouseInfo;
+import net.drcorchit.dungeonraiders.utils.Coordinate;
 import net.drcorchit.dungeonraiders.utils.Direction;
 import net.drcorchit.dungeonraiders.utils.Draw;
 import net.drcorchit.dungeonraiders.utils.Vector;
@@ -63,10 +64,10 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 				new Vector(0, 110));
 		player.setColliderToRectangle(0, 95, 40, 190);
 		player.setCameraOffset(new Vector(0, 300));
-		player.setViewBoundsToRectangle(0, 95, 400, 400);
+		player.setViewBounds(0, 95, 400, 400);
 		stage.addActor(player);
 
-		Room room = new Room(stage, new Vector(90, 90), 2);
+		Room room = new Room(stage, new Coordinate(0, 0), 2);
 
 		//a row of blocks
 		Room.Layer layer = room.getLayer(0);

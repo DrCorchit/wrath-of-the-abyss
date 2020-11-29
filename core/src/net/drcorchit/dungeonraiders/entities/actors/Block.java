@@ -1,12 +1,17 @@
 package net.drcorchit.dungeonraiders.entities.actors;
 
 import com.badlogic.gdx.graphics.Color;
+import com.google.common.collect.ImmutableList;
 import net.drcorchit.dungeonraiders.assets.Textures;
+import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
+import net.drcorchit.dungeonraiders.drawing.RunnableRenderInstruction;
 import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.utils.AnimatedSprite;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
-public class Block extends PhysicsActor {
+import java.util.Collection;
+
+public class Block extends PhysicsActor<DungeonStage> {
 
 	private final AnimatedSprite sprite = Textures.asSpriteList(Textures.WALL).asSprite();
 	private final float width, height;
@@ -19,19 +24,15 @@ public class Block extends PhysicsActor {
 	}
 
 	@Override
-	public void draw(Vector position) {
-		getCollider().draw(Color.WHITE);
+	public Collection<RenderInstruction> draw(Vector position) {
+		Runnable draw = () -> getCollider().draw(Color.WHITE);
+		return ImmutableList.of(new RunnableRenderInstruction(getZ(), draw));
 		//sprite.draw(getBatch(), position.x - width/2, position.y - width/2, width, height);
 	}
 
 	@Override
-	public void act(float delta) {
+	public void prePhysicsAct(float delta) {
 
-	}
-
-	@Override
-	public boolean collidesWith(DungeonActor other) {
-		return true;
 	}
 
 	@Override

@@ -1,11 +1,11 @@
 package net.drcorchit.dungeonraiders.entities.actors;
 
+import net.drcorchit.dungeonraiders.drawing.shapes.Circle;
+import net.drcorchit.dungeonraiders.drawing.shapes.NoShape;
+import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
+import net.drcorchit.dungeonraiders.drawing.shapes.Shape;
 import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.entities.stages.Room;
-import net.drcorchit.dungeonraiders.shapes.Circle;
-import net.drcorchit.dungeonraiders.shapes.NoShape;
-import net.drcorchit.dungeonraiders.shapes.Rectangle;
-import net.drcorchit.dungeonraiders.shapes.Shape;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
@@ -66,18 +66,6 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 	}
 
 	@Override
-	public float getDepth() {
-		return -z;
-	}
-
-	//returns whether collision between the actors should be considered
-	//example:
-	//players and enemies both collide with blocks
-	//players collide with enemies, but not with allies
-	//blocks collide with nothing
-	public abstract boolean collidesWith(DungeonActor<?> other);
-
-	@Override
 	boolean setPosition(Vector position) {
 		if (canOccupyPosition(position)) {
 			super.setPosition(position);
@@ -98,9 +86,7 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 		}
 
 		for (Room room : stage.getOverlappedRooms(this)) {
-			int layerIndex = Room.getLayerIndex(z);
-			Room.Layer layer = room.getLayer(layerIndex);
-			if (layer.collidesWith(collider.move(position.add(colliderOffset)))) return false;
+			if (room.collidesWith(this, position, z)) return false;
 		}
 		return true;
 	}
@@ -118,13 +104,15 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 			return moveToContactBinary(direction);
 		} else {
 			Vector step = direction.normalize().multiply(collider.getMinimalRadius());
-			double numSteps = direction.length() / collider.getMinimalRadius();
-			float lastStepLength = (float) MathUtils.fractionalPart(numSteps);
+			double ratio = direction.length() / collider.getMinimalRadius();
+			int numSteps = (int) ratio;
+			float lastStepLength = (float) MathUtils.fractionalPart(ratio);
 
 			//break the movement down into smaller steps of (at most) length = shape.getMinimalRadius()
 			for (int i = 0; i < numSteps; i++) {
 				if (!setPositionRelative(step)) {
-					if (!moveToContactBinary(step)) return false;
+					moveToContactBinary(step);
+					return false;
 				}
 			}
 
@@ -165,8 +153,10 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 	private boolean moveToContactBinary(Vector direction) {
 		if (direction.length() < 0.01f) return true;
 		if (setPositionRelative(direction)) {
+			System.out.println("set");
 			return true;
 		} else {
+			System.out.println("set-half");
 			Vector half = direction.half();
 			//try to move halfway
 			setPositionRelative(half);

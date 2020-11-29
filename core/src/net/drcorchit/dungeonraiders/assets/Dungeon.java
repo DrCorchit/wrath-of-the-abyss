@@ -31,6 +31,9 @@ public class Dungeon {
 			}
 			j--;
 		}
+	}
 
+	public void copyToLayer(Room.Layer layer) {
+		tiles.forEachCell(layer::placeSquare);
 	}
 }

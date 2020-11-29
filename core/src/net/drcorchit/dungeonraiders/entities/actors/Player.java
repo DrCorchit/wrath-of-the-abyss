@@ -16,7 +16,7 @@ public class Player extends PuppetActor<DungeonStage> {
 
 	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 20, JUMP = 10, MOVE = .5f, FRICTION = .2f;
 
-	private final KeyboardInfo keys = getGame().keyboard;
+	private final KeyboardInfo keys = DungeonRaidersGame.getInstance().keyboard;
 	private Vector cameraOffset;
 
 	public Player(DungeonStage stage,
@@ -41,7 +41,7 @@ public class Player extends PuppetActor<DungeonStage> {
 	}
 
 	@Override
-	public void actInner(float factor) {
+	public void prePhysicsAct(float factor) {
 		int horiz = keys.horiz;
 		boolean jumped = keys.space.isPressed();
 		boolean grounded = isGrounded();
@@ -55,12 +55,7 @@ public class Player extends PuppetActor<DungeonStage> {
 			skeleton.flipped = false;
 			hSpeed += MOVE;
 		} else if (grounded) {
-			//apply friction
-			if (hSpeed > 0) {
-				hSpeed = Math.max(0, hSpeed - FRICTION);
-			} else if (hSpeed < 0) {
-				hSpeed = Math.min(0, hSpeed + FRICTION);
-			}
+			hSpeed = MathUtils.decelerate(hSpeed, FRICTION);
 		}
 
 		if (jumped && grounded) {
@@ -83,7 +78,10 @@ public class Player extends PuppetActor<DungeonStage> {
 		} else {
 			animator.setAnimation(Animations.jump2);
 		}
+	}
 
+	@Override
+	public void postPhysicsAct(float factor) {
 		//set camera
 		stage.setViewCenter(getPosition().add(cameraOffset));
 		TreeMap<String, Object> map = DungeonRaidersGame.getInstance().debugInfoMap;
@@ -93,10 +91,5 @@ public class Player extends PuppetActor<DungeonStage> {
 		map.put("x", getPosition().x);
 		map.put("y", getPosition().y);
 		map.put("velocity", getVelocity());
-	}
-
-	@Override
-	public boolean collidesWith(DungeonActor<?> other) {
-		return other instanceof Room.Layer;
 	}
 }

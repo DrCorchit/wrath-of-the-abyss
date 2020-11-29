@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 import net.drcorchit.dungeonraiders.utils.AnimatedSprite;
 import net.drcorchit.dungeonraiders.utils.JsonUtils;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
@@ -97,7 +98,7 @@ public class Skin {
 		}
 
 		public void draw(float sprX, float sprY, float xScale, float yScale, float rotation) {
-			sprite.drawScaled(net.drcorchit.dungeonraiders.DungeonRaidersGame.getDraw().getBatch(), sprX, sprY, xScale, yScale, rotation);
+			sprite.drawScaled(DungeonRaidersGame.getDraw().batch, sprX, sprY, xScale, yScale, rotation);
 		}
 	}
 }
