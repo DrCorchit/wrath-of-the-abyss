@@ -1,4 +1,4 @@
-package net.drcorchit.dungeonraiders.utils;
+package net.drcorchit.dungeonraiders.drawing;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.drcorchit.dungeonraiders.DungeonRaidersGame;
+import net.drcorchit.dungeonraiders.utils.MathUtils;
 
 import javax.annotation.Nullable;
 

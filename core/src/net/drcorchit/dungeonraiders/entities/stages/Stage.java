@@ -7,7 +7,7 @@ import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.entities.Entity;
 import net.drcorchit.dungeonraiders.entities.actors.Actor;
-import net.drcorchit.dungeonraiders.utils.Draw;
+import net.drcorchit.dungeonraiders.drawing.Draw;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.ArrayList;

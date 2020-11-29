@@ -1,4 +1,4 @@
-package net.drcorchit.dungeonraiders.utils;
+package net.drcorchit.dungeonraiders.drawing;
 
 import com.badlogic.gdx.graphics.Color;
 import net.drcorchit.dungeonraiders.assets.Textures;

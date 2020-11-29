@@ -5,7 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.drcorchit.dungeonraiders.DungeonRaidersGame;
-import net.drcorchit.dungeonraiders.utils.Draw;
+import net.drcorchit.dungeonraiders.drawing.Draw;
 import net.drcorchit.dungeonraiders.utils.JsonUtils;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;

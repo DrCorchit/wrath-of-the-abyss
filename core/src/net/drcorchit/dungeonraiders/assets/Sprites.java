@@ -1,8 +1,8 @@
 package net.drcorchit.dungeonraiders.assets;
 
 import com.badlogic.gdx.graphics.Texture;
-import net.drcorchit.dungeonraiders.utils.AnimatedSprite;
-import net.drcorchit.dungeonraiders.utils.SpriteList;
+import net.drcorchit.dungeonraiders.drawing.AnimatedSprite;
+import net.drcorchit.dungeonraiders.drawing.SpriteList;
 
 public class Sprites {
 	public static final AnimatedSprite WHITE_POINT = initSprite(Textures.WHITE_POINT).asSprite();

@@ -6,7 +6,7 @@ import net.drcorchit.dungeonraiders.assets.Textures;
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.RunnableRenderInstruction;
 import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
-import net.drcorchit.dungeonraiders.utils.AnimatedSprite;
+import net.drcorchit.dungeonraiders.drawing.AnimatedSprite;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.Collection;

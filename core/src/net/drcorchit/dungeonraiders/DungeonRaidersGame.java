@@ -14,7 +14,7 @@ import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.input.MouseInfo;
 import net.drcorchit.dungeonraiders.utils.Coordinate;
 import net.drcorchit.dungeonraiders.utils.Direction;
-import net.drcorchit.dungeonraiders.utils.Draw;
+import net.drcorchit.dungeonraiders.drawing.Draw;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.TreeMap;

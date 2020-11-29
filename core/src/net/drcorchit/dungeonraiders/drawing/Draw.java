@@ -1,4 +1,4 @@
-package net.drcorchit.dungeonraiders.utils;
+package net.drcorchit.dungeonraiders.drawing;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -13,6 +13,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import net.drcorchit.dungeonraiders.utils.Direction;
+import net.drcorchit.dungeonraiders.utils.Pair;
+import net.drcorchit.dungeonraiders.utils.Vector;
 
 import javax.annotation.Nonnull;
 import java.util.List;

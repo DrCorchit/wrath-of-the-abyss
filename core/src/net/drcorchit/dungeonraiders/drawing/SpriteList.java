@@ -1,9 +1,10 @@
-package net.drcorchit.dungeonraiders.utils;
+package net.drcorchit.dungeonraiders.drawing;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.google.common.collect.ImmutableList;
+import net.drcorchit.dungeonraiders.drawing.AnimatedSprite;
 
 public class SpriteList {
 	private final ImmutableList<TextureRegion> frames;
@@ -46,7 +47,7 @@ public class SpriteList {
 		return frames.size();
 	}
 
-	public AnimatedSprite asSprite() {
+	public net.drcorchit.dungeonraiders.drawing.AnimatedSprite asSprite() {
 		return new AnimatedSprite(this);
 	}
 }

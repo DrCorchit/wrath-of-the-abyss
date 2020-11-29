@@ -2,7 +2,7 @@ package net.drcorchit.dungeonraiders.assets;
 
 import com.badlogic.gdx.graphics.Texture;
 import net.drcorchit.dungeonraiders.utils.Logger;
-import net.drcorchit.dungeonraiders.utils.SpriteList;
+import net.drcorchit.dungeonraiders.drawing.SpriteList;
 
 public class Textures {
 

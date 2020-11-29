@@ -8,6 +8,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 
 public class Coordinate {
+	public static final float HEX_RATIO = (float) Math.sqrt(3);
 	public final Integer x, y;
 
 	public Coordinate(int x, int y) {
@@ -34,7 +35,7 @@ public class Coordinate {
 			double myX = y % 2 == 0 ? x : x + .5;
 			double yourX = other.y % 2 == 0 ? other.x : other.x + .5;
 			//squash tiles along y axis so neighboring tiles are always 1 unit away
-			return distance(myX - yourX, (y - other.y) * Constants.HEX_RATIO);
+			return distance(myX - yourX, (y - other.y) * HEX_RATIO);
 		}
 		return distance(x - other.x, y - other.y);
 	}
@@ -44,7 +45,7 @@ public class Coordinate {
 			double myX = y % 2 == 0 ? x : x + .5;
 			double yourX = other.y % 2 == 0 ? other.x : other.x + .5;
 			//squash tiles along y axis so neighboring tiles are always 1 unit away
-			return angle(myX - yourX, (y - other.y) * Constants.HEX_RATIO);
+			return angle(myX - yourX, (y - other.y) * HEX_RATIO);
 		}
 		return angle(x - other.x, y - other.y);
 	}

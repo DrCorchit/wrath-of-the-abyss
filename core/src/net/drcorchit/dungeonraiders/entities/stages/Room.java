@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.GL20;
 import net.drcorchit.dungeonraiders.assets.Dungeon;
 import net.drcorchit.dungeonraiders.assets.Sprites;
 import net.drcorchit.dungeonraiders.assets.Textures;
+import net.drcorchit.dungeonraiders.drawing.AnimatedSprite;
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.RunnableRenderInstruction;
+import net.drcorchit.dungeonraiders.drawing.Surface;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.drawing.shapes.Shape;
 import net.drcorchit.dungeonraiders.drawing.shapes.Square;
@@ -85,7 +87,7 @@ public class Room extends Actor<DungeonStage> {
 
 	public class Layer {
 		public AnimatedSprite floorSprite, wallSprite;
-		private final Surface surface, maskSurface;
+		private final net.drcorchit.dungeonraiders.drawing.Surface surface, maskSurface;
 		public final float z;
 		public final Grid<Shape> grid = new Grid<>(Shape.class, SIZE, SIZE);
 
@@ -93,7 +95,7 @@ public class Room extends Actor<DungeonStage> {
 			this.z = index * -DungeonStage.BLOCK_SIZE;
 			floorSprite = Sprites.getSprite(Textures.FLOOR);
 			wallSprite = Sprites.getSprite(Textures.WALL);
-			surface = new Surface();
+			surface = new net.drcorchit.dungeonraiders.drawing.Surface();
 			maskSurface = new Surface();
 		}
 
