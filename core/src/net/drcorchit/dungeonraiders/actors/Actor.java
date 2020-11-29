@@ -1,14 +1,13 @@
-package net.drcorchit.dungeonraiders.entities.actors;
+package net.drcorchit.dungeonraiders.actors;
 
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
-import net.drcorchit.dungeonraiders.entities.Entity;
-import net.drcorchit.dungeonraiders.entities.stages.Stage;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
+import net.drcorchit.dungeonraiders.stages.Stage;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.Collection;
 
-public abstract class Actor<T extends Stage> extends Entity {
+public abstract class Actor<T extends Stage> {
 
 	//stage is generic because certain actors depend on stage-specific properties
 	protected final T stage;

@@ -1,4 +1,4 @@
-package net.drcorchit.dungeonraiders.entities.stages;
+package net.drcorchit.dungeonraiders.stages;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,23 +12,23 @@ import net.drcorchit.dungeonraiders.drawing.Surface;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.drawing.shapes.Shape;
 import net.drcorchit.dungeonraiders.drawing.shapes.Square;
-import net.drcorchit.dungeonraiders.entities.actors.Actor;
-import net.drcorchit.dungeonraiders.entities.actors.DungeonActor;
+import net.drcorchit.dungeonraiders.actors.Actor;
+import net.drcorchit.dungeonraiders.actors.DungeonActor;
 import net.drcorchit.dungeonraiders.utils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Room extends Actor<DungeonStage> {
+public class Room extends Actor<net.drcorchit.dungeonraiders.stages.DungeonStage> {
 
 	public static final int SIZE = 16;
-	public static final float PIXEL_SIZE = SIZE * DungeonStage.BLOCK_SIZE;
+	public static final float PIXEL_SIZE = SIZE * net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE;
 
 	private final Layer[] layers;
 	private final Coordinate coordinate;
 	private final int lastlayerIndex;
 
-	public Room(DungeonStage stage, Coordinate coordinate, int numLayers) {
+	public Room(net.drcorchit.dungeonraiders.stages.DungeonStage stage, Coordinate coordinate, int numLayers) {
 		super(stage, coordinateToPosition(coordinate));
 		this.coordinate = coordinate;
 		layers = new Layer[numLayers];
@@ -42,7 +42,7 @@ public class Room extends Actor<DungeonStage> {
 		setViewBounds(PIXEL_SIZE / 2, PIXEL_SIZE / 2, PIXEL_SIZE, PIXEL_SIZE);
 	}
 
-	public Room(DungeonStage stage, Coordinate coordinate, Dungeon... dungeons) {
+	public Room(net.drcorchit.dungeonraiders.stages.DungeonStage stage, Coordinate coordinate, Dungeon... dungeons) {
 		this(stage, coordinate, dungeons.length);
 		//initialize layers
 		for (int i = 0; i < dungeons.length; i++) {
@@ -59,7 +59,7 @@ public class Room extends Actor<DungeonStage> {
 	}
 
 	public static int getLayerIndex(float z) {
-		int index = (int) Math.ceil(-z / DungeonStage.BLOCK_SIZE);
+		int index = (int) Math.ceil(-z / net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE);
 		return Math.max(0, index);
 	}
 
@@ -92,7 +92,7 @@ public class Room extends Actor<DungeonStage> {
 		public final Grid<Shape> grid = new Grid<>(Shape.class, SIZE, SIZE);
 
 		private Layer(int index) {
-			this.z = index * -DungeonStage.BLOCK_SIZE;
+			this.z = index * -net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE;
 			floorSprite = Sprites.getSprite(Textures.FLOOR);
 			wallSprite = Sprites.getSprite(Textures.WALL);
 			surface = new net.drcorchit.dungeonraiders.drawing.Surface();
@@ -105,25 +105,25 @@ public class Room extends Actor<DungeonStage> {
 		}
 
 		public Vector getCellLocation(int i, int j) {
-			float x = getPosition().x + (i + .5f) * DungeonStage.BLOCK_SIZE;
-			float y = getPosition().y + (j + .5f) * DungeonStage.BLOCK_SIZE;
+			float x = getPosition().x + (i + .5f) * net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE;
+			float y = getPosition().y + (j + .5f) * net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE;
 			return new Vector(x, y);
 		}
 
 		public void placeSquare(int i, int j) {
-			Rectangle r = new Square(() -> getCellLocation(i, j), DungeonStage.BLOCK_SIZE);
+			Rectangle r = new Square(() -> getCellLocation(i, j), net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE);
 			grid.set(i, j, r);
 		}
 
 		public void draw(Vector roomPos) {
-			float farScale = DungeonStage.getZScale(z);
-			float nearScale = DungeonStage.getZScale(z + DungeonStage.BLOCK_SIZE);
-			float farSize = DungeonStage.BLOCK_SIZE * nearScale / 2;
-			float nearSize = DungeonStage.BLOCK_SIZE * farScale / 2;
+			float farScale = net.drcorchit.dungeonraiders.stages.DungeonStage.getZScale(z);
+			float nearScale = net.drcorchit.dungeonraiders.stages.DungeonStage.getZScale(z + net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE);
+			float farSize = net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE * nearScale / 2;
+			float nearSize = net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE * farScale / 2;
 
 			surface.begin();
 			surface.clear();
-			Vector projectedPos = stage.projectZPosition(roomPos, z + DungeonStage.BLOCK_SIZE);
+			Vector projectedPos = stage.projectZPosition(roomPos, z + net.drcorchit.dungeonraiders.stages.DungeonStage.BLOCK_SIZE);
 			wallSprite.drawTiled(stage.draw.batch, projectedPos.x, projectedPos.y);
 			surface.end();
 

@@ -1,20 +1,19 @@
-package net.drcorchit.dungeonraiders.entities.stages;
+package net.drcorchit.dungeonraiders.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import net.drcorchit.dungeonraiders.DungeonRaidersGame;
+import net.drcorchit.dungeonraiders.drawing.Draw;
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
-import net.drcorchit.dungeonraiders.entities.Entity;
-import net.drcorchit.dungeonraiders.entities.actors.Actor;
-import net.drcorchit.dungeonraiders.drawing.Draw;
+import net.drcorchit.dungeonraiders.actors.Actor;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public abstract class Stage extends Entity {
+public abstract class Stage {
 
 	public static final float EXPECTED_DELTA_TIME = 1 / 60f;
 

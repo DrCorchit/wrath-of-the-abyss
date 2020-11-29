@@ -3,7 +3,7 @@ package net.drcorchit.dungeonraiders.assets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.drcorchit.dungeonraiders.entities.stages.Room;
+import net.drcorchit.dungeonraiders.stages.Room;
 import net.drcorchit.dungeonraiders.utils.Grid;
 import net.drcorchit.dungeonraiders.utils.Pair;
 import static net.drcorchit.dungeonraiders.utils.MathUtils.getBit;

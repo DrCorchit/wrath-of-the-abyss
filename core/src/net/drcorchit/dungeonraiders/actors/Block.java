@@ -1,11 +1,11 @@
-package net.drcorchit.dungeonraiders.entities.actors;
+package net.drcorchit.dungeonraiders.actors;
 
 import com.badlogic.gdx.graphics.Color;
 import com.google.common.collect.ImmutableList;
 import net.drcorchit.dungeonraiders.assets.Textures;
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.RunnableRenderInstruction;
-import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
+import net.drcorchit.dungeonraiders.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.drawing.AnimatedSprite;
 import net.drcorchit.dungeonraiders.utils.Vector;
 

@@ -1,6 +1,6 @@
-package net.drcorchit.dungeonraiders.entities.actors;
+package net.drcorchit.dungeonraiders.actors;
 
-import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
+import net.drcorchit.dungeonraiders.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
 public abstract class PhysicsActor<T extends DungeonStage> extends DungeonActor<T> {
@@ -14,10 +14,6 @@ public abstract class PhysicsActor<T extends DungeonStage> extends DungeonActor<
 		super(stage, position);
 		this.isFixed = isFixed;
 		velocity = Vector.ZERO;
-	}
-
-	public void cancelVelocity() {
-		setVelocity(Vector.ZERO);
 	}
 
 	public void setVelocity(Vector velocity) {
@@ -35,8 +31,6 @@ public abstract class PhysicsActor<T extends DungeonStage> extends DungeonActor<
 	@Override
 	public void act(float factor) {
 		if (!isFixed) {
-			float initialY = getPosition().y;
-
 			if (!isGrounded()) {
 				Vector gravity = stage.getGravity().multiply(factor);
 				addVelocity(gravity);
@@ -47,25 +41,15 @@ public abstract class PhysicsActor<T extends DungeonStage> extends DungeonActor<
 			Vector grav = velocity.project(gravNorm);
 			Vector antiGrav = velocity.project(antiGravNorm);
 
-
-			float dif = getPosition().y - initialY;
-
-			if (!moveToContact(grav.multiply(factor))) {
+			if (moveToContact(grav.multiply(factor))) {
 				grav = Vector.ZERO;
 			}
 
-			float dif2 = getPosition().y - initialY;
-
-			if (!moveToContact(antiGrav.multiply(factor))) {
+			if (moveToContact(antiGrav.multiply(factor))) {
 				antiGrav = Vector.ZERO;
 			}
 
 			velocity = grav.add(antiGrav);
-
-			float dif3 = getPosition().y - initialY;
-
-			System.out.printf("grav: %f vel.y :%f dif1: %f, dif2: %f, dif3: %f, factor: %f\n",
-					grav.y, velocity.y, dif, dif2, dif3, factor);
 		}
 	}
 

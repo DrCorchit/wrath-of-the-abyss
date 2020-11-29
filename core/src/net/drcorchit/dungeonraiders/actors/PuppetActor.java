@@ -1,4 +1,4 @@
-package net.drcorchit.dungeonraiders.entities.actors;
+package net.drcorchit.dungeonraiders.actors;
 
 import com.google.common.collect.ImmutableSet;
 import net.drcorchit.dungeonraiders.assets.Skeleton;
@@ -8,7 +8,7 @@ import net.drcorchit.dungeonraiders.assets.animation.MutableFrame;
 import net.drcorchit.dungeonraiders.assets.animation.NoopFrame;
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.RunnableRenderInstruction;
-import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
+import net.drcorchit.dungeonraiders.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.utils.Vector;
 import org.jetbrains.annotations.NotNull;
 

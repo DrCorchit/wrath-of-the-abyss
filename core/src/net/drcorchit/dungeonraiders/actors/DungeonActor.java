@@ -1,11 +1,11 @@
-package net.drcorchit.dungeonraiders.entities.actors;
+package net.drcorchit.dungeonraiders.actors;
 
 import net.drcorchit.dungeonraiders.drawing.shapes.Circle;
 import net.drcorchit.dungeonraiders.drawing.shapes.NoShape;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.drawing.shapes.Shape;
-import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
-import net.drcorchit.dungeonraiders.entities.stages.Room;
+import net.drcorchit.dungeonraiders.stages.DungeonStage;
+import net.drcorchit.dungeonraiders.stages.Room;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
@@ -96,9 +96,9 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 		return canOccupyPosition(testPos);
 	}
 
-	//returns true if the full range of motion was completed.
+	//returns true if the object made contact (met an obstruction)
 	public boolean moveToContact(Vector direction) {
-		if (direction.length() == 0) return true;
+		if (direction.length() == 0) return false;
 
 		if (collider.getMinimalRadius() > direction.length()) {
 			return moveToContactBinary(direction);
@@ -112,7 +112,7 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 			for (int i = 0; i < numSteps; i++) {
 				if (!setPositionRelative(step)) {
 					moveToContactBinary(step);
-					return false;
+					return true;
 				}
 			}
 
@@ -121,7 +121,7 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 		}
 	}
 
-	//returns true if the full range of motion was completed.
+	//returns true if the object made contact (met an obstruction)
 	public boolean moveToContactZ(float amount) {
 		if (amount == 0) return true;
 
@@ -132,16 +132,12 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 			return false;
 		}
 
-		int currentIndex = Room.getLayerIndex(z);
-		int endIndex = Room.getLayerIndex(z + amount);
-
-		if (currentIndex == endIndex) {
+		if (amount < DungeonStage.BLOCK_SIZE) {
 			return setZRelative(amount);
 		} else {
 			float step = DungeonStage.BLOCK_SIZE * Math.signum(amount);
-			boolean temp = setZRelative(step);
 
-			if (temp) {
+			if (setZRelative(step)) {
 				return moveToContactZ(amount - step);
 			} else {
 				moveToContactZBinary(amount);
@@ -151,31 +147,29 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 	}
 
 	private boolean moveToContactBinary(Vector direction) {
-		if (direction.length() < 0.01f) return true;
+		if (direction.length() < 0.01f) return false;
 		if (setPositionRelative(direction)) {
-			System.out.println("set");
-			return true;
+			return false;
 		} else {
-			System.out.println("set-half");
 			Vector half = direction.half();
 			//try to move halfway
 			setPositionRelative(half);
 			//try to move the remaining half (or the first half)
 			moveToContactBinary(half);
-			return false;
+			return true;
 		}
 	}
 
 	private boolean moveToContactZBinary(float amount) {
-		if (amount < 1f) return true;
+		if (amount < .1f) return false;
 		if (setZRelative(amount)) {
-			return true;
+			return false;
 		} else {
 			//try to move halfway
 			setZRelative(amount / 2);
 			//try to move the remaining half (or the first half)
 			moveToContactZBinary(amount / 2);
-			return false;
+			return true;
 		}
 	}
 

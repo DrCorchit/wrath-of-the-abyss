@@ -1,11 +1,11 @@
-package net.drcorchit.dungeonraiders.entities.actors;
+package net.drcorchit.dungeonraiders.actors;
 
 import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 import net.drcorchit.dungeonraiders.assets.Skeleton;
 import net.drcorchit.dungeonraiders.assets.Skin;
 import net.drcorchit.dungeonraiders.assets.animation.Animations;
-import net.drcorchit.dungeonraiders.entities.stages.DungeonStage;
-import net.drcorchit.dungeonraiders.entities.stages.Room;
+import net.drcorchit.dungeonraiders.stages.DungeonStage;
+import net.drcorchit.dungeonraiders.stages.Room;
 import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;

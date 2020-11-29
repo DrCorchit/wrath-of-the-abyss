@@ -1,10 +1,10 @@
-package net.drcorchit.dungeonraiders.entities.stages;
+package net.drcorchit.dungeonraiders.stages;
 
 import com.badlogic.gdx.graphics.Texture;
 import net.drcorchit.dungeonraiders.assets.Dungeons;
 import net.drcorchit.dungeonraiders.assets.Textures;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
-import net.drcorchit.dungeonraiders.entities.actors.DungeonActor;
+import net.drcorchit.dungeonraiders.actors.DungeonActor;
 import net.drcorchit.dungeonraiders.utils.Coordinate;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
