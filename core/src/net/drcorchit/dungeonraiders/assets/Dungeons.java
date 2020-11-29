@@ -31,7 +31,7 @@ public class Dungeons {
 	}
 
 	static {
-		File dungeonsFile = IOUtils.getFileAsChildOfWorkingDir("dungeons/dungeons.json");
+		File dungeonsFile = IOUtils.getFileAsChildOfWorkingDir("resources/dungeons/dungeons.json");
 
 		ImmutableList.Builder<Dungeon> builder = ImmutableList.builder();
 		Map<Pair<Boolean, Boolean>, List<Dungeon>> topBuilder = new HashMap<>();

@@ -14,7 +14,7 @@ import java.util.TreeMap;
 
 public class Player extends PuppetActor<DungeonStage> {
 
-	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 20, JUMP = 10, MOVE = .5f, FRICTION = .2f;
+	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 20, JUMP = 12, MOVE = .5f, FRICTION = .2f;
 
 	private final KeyboardInfo keys = DungeonRaidersGame.getInstance().keyboard;
 	private Vector cameraOffset;

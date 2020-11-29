@@ -155,7 +155,7 @@ public class Room extends Actor<net.drcorchit.dungeonraiders.stages.DungeonStage
 					boolean drawRight = farC4.x > nearC4.x && (i == grid.getWidth() - 1 || grid.get(i + 1, j) == null);
 					boolean drawBottom = farC4.y < nearC4.y && (j == 0 || grid.get(i, j - 1) == null);
 
-					//*
+					/*
 					if (drawTop) {
 						stage.draw.drawPrimitive(Textures.FLOOR, farC1, farC2, nearC1, nearC2);
 					}
@@ -171,12 +171,12 @@ public class Room extends Actor<net.drcorchit.dungeonraiders.stages.DungeonStage
 					if (drawBottom) {
 						stage.draw.drawPrimitive(Textures.FLOOR, nearC3, nearC4, farC3, farC4);
 					}
-					//*/
 
 					if (drawTop) stage.draw.drawLine(nearC1.x, nearC1.y, farC1.x, farC1.y, 1, Color.BLACK);
 					if (drawRight) stage.draw.drawLine(nearC2.x, nearC2.y, farC2.x, farC2.y, 1, Color.BLACK);
 					if (drawLeft) stage.draw.drawLine(nearC3.x, nearC3.y, farC3.x, farC3.y, 1, Color.BLACK);
 					if (drawBottom) stage.draw.drawLine(nearC4.x, nearC4.y, farC4.x, farC4.y, 1, Color.BLACK);
+					//*/
 
 					maskSurface.begin();
 					stage.draw.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
@@ -207,8 +207,8 @@ public class Room extends Actor<net.drcorchit.dungeonraiders.stages.DungeonStage
 	}
 
 	public static Coordinate positionToCoordinate(Vector position) {
-		int i = (int) (position.x / PIXEL_SIZE);
-		int j = (int) (position.y / PIXEL_SIZE);
+		int i = (int) Math.floor(position.x / PIXEL_SIZE);
+		int j = (int) Math.floor(position.y / PIXEL_SIZE);
 		return new Coordinate(i, j);
 	}
 }

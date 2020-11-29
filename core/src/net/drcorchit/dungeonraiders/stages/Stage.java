@@ -28,7 +28,9 @@ public abstract class Stage {
 	protected Stage() {
 		this.draw = DungeonRaidersGame.getDraw();
 		viewPosition = new Vector(0, 0);
-		viewBounds = new Rectangle(this::getViewCenter, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		viewBounds = new Rectangle(this::getViewCenter,
+				Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
 		viewOffset = new Vector(viewBounds.width / 2, viewBounds.height / 2);
 	}
 

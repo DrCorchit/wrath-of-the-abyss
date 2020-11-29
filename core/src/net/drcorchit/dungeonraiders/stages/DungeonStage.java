@@ -1,14 +1,18 @@
 package net.drcorchit.dungeonraiders.stages;
 
 import com.badlogic.gdx.graphics.Texture;
+import net.drcorchit.dungeonraiders.actors.DungeonActor;
+import net.drcorchit.dungeonraiders.assets.Dungeon;
 import net.drcorchit.dungeonraiders.assets.Dungeons;
 import net.drcorchit.dungeonraiders.assets.Textures;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
-import net.drcorchit.dungeonraiders.actors.DungeonActor;
 import net.drcorchit.dungeonraiders.utils.Coordinate;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DungeonStage extends Stage {
@@ -44,14 +48,11 @@ public class DungeonStage extends Stage {
 
 	public void addRoom(Room room) {
 		super.addActor(room);
-		rooms.put(room.getCoordinate(), room);
-	}
-
-	public void addRoom(Coordinate location) {
-		if (!rooms.containsKey(location)) {
-			Room room = new Room(this, location, Dungeons.getRandomDungeon(Dungeons.dungeons, random::nextInt));
-			addRoom(room);
+		Room oldRoom = rooms.get(room.getCoordinate());
+		if (oldRoom != null) {
+			oldRoom.destroy();
 		}
+		rooms.put(room.getCoordinate(), room);
 	}
 
 	public Vector getGravity() {
@@ -74,33 +75,42 @@ public class DungeonStage extends Stage {
 		return diff.multiply(getZScale(z)).add(center);
 	}
 
-	public Set<Room> getRoomsInView() {
-		HashSet<Coordinate> output = new HashSet<>();
-		Vector view = getViewPosition();
-		for (float x = view.x; x < view.x + viewBounds.width; x += Room.PIXEL_SIZE) {
-			for (float y = view.y; y < view.y + viewBounds.height; y += Room.PIXEL_SIZE) {
-				output.add(Room.positionToCoordinate(new Vector(x, y)));
-			}
-		}
-		return output.stream().map(rooms::get).collect(Collectors.toSet());
+	public Set<Room> getOverlappedRooms(DungeonActor<?> actor) {
+		return getRoomCoordinates(actor.getViewBounds()).stream()
+				.filter(rooms::containsKey)
+				.map(rooms::get)
+				.collect(Collectors.toSet());
 	}
 
-	public Set<Room> getOverlappedRooms(DungeonActor<?> actor) {
-		HashSet<Coordinate> output = new HashSet<>();
-		Rectangle actorViewBounds = actor.getViewBounds();
-		//we want the lower left corner of the actor's viewBounds
-		Vector pos = actor.getViewPosition();
-		pos = pos.subtract(actorViewBounds.width / 2, actorViewBounds.height / 2);
+	@Override
+	public void act(float factor) {
+		loadVisibleRooms();
+		super.act(factor);
+	}
 
-		//get all coordinates that overlap actor's view bounds
-		for (float x = pos.x; x < pos.x + actorViewBounds.width; x += Room.PIXEL_SIZE) {
-			for (float y = pos.y; y < pos.y + actorViewBounds.height; y += Room.PIXEL_SIZE) {
-				output.add(Room.positionToCoordinate(new Vector(x, y)));
+	private void loadVisibleRooms() {
+		for (Coordinate c : getRoomCoordinates(viewBounds)) {
+			if (!rooms.containsKey(c)) {
+				Dungeon d = Dungeons.getRandomDungeon(Dungeons.dungeons, random::nextInt);
+				Room r = new Room(this, c, d);
+				addRoom(r);
+			}
+		}
+	}
+
+	private Set<Coordinate> getRoomCoordinates(Rectangle r) {
+		HashSet<Coordinate> output = new HashSet<>();
+		Vector minPos = r.getPosition().subtract(r.width / 2, r.height / 2);
+		Vector maxPos = minPos.add(r.width, r.height);
+		Coordinate minC = Room.positionToCoordinate(minPos);
+		Coordinate maxC = Room.positionToCoordinate(maxPos);
+
+		for (int i = minC.x; i <= maxC.x; i++) {
+			for (int j = minC.y; j <= maxC.y; j++) {
+				output.add(new Coordinate(i, j));
 			}
 		}
 
-		return output.stream().map(rooms::get)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toSet());
+		return output;
 	}
 }

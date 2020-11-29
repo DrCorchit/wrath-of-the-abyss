@@ -122,7 +122,7 @@ public class Coordinate {
 
 	@Override
 	public String toString() {
-		return String.format("%d, %d", x, y);
+		return String.format("(%d, %d)", x, y);
 	}
 
 	private static double distance(double x, double y) {
