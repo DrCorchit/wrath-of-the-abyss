@@ -5,7 +5,6 @@ import net.drcorchit.dungeonraiders.drawing.shapes.NoShape;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.drawing.shapes.Shape;
 import net.drcorchit.dungeonraiders.stages.DungeonStage;
-import net.drcorchit.dungeonraiders.stages.Room;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;
 

@@ -47,7 +47,7 @@ public class SpriteList {
 		return frames.size();
 	}
 
-	public net.drcorchit.dungeonraiders.drawing.AnimatedSprite asSprite() {
+	public AnimatedSprite asSprite() {
 		return new AnimatedSprite(this);
 	}
 }

@@ -5,7 +5,6 @@ import net.drcorchit.dungeonraiders.assets.Skeleton;
 import net.drcorchit.dungeonraiders.assets.Skin;
 import net.drcorchit.dungeonraiders.assets.animation.Animations;
 import net.drcorchit.dungeonraiders.stages.DungeonStage;
-import net.drcorchit.dungeonraiders.stages.Room;
 import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;
@@ -14,7 +13,8 @@ import java.util.TreeMap;
 
 public class Player extends PuppetActor<DungeonStage> {
 
-	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 20, JUMP = 12, MOVE = .5f, FRICTION = .2f;
+	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 20;
+	private static final float JUMP = 12, MOVE = .4f, Z_SPEED = 2, FRICTION = .15f;
 
 	private final KeyboardInfo keys = DungeonRaidersGame.getInstance().keyboard;
 	private Vector cameraOffset;
@@ -67,7 +67,7 @@ public class Player extends PuppetActor<DungeonStage> {
 		setVelocity(new Vector(hSpeed, vSpeed));
 
 		//move in z direction
-		boolean movedZ = keys.vert != 0 && moveToContactZ(-keys.vert);
+		boolean movedZ = keys.vert != 0 && moveToContactZ(-keys.vert * Z_SPEED);
 
 		if (grounded) {
 			if (hSpeed == 0 && !movedZ) {

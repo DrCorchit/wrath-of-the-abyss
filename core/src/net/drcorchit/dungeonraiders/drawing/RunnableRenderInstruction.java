@@ -2,17 +2,16 @@ package net.drcorchit.dungeonraiders.drawing;
 
 public class RunnableRenderInstruction implements RenderInstruction {
 
-	private final float depth;
-
 	private final Runnable draw;
+	private final Depth depth;
 
-	public RunnableRenderInstruction(float depth, Runnable draw) {
-		this.depth = depth;
+	public RunnableRenderInstruction(Runnable draw, float...depth) {
 		this.draw = draw;
+		this.depth = new Depth(depth);
 	}
 
 	@Override
-	public float getDepth() {
+	public Depth getDepth() {
 		return depth;
 	}
 

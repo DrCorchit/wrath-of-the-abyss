@@ -6,18 +6,23 @@ import net.drcorchit.dungeonraiders.drawing.SpriteList;
 
 public class Textures {
 
-	public static final Texture WHITE_POINT, WHITE_TILE, FLOOR, WALL, WALL_2;
+	public static final Texture BLG, WHITE_POINT, WHITE_TILE, TILES, DUNGEON, BRICK, VOLCANIC, ROCK;
+	public static final Texture STONE_BRICKS;
 
 	private static final Logger log;
 
 	static {
 		log = Logger.getLogger(Textures.class);
 
+		BLG = initTexture("badlogic.jpg");
 		WHITE_POINT = initTexture("white.png");
 		WHITE_TILE = initTexture("white_tile.png");
-		FLOOR = initTexture("tiles_4_small.png");
-		WALL = initTexture("walls/dungeon.png");
-		WALL_2 = initTexture("walls/wall_2.jpg");
+		TILES = initTexture("tiles_1_small.png");
+		DUNGEON = initTexture("walls/dungeon.png");
+		BRICK = initTexture("walls/brick.png");
+		VOLCANIC = initTexture("walls/volcanic.png");
+		ROCK = initTexture("walls/rock.png");
+		STONE_BRICKS = initTexture("walls/stone_bricks.png");
 	}
 
 	public static SpriteList asSpriteList(Texture texture) {

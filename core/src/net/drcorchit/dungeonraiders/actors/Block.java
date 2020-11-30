@@ -13,7 +13,7 @@ import java.util.Collection;
 
 public class Block extends PhysicsActor<DungeonStage> {
 
-	private final AnimatedSprite sprite = Textures.asSpriteList(Textures.WALL).asSprite();
+	private final AnimatedSprite sprite = Textures.asSpriteList(Textures.DUNGEON).asSprite();
 	private final float width, height;
 
 	public Block(DungeonStage stage, float x, float y, float w, float h) {
@@ -26,7 +26,7 @@ public class Block extends PhysicsActor<DungeonStage> {
 	@Override
 	public Collection<RenderInstruction> draw(Vector position) {
 		Runnable draw = () -> getCollider().draw(Color.WHITE);
-		return ImmutableList.of(new RunnableRenderInstruction(getZ(), draw));
+		return ImmutableList.of(new RunnableRenderInstruction(draw, getZ()));
 		//sprite.draw(getBatch(), position.x - width/2, position.y - width/2, width, height);
 	}
 

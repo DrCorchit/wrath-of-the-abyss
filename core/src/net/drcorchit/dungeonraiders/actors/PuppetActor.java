@@ -61,6 +61,6 @@ public abstract class PuppetActor<T extends DungeonStage> extends PhysicsActor<T
 			//skeleton.draw(skeletonPosition);
 			skeleton.scale = originalScale;
 		};
-		return ImmutableSet.of(new RunnableRenderInstruction(getZ(), draw));
+		return ImmutableSet.of(new RunnableRenderInstruction(draw, getZ(), 1f));
 	}
 }

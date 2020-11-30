@@ -95,14 +95,15 @@ public class AnimatedSprite extends BaseDrawable {
 					 float scaleY, float rotation) {
 		Color temp = batch.getColor().cpy();
 		batch.setColor(blend);
-		getCurrentTexture().draw(batch, x - originX, y - originY, originX, originY, width, height, scaleX, scaleY, rotation);
+		batch.draw(getCurrentFrame(), x - originX, y - originY, originX, originY, width, height, scaleX, scaleY, rotation);
 		batch.setColor(temp);
 	}
 
-	public void drawTiled(Batch batch, float x, float y) {
+	//draws the sprite multiple times, filling the entire screen. works best with surfaces.
+	public void drawTiled(Batch batch, float x, float y, float xScale, float yScale) {
 		TextureRegion region = getCurrentFrame();
-		float w = region.getRegionWidth();
-		float h = region.getRegionHeight();
+		float w = region.getRegionWidth() * xScale;
+		float h = region.getRegionHeight() * yScale;
 		float leftX = (float) (MathUtils.mod(x, w) - w);
 		float bottomY = (float) (MathUtils.mod(y, h) - h);
 		float rightX = Gdx.graphics.getWidth();
@@ -110,9 +111,11 @@ public class AnimatedSprite extends BaseDrawable {
 
 		for (float texX = leftX; texX < rightX; texX += w) {
 			for (float texY = bottomY; texY < topY; texY += h) {
-				batch.draw(region, texX, texY);
+				batch.draw(region, texX, texY, 0, 0, w, h, 1, 1, 0);
 			}
 		}
+
+		//batch.draw(temp, 0, 0, 500, 500, 0, 0, 500, 500, false, false);
 	}
 
 	public void setOffset(float xOffset, float yOffset) {

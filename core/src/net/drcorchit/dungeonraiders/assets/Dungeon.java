@@ -3,7 +3,7 @@ package net.drcorchit.dungeonraiders.assets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.drcorchit.dungeonraiders.stages.Room;
+import net.drcorchit.dungeonraiders.actors.Room;
 import net.drcorchit.dungeonraiders.utils.Grid;
 import net.drcorchit.dungeonraiders.utils.Pair;
 import static net.drcorchit.dungeonraiders.utils.MathUtils.getBit;
@@ -34,6 +34,8 @@ public class Dungeon {
 	}
 
 	public void copyToLayer(Room.Layer layer) {
-		tiles.forEachCell(layer::placeSquare);
+		tiles.forEachCell((i, j) -> {
+			if (tiles.get(i, j)) layer.placeSquare(i, j);
+		});
 	}
 }
