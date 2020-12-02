@@ -11,11 +11,15 @@ public class Skins {
 
 	private static final File skinsFolder = IOUtils.getFileAsChildOfWorkingDir("resources/skins");
 
+	public static final Skin base = loadSkin("base.json");
 	public static final Skin punk = loadSkin("0.json");
 	public static final Skin vegas = loadSkin("1.json");
 	public static final Skin regal = loadSkin("2.json");
 	public static final Skin harness = loadSkin("3.json");
 	public static final Skin purple = loadSkin("4.json");
+	public static final Skin gown = loadSkin("5.json");
+	public static final Skin goth = loadSkin("6.json");
+	public static final Skin lifeguard = loadSkin("7.json");
 
 	public static Skin loadSkin(String path) {
 		try {

@@ -64,7 +64,7 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 
 		Player player = new Player(stage,
 				Skeletons.human_female,
-				Skins.punk,
+				Skins.lifeguard,
 				new Vector(500, 500),
 				new Vector(0, 110));
 		player.setColliderToRectangle(0, 95, 40, 190);

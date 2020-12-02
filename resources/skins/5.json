@@ -26,8 +26,8 @@
     },
     {
       "joint": "left_ankle",
-      "texture": "skins/legs/high_heel.png",
-      "x": 7,
+      "texture": "skins/legs/glass_slipper.png",
+      "x": 9,
       "y": 8
     },
     {
@@ -47,7 +47,7 @@
       "texture": "skins/heads/hair_long.png",
       "x": 21,
       "y": 24,
-      "blend": "#a06000"
+      "blend": "#ff8040"
     },
     {
       "joint": "right_hip",
@@ -57,20 +57,20 @@
     },
     {
       "joint": "root",
-      "texture": "skins/torsos/suit.png",
-      "x": 18,
-      "y": 20
+      "texture": "skins/torsos/gown_green.png",
+      "x": 13,
+      "y": 34
     },
     {
       "joint": "right_knee",
       "texture": "skins/legs/calf_right_footless.png",
-      "x": 10,
+      "x": 11,
       "y": 49
     },
     {
       "joint": "right_ankle",
-      "texture": "skins/legs/high_heel.png",
-      "x": 7,
+      "texture": "skins/legs/glass_slipper.png",
+      "x": 9,
       "y": 8
     },
     {
