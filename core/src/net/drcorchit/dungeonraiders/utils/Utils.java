@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
@@ -71,19 +72,20 @@ public class Utils {
 		return min;
 	}
 
-	public static long getLong(JsonObject info, String key, long def) {
-		return info.has(key) ? info.get(key).getAsLong() : def;
+	public static <T> int getIntersectionSize(Collection<T> c1, Collection<T> c2) {
+		int size = 0;
+		if (c2.size() < c1.size()) {
+			//swap args so that smaller set is c1
+			Collection<T> temp = c1;
+			c1 = c2;
+			c2 = temp;
+		}
+
+		for (T item : c1) {
+			if (c2.contains(item)) size += 1;
+		}
+
+		return size;
 	}
 
-	public static JsonArray serialize(Iterable<String> strings) {
-		JsonArray output = new JsonArray();
-		for (String s : strings) output.add(s);
-		return output;
-	}
-
-	public static boolean requireAll(JsonObject info, String...fields) {
-		if (info == null) return false;
-		for (String field : fields) if (!info.has(field)) return false;
-		return true;
-	}
 }

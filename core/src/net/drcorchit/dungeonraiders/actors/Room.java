@@ -1,8 +1,8 @@
 package net.drcorchit.dungeonraiders.actors;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import net.drcorchit.dungeonraiders.assets.Dungeon;
+import com.google.common.collect.ImmutableSet;
+import net.drcorchit.dungeonraiders.assets.RoomLayout;
 import net.drcorchit.dungeonraiders.assets.Sprites;
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.RunnableRenderInstruction;
@@ -20,11 +20,12 @@ import java.util.Collection;
 
 public class Room extends Actor<DungeonStage> {
 
-	public static final int SIZE = 16;
+	public static final int SIZE = 20;
 	public static final float PIXEL_SIZE = SIZE * DungeonStage.BLOCK_SIZE;
 
+	public final Coordinate coordinate;
+	public final ImmutableSet<String> topTags, leftTags, rightTags, bottomTags;
 	private final Layer[] layers;
-	private final Coordinate coordinate;
 	private final int lastlayerIndex;
 
 	public Room(DungeonStage stage, Coordinate coordinate) {
@@ -40,18 +41,33 @@ public class Room extends Actor<DungeonStage> {
 		}
 
 		setViewBounds(PIXEL_SIZE / 2, PIXEL_SIZE / 2, PIXEL_SIZE, PIXEL_SIZE);
+
+		topTags = ImmutableSet.of();
+		leftTags = ImmutableSet.of();
+		rightTags = ImmutableSet.of();
+		bottomTags = ImmutableSet.of();
 	}
 
-	public Room(DungeonStage stage, Coordinate coordinate, Dungeon... dungeons) {
-		this(stage, coordinate);
+	public Room(DungeonStage stage, Coordinate coordinate, RoomLayout roomLayout) {
+		super(stage, coordinateToPosition(coordinate));
+		this.coordinate = coordinate;
+		int numLayers = stage.getLayerCount();
+		layers = new Layer[numLayers];
+		lastlayerIndex = layers.length - 1;
 
-		if (dungeons.length != stage.getLayerCount()) {
-			throw new IllegalArgumentException("Number of dungeon layers provided does not match stage.getLayerCount()");
-		}
 		//initialize layers
-		for (int i = 0; i < dungeons.length; i++) {
-			dungeons[i].copyToLayer(layers[i]);
+		for (int i = 0; i < numLayers; i++) {
+			layers[i] = new Layer(i);
 		}
+
+		setViewBounds(PIXEL_SIZE / 2, PIXEL_SIZE / 2, PIXEL_SIZE, PIXEL_SIZE);
+		//initialize layers
+		roomLayout.copyToRoom(this);
+
+		topTags = roomLayout.topTags;
+		leftTags = roomLayout.leftTags;
+		rightTags = roomLayout.rightTags;
+		bottomTags = roomLayout.bottomTags;
 	}
 
 	public Coordinate getCoordinate() {

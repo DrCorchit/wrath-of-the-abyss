@@ -13,7 +13,7 @@ import java.util.TreeMap;
 
 public class Player extends PuppetActor<DungeonStage> {
 
-	private static final float MAX_H_SPEED = 6, MAX_V_SPEED = 20;
+	private static final float MAX_H_SPEED = 9, MAX_V_SPEED = 20;
 	private static final float JUMP = 12, MOVE = .4f, Z_SPEED = 2, FRICTION = .15f;
 
 	private final KeyboardInfo keys = DungeonRaidersGame.getInstance().keyboard;
@@ -58,7 +58,7 @@ public class Player extends PuppetActor<DungeonStage> {
 			hSpeed = MathUtils.decelerate(hSpeed, FRICTION);
 		}
 
-		if (jumped && grounded) {
+		if (jumped) { // && grounded
 			vSpeed += JUMP;
 		}
 
@@ -85,11 +85,11 @@ public class Player extends PuppetActor<DungeonStage> {
 		//set camera
 		stage.setViewCenter(getPosition().add(cameraOffset));
 		TreeMap<String, Object> map = DungeonRaidersGame.getInstance().debugInfoMap;
-		map.put("player z", getZ());
 		int zLayer = Room.getLayerIndex(getZ());
-		map.put("z layer", zLayer);
+		map.put("velocity", getVelocity());
 		map.put("x", getPosition().x);
 		map.put("y", getPosition().y);
-		map.put("velocity", getVelocity());
+		map.put("z", getZ());
+		map.put("z layer", zLayer);
 	}
 }

@@ -10,7 +10,7 @@ import java.util.Collection;
 public abstract class Actor<T extends Stage> {
 
 	//stage is generic because certain actors depend on stage-specific properties
-	protected final T stage;
+	public final T stage;
 	private Vector lastPosition, position, viewOffset;
 	private Rectangle viewBounds;
 

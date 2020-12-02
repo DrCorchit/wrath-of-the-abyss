@@ -316,6 +316,22 @@ public class JsonUtils {
 		return new JsonPrimitive(output);
 	}
 
+	public static long getLong(JsonObject info, String key, long def) {
+		return info.has(key) ? info.get(key).getAsLong() : def;
+	}
+
+	public static JsonArray serialize(Iterable<String> strings) {
+		JsonArray output = new JsonArray();
+		for (String s : strings) output.add(s);
+		return output;
+	}
+
+	public static boolean requireAll(JsonObject info, String...fields) {
+		if (info == null) return false;
+		for (String field : fields) if (!info.has(field)) return false;
+		return true;
+	}
+
 	private static class JsonIterable implements Iterable<JsonElement> {
 
 		private final JsonElement element;

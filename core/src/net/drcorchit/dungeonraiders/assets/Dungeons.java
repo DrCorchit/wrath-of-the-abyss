@@ -1,66 +1,66 @@
 package net.drcorchit.dungeonraiders.assets;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.drcorchit.dungeonraiders.utils.IOUtils;
 import net.drcorchit.dungeonraiders.utils.JsonUtils;
-import net.drcorchit.dungeonraiders.utils.MathUtils;
-import net.drcorchit.dungeonraiders.utils.Pair;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class Dungeons {
 
-	public static final ImmutableList<Dungeon> dungeons;
-	public static final ImmutableMap<Pair<Boolean, Boolean>, ImmutableList<Dungeon>> dungeonsByTopEntrance;
-	public static final ImmutableMap<Pair<Boolean, Boolean>, ImmutableList<Dungeon>> dungeonsByLeftEntrance;
-	public static final ImmutableMap<Pair<Boolean, Boolean>, ImmutableList<Dungeon>> dungeonsByRightEntrance;
-	public static final ImmutableMap<Pair<Boolean, Boolean>, ImmutableList<Dungeon>> dungeonsByBottomEntrance;
+	private static final float MAX;
+	public static final ImmutableList<RoomLayout> ROOM_LAYOUTS;
 
-	public static Dungeon getRandomDungeon(List<Dungeon> dungeons, Supplier<Integer> randomSource) {
-		return dungeons.get(MathUtils.mod(randomSource.get(), dungeons.size()));
+	public static RoomLayout getRandomDungeon(Predicate<RoomLayout> rule, Random random) {
+		float max = 0;
+		List<RoomLayout> candidates = new ArrayList<>();
+		for (RoomLayout layout : ROOM_LAYOUTS) {
+			if (rule.test(layout)) {
+				max += layout.prevalence;
+				candidates.add(layout);
+			}
+		}
+
+		if (candidates.isEmpty()) {
+			candidates = ROOM_LAYOUTS;
+			max = MAX;
+		}
+
+		float target = random.nextFloat() * max;
+
+		for (RoomLayout layout : candidates) {
+			target -= layout.prevalence;
+			if (target <= 0) {
+				return layout;
+			}
+		}
+		//this should never happen
+		return candidates.get(0);
 	}
 
 	static {
-		File dungeonsFile = IOUtils.getFileAsChildOfWorkingDir("resources/dungeons/dungeons.json");
-
-		ImmutableList.Builder<Dungeon> builder = ImmutableList.builder();
-		Map<Pair<Boolean, Boolean>, List<Dungeon>> topBuilder = new HashMap<>();
-		Map<Pair<Boolean, Boolean>, List<Dungeon>> leftBuilder = new HashMap<>();
-		Map<Pair<Boolean, Boolean>, List<Dungeon>> rightBuilder = new HashMap<>();
-		Map<Pair<Boolean, Boolean>, List<Dungeon>> bottomBuilder = new HashMap<>();
+		File dungeonsFolder = IOUtils.getFileAsChildOfWorkingDir("resources/dungeons");
+		ImmutableList.Builder<RoomLayout> builder = ImmutableList.builder();
+		float tempMax = 0;
 
 		try {
-			JsonArray dungeonsInfo = JsonUtils.parseFile(dungeonsFile).getAsJsonArray();
-			for (JsonElement ele : dungeonsInfo) {
-				Dungeon dungeon = new Dungeon(ele.getAsJsonObject());
-				builder.add(dungeon);
-				topBuilder.computeIfAbsent(dungeon.top, (pair) -> new ArrayList<>());
-				topBuilder.get(dungeon.top).add(dungeon);
-				leftBuilder.computeIfAbsent(dungeon.left, (pair) -> new ArrayList<>());
-				leftBuilder.get(dungeon.left).add(dungeon);
-				rightBuilder.computeIfAbsent(dungeon.right, (pair) -> new ArrayList<>());
-				rightBuilder.get(dungeon.right).add(dungeon);
-				bottomBuilder.computeIfAbsent(dungeon.bottom, (pair) -> new ArrayList<>());
-				bottomBuilder.get(dungeon.bottom).add(dungeon);
+			for (File file : Objects.requireNonNull(dungeonsFolder.listFiles((dir, name) -> name.endsWith(".json")))) {
+				JsonObject info = JsonUtils.parseFile(file).getAsJsonObject();
+				String name = file.getName().replaceAll(".json", "");
+				RoomLayout roomLayout = new RoomLayout(name, info);
+				tempMax += roomLayout.prevalence;
+				builder.add(roomLayout);
+
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
-		dungeons = builder.build();
-		dungeonsByTopEntrance = ImmutableMap.copyOf(Maps.transformValues(topBuilder, ImmutableList::copyOf));
-		dungeonsByLeftEntrance = ImmutableMap.copyOf(Maps.transformValues(leftBuilder, ImmutableList::copyOf));
-		dungeonsByRightEntrance = ImmutableMap.copyOf(Maps.transformValues(rightBuilder, ImmutableList::copyOf));
-		dungeonsByBottomEntrance = ImmutableMap.copyOf(Maps.transformValues(bottomBuilder, ImmutableList::copyOf));
+		MAX = tempMax;
+		ROOM_LAYOUTS = builder.build();
 	}
 }

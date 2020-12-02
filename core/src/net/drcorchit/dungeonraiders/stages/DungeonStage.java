@@ -3,11 +3,12 @@ package net.drcorchit.dungeonraiders.stages;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.google.common.collect.ImmutableList;
+import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 import net.drcorchit.dungeonraiders.actors.Actor;
 import net.drcorchit.dungeonraiders.actors.DungeonActor;
 import net.drcorchit.dungeonraiders.actors.Room;
-import net.drcorchit.dungeonraiders.assets.Dungeon;
 import net.drcorchit.dungeonraiders.assets.Dungeons;
+import net.drcorchit.dungeonraiders.assets.RoomLayout;
 import net.drcorchit.dungeonraiders.assets.Sprites;
 import net.drcorchit.dungeonraiders.assets.Textures;
 import net.drcorchit.dungeonraiders.drawing.AnimatedSprite;
@@ -16,10 +17,12 @@ import net.drcorchit.dungeonraiders.drawing.RunnableRenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.Surface;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.utils.Coordinate;
+import net.drcorchit.dungeonraiders.utils.Utils;
 import net.drcorchit.dungeonraiders.utils.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class DungeonStage extends Stage {
@@ -27,11 +30,9 @@ public class DungeonStage extends Stage {
 	public static final float BLOCK_SIZE = 45;
 	public static final float ACTOR_MIN_Z = -BLOCK_SIZE;
 	public static final float ACTOR_MAX_Z = BLOCK_SIZE;
-	//increase
-	public static final float CAMERA_Z = BLOCK_SIZE * 8;
-	public static final float FOREGROUND_Z = BLOCK_SIZE;
-	public static final float MIDGROUND_Z = BLOCK_SIZE * -1;
-	public static final float BACKGROUND_Z = BLOCK_SIZE * -4;
+	//increase this to decrease the "depthiness" of the game
+	//if an object's z position increases to this size, it's zscale becomes infinte
+	public static final float CAMERA_Z = BLOCK_SIZE * 10;
 
 	//converts z value to foreshortening scale factor
 	public static float getZScale(float z) {
@@ -122,6 +123,7 @@ public class DungeonStage extends Stage {
 	public void act(float factor) {
 		super.act(factor);
 		loadVisibleRooms();
+		DungeonRaidersGame.getInstance().debugInfoMap.put("rooms", rooms.size());
 	}
 
 	@Override
@@ -191,11 +193,10 @@ public class DungeonStage extends Stage {
 	private void loadVisibleRooms() {
 		for (Coordinate c : getRoomCoordinates(viewBounds)) {
 			if (!rooms.containsKey(c)) {
-				Dungeon[] dungeons = new Dungeon[getLayerCount()];
-				for (int i = 0; i < getLayerCount(); i++) {
-					dungeons[i] = Dungeons.getRandomDungeon(Dungeons.dungeons, random::nextInt);
-				}
-				net.drcorchit.dungeonraiders.actors.Room r = new net.drcorchit.dungeonraiders.actors.Room(this, c, dungeons);
+				//DungeonTile dungeonTile = Dungeons.getRandomDungeon(Dungeons.DUNGEON_TILES, random::nextInt);
+				RoomLayout roomLayout = getRandomDungeon(c);
+
+				Room r = new Room(this, c, roomLayout);
 				addRoom(r);
 			}
 		}
@@ -215,5 +216,22 @@ public class DungeonStage extends Stage {
 		}
 
 		return output;
+	}
+
+	public RoomLayout getRandomDungeon(Coordinate c) {
+		Room top = rooms.get(new Coordinate(c.x, c.y+1));
+		Room left = rooms.get(new Coordinate(c.x-1, c.y));
+		Room right = rooms.get(new Coordinate(c.x+1, c.y));
+		Room bottom = rooms.get(new Coordinate(c.x, c.y-1));
+
+		Predicate<RoomLayout> rule = (layout) -> {
+			if (top != null && Utils.getIntersectionSize(top.bottomTags, layout.topTags) == 0) return false;
+			if (left != null && Utils.getIntersectionSize(left.rightTags, layout.leftTags) == 0) return false;
+			if (right != null && Utils.getIntersectionSize(right.leftTags, layout.rightTags) == 0) return false;
+			if (bottom != null && Utils.getIntersectionSize(bottom.topTags, layout.bottomTags) == 0) return false;
+			return true;
+		};
+
+		return Dungeons.getRandomDungeon(rule, random);
 	}
 }

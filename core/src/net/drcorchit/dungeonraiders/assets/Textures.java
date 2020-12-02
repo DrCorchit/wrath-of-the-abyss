@@ -17,7 +17,7 @@ public class Textures {
 		BLG = initTexture("badlogic.jpg");
 		WHITE_POINT = initTexture("white.png");
 		WHITE_TILE = initTexture("white_tile.png");
-		TILES = initTexture("tiles_1_small.png");
+		TILES = initTexture("tiles_7_small.png");
 		DUNGEON = initTexture("walls/dungeon.png");
 		BRICK = initTexture("walls/brick.png");
 		VOLCANIC = initTexture("walls/volcanic.png");
