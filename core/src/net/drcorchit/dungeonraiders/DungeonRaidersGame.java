@@ -66,12 +66,12 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 		player.setCameraOffset(new Vector(0, 300));
 		player.setViewBounds(0, 95, 400, 400);
 
-		FlickeringLightSource light = new FlickeringLightSource(player::getSkeletonPosition);
+		FlickeringLightSource light = new FlickeringLightSource(player::getSkeletonPosition, player::getZ);
 		light.setLightRadius(1000);
 		light.setFlicker(.01f, .95f, 1.05f);
 		light.setHueFlicker(1, 10, 40);
-		light.setSaturation(0.4f);
-		//light.setGeometric(true);
+		light.setSaturation(0.2f);
+		light.setGeometric(true);
 		player.setLightSource(light);
 
 		stage.addActor(player);
@@ -108,6 +108,22 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 	public void draw() {
 		stage.draw();
 		batch.begin();
+
+		//Gdx.gl.glClearColor(0, 0, 0, 1);
+		//Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		//AnimatedSprite lightSprite = Sprites.getSprite(Textures.LIGHT);
+		//lightSprite.setOffsetCentered();
+		//float lightScale = 2 * testLight.getLightRadius() / lightSprite.getMinWidth();
+		/*
+		lightSprite.drawScaled(draw.batch,
+				testLight.getLightPosition().x,
+				testLight.getLightPosition().y,
+				lightScale, lightScale, 0);
+		*/
+		//Rectangle r = new Rectangle(() -> new Vector(500, 500), 45, 45);
+		//drawTest(testLight.getBoundingRectangle(), r);
+
 		StringBuilder builder = new StringBuilder();
 		debugInfoMap.forEach((key, val) -> builder.append(key).append(": ").append(val).append("\n"));
 		draw.drawText(40, 1040, Fonts.getDefaultFont(), builder.toString(), -1, Direction.SOUTHEAST, Color.GREEN);
@@ -119,8 +135,6 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 	public void render() {
 		act();
 		draw();
-
-
 	}
 
 	@Override

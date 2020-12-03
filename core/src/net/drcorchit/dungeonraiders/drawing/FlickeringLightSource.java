@@ -9,15 +9,17 @@ import java.util.function.Supplier;
 
 public class FlickeringLightSource implements LightSource {
 
-	private final Supplier<Vector> position;
+	private final Supplier<Vector> pos;
+	private final Supplier<Float> zPos;
 	private final Color color;
 	private final Random random;
 	private boolean geometric;
 	private float hue, saturation, value, hueFlicker, maxHue, minHue;
 	private float radius, flicker, scale, maxScale, minScale;
 
-	public FlickeringLightSource(Supplier<Vector> position) {
-		this.position = position;
+	public FlickeringLightSource(Supplier<Vector> pos, Supplier<Float> zPos) {
+		this.pos = pos;
+		this.zPos = zPos;
 		color = Color.WHITE.cpy();
 		random = new Random();
 		this.geometric = false;
@@ -90,7 +92,12 @@ public class FlickeringLightSource implements LightSource {
 
 	@Override
 	public Vector getLightPosition() {
-		return position.get();
+		return pos.get();
+	}
+
+	@Override
+	public float getLightZ() {
+		return zPos.get();
 	}
 
 	@Override

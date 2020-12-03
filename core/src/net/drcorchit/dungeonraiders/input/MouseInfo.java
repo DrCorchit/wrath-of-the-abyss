@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
+import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.function.BiPredicate;
 
@@ -31,6 +32,10 @@ public class MouseInfo {
 			if (state != state.cleared()) {
 				state = state.cleared();
 			}
+		}
+
+		public Vector getPosition() {
+			return new Vector(x, y);
 		}
 
 		public boolean heldWithin(int x, int y, int r) {
@@ -67,6 +72,10 @@ public class MouseInfo {
 	public MouseInfo() {
 		left = new ButtonInfo("left");
 		right = new ButtonInfo("right");
+	}
+
+	public Vector getPosition() {
+		return new Vector(x, y);
 	}
 
 	public void setH(int h) {

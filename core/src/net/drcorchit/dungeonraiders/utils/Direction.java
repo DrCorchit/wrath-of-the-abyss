@@ -30,7 +30,7 @@ public enum Direction {
 	}
 
 	public int getHoriz() {
-		return  horiz;
+		return horiz;
 	}
 
 	public int getVert() {
@@ -49,18 +49,19 @@ public enum Direction {
 	//to any direction, however
 	public static Direction getRectangleDirection(Rectangle rect, Vector point) {
 		Vector pos = rect.getPosition();
-		final boolean above = point.y > pos.y + rect.height;
+		final boolean above = point.y > pos.y + rect.height / 2;
+		final boolean below = point.y < pos.y - rect.height / 2;
 
-		if (point.x < pos.x) {
-			if (point.y < pos.y) {
+		if (point.x < pos.x - rect.width / 2) {
+			if (below) {
 				return SOUTHWEST;
 			} else if (above) {
 				return NORTHWEST;
 			} else {
 				return WEST;
 			}
-		} else if (point.x > pos.x + rect.width) {
-			if (point.y < pos.y) {
+		} else if (point.x > pos.x + rect.width / 2) {
+			if (below) {
 				return SOUTHEAST;
 			} else if (above) {
 				return NORTHEAST;
@@ -68,7 +69,7 @@ public enum Direction {
 				return EAST;
 			}
 		} else {
-			if (point.y < pos.y) {
+			if (below) {
 				return SOUTH;
 			} else if (above) {
 				return NORTH;

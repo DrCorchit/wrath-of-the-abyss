@@ -13,6 +13,8 @@ public interface LightSource {
 
 	Vector getLightPosition();
 
+	float getLightZ();
+
 	//positive
 	float getLightRadius();
 
@@ -22,7 +24,7 @@ public interface LightSource {
 	Color getLightColor();
 
 	default Rectangle getBoundingRectangle() {
-		return new Rectangle(() -> getLightPosition().subtract(getLightRadius(), getLightRadius()),
-				getLightRadius() * 2, getLightRadius() * 2);
+		float r = getLightRadius();
+		return new Rectangle(this::getLightPosition, 2 * r, 2 * r);
 	}
 }

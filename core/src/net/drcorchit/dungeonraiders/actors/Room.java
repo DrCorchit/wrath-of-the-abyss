@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.google.common.collect.ImmutableSet;
 import net.drcorchit.dungeonraiders.assets.RoomLayout;
 import net.drcorchit.dungeonraiders.assets.Sprites;
-import net.drcorchit.dungeonraiders.assets.Textures;
-import net.drcorchit.dungeonraiders.drawing.LightSource;
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.RunnableRenderInstruction;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
@@ -15,7 +13,6 @@ import net.drcorchit.dungeonraiders.drawing.shapes.Square;
 import net.drcorchit.dungeonraiders.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.utils.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -107,7 +104,7 @@ public class Room extends AbstractActor<DungeonStage> {
 	}
 
 	public class Layer {
-		private Vector lastRoomPos;
+		private Vector lastPos;
 		public final float z, farScale, nearScale, farSize, nearSize;
 		public final Grid<Cell> grid = new Grid<>(Cell.class, SIZE, SIZE);
 
@@ -119,14 +116,18 @@ public class Room extends AbstractActor<DungeonStage> {
 			nearSize = DungeonStage.BLOCK_SIZE * nearScale / 2;
 		}
 
-		public Vector getCellLocation(int i, int j) {
-			float x = getPosition().x + (i + .5f) * DungeonStage.BLOCK_SIZE;
-			float y = getPosition().y + (j + .5f) * DungeonStage.BLOCK_SIZE;
+		public Vector getCellLocationRelative(int i, int j) {
+			float x = (i + .5f) * DungeonStage.BLOCK_SIZE;
+			float y = (j + .5f) * DungeonStage.BLOCK_SIZE;
 			return new Vector(x, y);
 		}
 
+		public Vector getCellLocationAbsolute(int i, int j) {
+			return getPosition().add(getCellLocationRelative(i, j));
+		}
+
 		public void placeSquare(int i, int j) {
-			Rectangle r = new Square(() -> getCellLocation(i, j), DungeonStage.BLOCK_SIZE);
+			Rectangle r = new Square(() -> getCellLocationAbsolute(i, j), DungeonStage.BLOCK_SIZE);
 			grid.set(i, j, new Cell(i, j, r));
 		}
 
@@ -135,16 +136,16 @@ public class Room extends AbstractActor<DungeonStage> {
 
 			grid.forEachCell(cell -> {
 				if (cell != null) {
-					Sprites.WHITE_TILE.drawScaled(getStage().draw.batch, cell.nearC3.x, cell.nearC3.y, nearScale, nearScale, 0);
+					Sprites.WHITE_TILE.drawScaled(getStage().draw.batch, cell.projectedPosNear.x, cell.projectedPosNear.y, nearScale, nearScale, 0);
 				}
 			});
 		}
 
-		public void drawLightGeometry(Vector roomPos, LightSource lightSource) {
+		public void drawShadows(Vector roomPos, Rectangle light) {
 			updateCellVectors(roomPos);
 			grid.forEachCell(cell -> {
 				if (cell != null) {
-					cell.drawShadow(lightSource);
+					cell.drawShadow(light);
 				}
 			});
 		}
@@ -166,8 +167,8 @@ public class Room extends AbstractActor<DungeonStage> {
 
 		private void updateCellVectors(Vector roomPos) {
 			//If true, no need to recalculate vectors
-			if (roomPos.equals(lastRoomPos)) return;
-			lastRoomPos = roomPos;
+			if (roomPos.equals(lastPos)) return;
+			lastPos = roomPos;
 
 			grid.forEach(cell -> {
 				if (cell != null) cell.updateVectors(roomPos);
@@ -177,7 +178,7 @@ public class Room extends AbstractActor<DungeonStage> {
 		private class Cell {
 			private final int i, j;
 			private final Rectangle shape;
-			private Vector relativePos, projectedPosFar, projectedPosNear;
+			private Vector pos, projectedPosFar, projectedPosNear;
 			//These form the vertices of a cube
 			private Vector farC1, farC2, farC3, farC4, nearC1, nearC2, nearC3, nearC4;
 
@@ -188,9 +189,9 @@ public class Room extends AbstractActor<DungeonStage> {
 			}
 
 			private void updateVectors(Vector roomPos) {
-				relativePos = getCellLocation(i, j).subtract(getPosition()).add(roomPos);
-				projectedPosFar = getStage().projectZPosition(relativePos, z);
-				projectedPosNear = getStage().projectZPosition(relativePos, z + DungeonStage.BLOCK_SIZE);
+				pos = getCellLocationRelative(i, j).add(roomPos);
+				projectedPosFar = getStage().projectZPosition(pos, z);
+				projectedPosNear = getStage().projectZPosition(pos, z + DungeonStage.BLOCK_SIZE);
 				farC1 = projectedPosFar.add(-farSize, farSize);
 				farC2 = projectedPosFar.add(farSize, farSize);
 				farC3 = projectedPosFar.add(-farSize, -farSize);
@@ -231,135 +232,125 @@ public class Room extends AbstractActor<DungeonStage> {
 				//if (drawBottom) stage.draw.drawLine(nearC4.x, nearC4.y, farC4.x, farC4.y, 1, Color.BLACK);
 			}
 
-			public void drawShadow(LightSource lightSource) {
-				/*
-				This handles drawing shadows for a single block
-				This code is complicated, but all it does is draw the shadow for
-				a rectangle as cast by a single light source.
+			public void drawShadow(Rectangle light) {
+				//Rectangle light = lightSource.getBoundingRectangle();
+				Rectangle block = new Rectangle(() -> projectedPosNear, nearSize * 2, nearSize * 2);
 
-				argument0 -> block id
-				argument1 -> light source id
+				float r = light.width / 2;
 
-				source_x, source_y -> coordinates of light source
-				box_x, box_y, box_size, box_half -> size of a box around the light source.
-			    points outside this box are too far to be handled by the lighting engine
-				block_x, block_y, block_w, block_h -> size of the rectangle that obstructs the light
-
-				p1, p2 -> points on the block
-				p3, p4 -> points on the outer rectangle
-				a1, a2 -> angles from p1 to p3 and p2 to p4
-				xq, yq -> queues of x and y coorinates
-				*/
-				float boxSize = lightSource.getLightRadius();
-				Rectangle box = lightSource.getBoundingRectangle();
-				float blockX = projectedPosNear.x;
-				float blockY = projectedPosNear.y;
-				float blockWidth = shape.width;
-				float blockHeight = shape.height;
-
-				//The block is outside the light square
-				if (!box.containsPoint(projectedPosNear)) return;
+				//The block is outside the light square. Nothing to draw
+				if (!light.collidesWith(block)) return;
 
 				//fit the block until it is inside the box
 				//if the block is large than the box, weird stuff happens
-				if (box.getX() > blockX) {
-					blockWidth += blockX - box.getX();
-					blockX = box.getX();
+				float cornerX, cornerY, width, height;
+				cornerX = block.getPosition().x - block.width / 2;
+				cornerY = block.getPosition().y - block.height / 2;
+				width = block.width;
+				height = block.height;
+
+				if (light.getX() - r > cornerX) {
+					width -= light.getX() - r - cornerX;
+					cornerX = light.getX() - r;
 				}
 
-				if (box.getX() + boxSize < blockX + blockWidth) {
-					blockWidth = (box.getX() + boxSize) - blockX;
+				if (light.getX() + r < cornerX + width) {
+					width = (light.getX() + r) - cornerX;
 				}
 
-				if (box.getY() > blockY) {
-					blockHeight += blockY - box.getY();
-					blockY = box.getY();
+				if (light.getY() - r > cornerY) {
+					height -= light.getY() - r - cornerY;
+					cornerY = light.getY() - r;
 				}
 
-				if (box.getY() + boxSize < blockY + blockHeight) {
-					blockHeight = (box.getY() + boxSize) - blockY;
+				if (light.getY() + r < cornerY + height) {
+					height = (light.getY() + r) - cornerY;
 				}
 
-				Vector blockPos = new Vector(blockX, blockY);
-				Rectangle block = new Rectangle(() -> blockPos, blockWidth, blockHeight);
+				Vector blockPos = new Vector(cornerX + width / 2, cornerY + height / 2);
+				block = new Rectangle(() -> blockPos, width, height);
+				float w2 = block.width / 2, h2 = block.height / 2;
 
-				Vector p1, p2, p3, p4, p5 = null;
+				//light.draw(com.badlogic.gdx.graphics.Color.BLUE);
+				//block.draw(Color.RED);
 
-				Direction blockToLightDir = Direction.getRectangleDirection(block, box.getPosition());
+				Vector lightPos = light.getPosition(), p1, p2, p3, p4, p5 = null;
+
+				Direction blockToLightDir = Direction.getRectangleDirection(block, lightPos);
 				switch (blockToLightDir) {
 					case NORTH:
-						p1 = block.getPosition().add(block.width, block.height);
-						p2 = block.getPosition().add(0, block.height);
+						p1 = block.getPosition().add(w2, h2);
+						p2 = block.getPosition().add(-w2, h2);
 						break;
 					case NORTHEAST:
-						p1 = block.getPosition().add(block.width, 0);
-						p2 = block.getPosition().add(0, block.height);
+						p1 = block.getPosition().add(w2, -h2);
+						p2 = block.getPosition().add(-w2, h2);
 						break;
 					case EAST:
-						p1 = block.getPosition().add(block.width, 0);
-						p2 = block.getPosition().add(block.width, block.height);
+						p1 = block.getPosition().add(w2, -h2);
+						p2 = block.getPosition().add(w2, h2);
 						break;
 					case SOUTHEAST:
-						p1 = block.getPosition();
-						p2 = block.getPosition().add(block.width, block.height);
+						p1 = block.getPosition().add(-w2, -h2);
+						p2 = block.getPosition().add(w2, h2);
 						break;
 					case SOUTH:
-						p1 = block.getPosition();
-						p2 = block.getPosition().add(block.width, 0);
+						p1 = block.getPosition().add(-w2, -h2);
+						p2 = block.getPosition().add(w2, -h2);
 						break;
 					case SOUTHWEST:
-						p1 = block.getPosition().add(0, block.height);
-						p2 = block.getPosition().add(block.width, 0);
+						p1 = block.getPosition().add(-w2, h2);
+						p2 = block.getPosition().add(w2, -h2);
 						break;
 					case WEST:
-						p1 = block.getPosition();
-						p2 = block.getPosition().add(0, block.height);
+						p1 = block.getPosition().add(-w2, -h2);
+						p2 = block.getPosition().add(-w2, h2);
 						break;
 					case NORTHWEST:
-						p1 = block.getPosition().add(block.width, block.height);
-						p2 = block.getPosition();
+						p1 = block.getPosition().add(w2, h2);
+						p2 = block.getPosition().add(-w2, -h2);
 						break;
 					default:
 						//the light is in the box. Nothing to draw.
 						return;
 				}
 
-				float a1 = box.getPosition().subtract(p1).angle(Vector.ZERO);
-				float a2 = box.getPosition().subtract(p2).angle(Vector.ZERO);
+				float a1 = (float) MathUtils.mod(lightPos.angle(p1), 360f);
+				float a2 = (float) MathUtils.mod(lightPos.angle(p2), 360f);
 				//a1 = point_direction(source_x, source_y, p1x, p1y);
 				//a2 = point_direction(source_x, source_y, p2x, p2y);
-				p3 = box.getPosition();
-				p4 = box.getPosition();
+				p3 = lightPos;
+				p4 = lightPos;
 
 				if (a1 > 45 && a1 <= 135) {
-					p3 = p3.add((float) (Math.tan(Math.toRadians(a1 - 90)) * boxSize), -boxSize);
+					p3 = p3.add((float) (-Math.tan(Math.toRadians(a1 - 90)) * r), r);
 				} else if (a1 > 135 && a1 <= 225) {
-					p3 = p3.add(-boxSize, (float) (Math.tan(Math.toDegrees(a1)) * boxSize));
+					p3 = p3.add(-r, (float) (-Math.tan(Math.toRadians(a1)) * r));
 				} else if (a1 > 225 && a1 <= 315) {
-					p3 = p3.add((float) (Math.tan(Math.toDegrees(a1 - 270)) * boxSize), boxSize);
+					p3 = p3.add((float) (Math.tan(Math.toRadians(a1 - 270)) * r), -r);
 				} else {
-					p3 = p3.add(boxSize, (float) (Math.tan(Math.toDegrees(a1)) * boxSize));
+					p3 = p3.add(r, (float) (Math.tan(Math.toRadians(a1)) * r));
 				}
 
 				if (a2 > 45 && a2 <= 135) {
-					p4 = p4.add((float) (Math.tan(Math.toRadians(a2 - 90)) * boxSize), -boxSize);
+					p4 = p4.add((float) (-Math.tan(Math.toRadians(a2 - 90)) * r), r);
 				} else if (a2 > 135 && a2 <= 225) {
-					p4 = p4.add(-boxSize, (float) (Math.tan(Math.toDegrees(a2)) * boxSize));
+					p4 = p4.add(-r, (float) (-Math.tan(Math.toRadians(a2)) * r));
 				} else if (a2 > 225 && a2 <= 315) {
-					p4 = p4.add((float) (Math.tan(Math.toDegrees(a2 - 270)) * boxSize), boxSize);
+					p4 = p4.add((float) (Math.tan(Math.toRadians(a2 - 270)) * r), -r);
 				} else {
-					p4 = p4.add(boxSize, (float) (Math.tan(Math.toDegrees(a2)) * boxSize));
+					p4 = p4.add(r, (float) (Math.tan(Math.toRadians(a2)) * r));
 				}
 
 				//add an extra point if the two angles enclose one of the corners
 				if (MathUtils.angleBetween(a1, 45, a2)) {
-					p5 = box.getPosition().add(boxSize, boxSize);
+					p5 = lightPos.add(r, r);
 				} else if (MathUtils.angleBetween(a1, 135, a2)) {
-					p5 = box.getPosition().add(-boxSize, boxSize);
+					p5 = lightPos.add(-r, r);
 				} else if (MathUtils.angleBetween(a1, 225, a2)) {
-					p5 = box.getPosition().add(-boxSize, -boxSize);
+					p5 = lightPos.add(-r, -r);
 				} else if (MathUtils.angleBetween(a1, 315, a2)) {
-					p5 = box.getPosition().add(boxSize, -boxSize);
+					p5 = lightPos.add(r, -r);
 				}
 
 				float[] vertices;
@@ -396,8 +387,22 @@ public class Room extends AbstractActor<DungeonStage> {
 					triangles[8] = 4;
 				}
 
+				/*
+				Batch batch = getStage().draw.batch;
+				Sprites.WHITE_POINT.setBlend(Color.WHITE);
+				Sprites.WHITE_POINT.draw(batch, p1.x, p1.y);
+				Sprites.WHITE_POINT.setBlend(Color.GREEN);
+				Sprites.WHITE_POINT.draw(batch, p2.x, p2.y);
+
+				Sprites.WHITE_TILE.draw(batch, p3.x, p3.y);
+				Sprites.WHITE_TILE.draw(batch, p4.x, p4.y);
+				if (p5 != null) {
+					Sprites.WHITE_TILE.draw(batch, p5.x, p5.y);
+				}
+				//*/
+
 				PolygonRegion pr = new PolygonRegion(Sprites.WHITE_POINT.getCurrentFrame(), vertices, triangles);
-				//getStage().draw.batch.draw(pr, 0, 0);
+				getStage().draw.batch.draw(pr, 0, 0);
 			}
 		}
 	}

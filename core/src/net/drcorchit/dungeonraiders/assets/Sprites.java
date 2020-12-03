@@ -8,6 +8,10 @@ public class Sprites {
 	public static final AnimatedSprite WHITE_POINT = initSprite(Textures.WHITE_POINT).asSprite();
 	public static final AnimatedSprite WHITE_TILE = initSprite(Textures.WHITE_TILE).asSprite();
 
+	static {
+		WHITE_TILE.setOffsetCentered();
+	}
+
 	private static SpriteList initSprite(Texture texture) {
 		return initSprite(texture, 1, 1, 0, 0);
 	}

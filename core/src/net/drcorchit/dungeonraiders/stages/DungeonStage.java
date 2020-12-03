@@ -182,11 +182,11 @@ public class DungeonStage extends Stage {
 			wallSurface.begin();
 			wallSurface.clear();
 			float z = (layerIndex - 1) * -BLOCK_SIZE;
-			float scale = getZScale(z);
+			float zScale = getZScale(z);
 
 			Vector projectedPos = projectZPosition(getViewPosition().multiply(-1), z);
 			//tile the wall surface with the wall sprite
-			wallSprites[layerIndex].drawTiled(draw.batch, projectedPos.x, projectedPos.y, scale, scale);
+			wallSprites[layerIndex].drawTiled(draw.batch, projectedPos.x, projectedPos.y, zScale, zScale);
 			//draw the mask multiplicatively
 			draw.batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
 			maskSurface.createSprite().draw(draw.batch);
@@ -195,7 +195,7 @@ public class DungeonStage extends Stage {
 			//end wall surfaces
 			//add render instruction to draw wall
 			RenderInstruction wall = new RunnableRenderInstruction(() ->
-					wallSurface.createSprite().draw(draw.batch), z, -3f);
+					wallSurface.createSprite().draw(draw.batch), z, -2f);
 			instructions.add(wall);
 
 			//Setup light surfaces
@@ -217,16 +217,23 @@ public class DungeonStage extends Stage {
 						lightSprite.setBlend(lightSource.getLightColor());
 						lightSprite.setAlpha(MathUtils.clamp(0f, lightSource.getLightIntensity(), 1f));
 						Vector lightPos = projectZPosition(lightSource.getLightPosition().subtract(getViewPosition()), z);
-						float lightScale = 2 * lightSource.getLightRadius() / lightSprite.getMinWidth();
+						float lightZ = lightSource.getLightZ();
+						int lightZLayer = Room.getLayerIndex(lightZ);
+						float r = lightSource.getLightRadius() * getZScale(lightZ);
+						float lightScale = 2 * r / lightSprite.getMinWidth();
 						lightSprite.drawScaled(draw.batch, lightPos.x, lightPos.y, lightScale, lightScale, 0);
 
 						if (lightSource.isGeometric()) {
-							for (Room room : roomSet) {
-								Vector roomViewPos = room.getPosition().subtract(getViewPosition());
-								room.getLayer(layerIndex).drawLightGeometry(roomViewPos, lightSource);
+							if (true) {
+								draw.batch.setBlendFunction(GL20.GL_ZERO, GL20.GL_ONE_MINUS_SRC_COLOR);
+								for (Room room : roomSet) {
+									Room.Layer layer = room.getLayer(layerIndex);
+									Vector roomViewPos = room.getPosition().subtract(getViewPosition());
+									Rectangle light = new Rectangle(() -> lightPos, 2 * r, 2 * r);
+									layer.drawShadows(roomViewPos, light);
+								}
 							}
 						}
-
 						lightTempSurface.end();
 
 						//draw lightTempSurface to lightSurface additively
@@ -244,7 +251,7 @@ public class DungeonStage extends Stage {
 				draw.batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
 				lightSurface.createSprite().draw(draw.batch);
 				draw.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-			}, z, -2f);
+			}, z, -3f);
 			instructions.add(light);
 		}
 
