@@ -1,5 +1,7 @@
 package net.drcorchit.dungeonraiders.actors;
 
+import com.google.common.collect.ImmutableList;
+import net.drcorchit.dungeonraiders.drawing.LightSource;
 import net.drcorchit.dungeonraiders.drawing.shapes.Circle;
 import net.drcorchit.dungeonraiders.drawing.shapes.NoShape;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
@@ -8,17 +10,35 @@ import net.drcorchit.dungeonraiders.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
-public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class DungeonActor<T extends DungeonStage> extends AbstractActor<T> implements HasLightSources {
 
 	private float z;
 	private Vector colliderOffset;
 	private Shape collider;
+	private ImmutableList<LightSource> lightSources;
 
 	public DungeonActor(T stage, Vector position) {
 		super(stage, position);
 		z = 0;
 		colliderOffset = Vector.ZERO;
 		collider = NoShape.INSTANCE;
+		lightSources = ImmutableList.of();
+	}
+
+	public void setLightSource(LightSource lightSource) {
+		this.lightSources = ImmutableList.of(lightSource);
+	}
+
+	public void clearLightSource() {
+		lightSources = ImmutableList.of();
+	}
+
+	@Override
+	public List<LightSource> getLightSources() {
+		return lightSources;
 	}
 
 	public Shape getCollider() {
@@ -65,7 +85,7 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 	}
 
 	@Override
-	boolean setPosition(Vector position) {
+	public boolean setPosition(Vector position) {
 		if (canOccupyPosition(position)) {
 			super.setPosition(position);
 			return true;
@@ -80,11 +100,11 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 	public boolean canOccupyPosition(Vector position, float z) {
 		if (collider == NoShape.INSTANCE) return true;
 
-		if (z < stage.getMinZ() || z > stage.getMaxZ()) {
+		if (z < getStage().getMinZ() || z > getStage().getMaxZ()) {
 			return false;
 		}
 
-		for (Room room : stage.getOverlappedRooms(this)) {
+		for (Room room : getStage().getOverlappedRooms(this)) {
 			if (room.collidesWith(this, position, z)) return false;
 		}
 		return true;
@@ -125,8 +145,8 @@ public abstract class DungeonActor<T extends DungeonStage> extends Actor<T> {
 		if (amount == 0) return true;
 
 		float targetZ = z + amount;
-		if (targetZ < stage.getMinZ() || targetZ > stage.getMaxZ()) {
-			targetZ = amount > 0 ? stage.getMaxZ() : stage.getMinZ();
+		if (targetZ < getStage().getMinZ() || targetZ > getStage().getMaxZ()) {
+			targetZ = amount > 0 ? getStage().getMaxZ() : getStage().getMinZ();
 			moveToContactZ(targetZ - z);
 			return false;
 		}

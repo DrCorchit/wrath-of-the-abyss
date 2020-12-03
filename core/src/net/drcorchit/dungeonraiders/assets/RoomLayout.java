@@ -83,10 +83,10 @@ public class RoomLayout {
 		if (layers.size() == 1) {
 			Grid<Boolean> gridLayer = layers.get(0);
 
-			for (int layerIndex = 0; layerIndex < room.stage.getLayerCount(); layerIndex++) {
+			for (int layerIndex = 0; layerIndex < room.getLayerCount(); layerIndex++) {
 				copyToLayer(gridLayer, room.getLayer(layerIndex));
 			}
-		} else if (layers.size() != room.stage.getLayerCount()) {
+		} else if (layers.size() != room.getLayerCount()) {
 			throw new IllegalArgumentException("Room layer count does not match dungeon layer count!");
 		} else {
 			for (int layerIndex = 0; layerIndex < layers.size(); layerIndex++) {

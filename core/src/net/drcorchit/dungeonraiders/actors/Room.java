@@ -18,7 +18,7 @@ import net.drcorchit.dungeonraiders.utils.Vector;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Room extends Actor<DungeonStage> {
+public class Room extends AbstractActor<DungeonStage> {
 
 	public static final int SIZE = 20;
 	public static final float PIXEL_SIZE = SIZE * DungeonStage.BLOCK_SIZE;
@@ -74,6 +74,10 @@ public class Room extends Actor<DungeonStage> {
 		return coordinate;
 	}
 
+	public int getLayerCount() {
+		return layers.length;
+	}
+
 	public Layer getLayer(int index) {
 		return layers[MathUtils.clamp(0, index, lastlayerIndex)];
 	}
@@ -127,8 +131,8 @@ public class Room extends Actor<DungeonStage> {
 		public void drawMask(Vector roomPos) {
 			grid.forEachCell(cell -> {
 				if (cell != null) {
-					cell.updateVectors(roomPos.subtract(stage.getViewPosition()));
-					Sprites.WHITE_TILE.drawScaled(stage.draw.batch, cell.nearC3.x, cell.nearC3.y, nearScale, nearScale, 0);
+					cell.updateVectors(roomPos.subtract(getStage().getViewPosition()));
+					Sprites.WHITE_TILE.drawScaled(getStage().draw.batch, cell.nearC3.x, cell.nearC3.y, nearScale, nearScale, 0);
 				}
 			});
 		}
@@ -162,8 +166,8 @@ public class Room extends Actor<DungeonStage> {
 
 			private void updateVectors(Vector roomPos) {
 				Vector relativePos = getCellLocation(i, j).subtract(getPosition()).add(roomPos);
-				Vector projectedPosFar = stage.projectZPosition(relativePos, z);
-				Vector projectedPosNear = stage.projectZPosition(relativePos, z + DungeonStage.BLOCK_SIZE);
+				Vector projectedPosFar = getStage().projectZPosition(relativePos, z);
+				Vector projectedPosNear = getStage().projectZPosition(relativePos, z + DungeonStage.BLOCK_SIZE);
 				farC1 = projectedPosFar.add(-farSize, farSize);
 				farC2 = projectedPosFar.add(farSize, farSize);
 				farC3 = projectedPosFar.add(-farSize, -farSize);
@@ -180,22 +184,22 @@ public class Room extends Actor<DungeonStage> {
 				boolean drawRight = farC4.x > nearC4.x && (i == grid.getWidth() - 1 || grid.get(i + 1, j) == null);
 				boolean drawBottom = farC4.y < nearC4.y && (j == 0 || grid.get(i, j - 1) == null);
 
-				TextureRegion floor = stage.floorSprite.getCurrentFrame();
+				TextureRegion floor = getStage().floorSprite.getCurrentFrame();
 
 				if (drawTop) {
-					stage.draw.drawPrimitive(floor, farC1, farC2, nearC1, nearC2);
+					getStage().draw.drawPrimitive(floor, farC1, farC2, nearC1, nearC2);
 				}
 
 				if (drawLeft) {
-					stage.draw.drawPrimitive(floor, farC3, farC1, nearC3, nearC1);
+					getStage().draw.drawPrimitive(floor, farC3, farC1, nearC3, nearC1);
 				}
 
 				if (drawRight) {
-					stage.draw.drawPrimitive(floor, farC2, farC4, nearC2, nearC4);
+					getStage().draw.drawPrimitive(floor, farC2, farC4, nearC2, nearC4);
 				}
 
 				if (drawBottom) {
-					stage.draw.drawPrimitive(floor, nearC3, nearC4, farC3, farC4);
+					getStage().draw.drawPrimitive(floor, nearC3, nearC4, farC3, farC4);
 				}
 
 				//if (drawTop) stage.draw.drawLine(nearC1.x, nearC1.y, farC1.x, farC1.y, 1, Color.BLACK);

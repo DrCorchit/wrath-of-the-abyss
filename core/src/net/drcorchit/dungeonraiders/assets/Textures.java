@@ -7,7 +7,7 @@ import net.drcorchit.dungeonraiders.drawing.SpriteList;
 public class Textures {
 
 	public static final Texture BLG, WHITE_POINT, WHITE_TILE, TILES, DUNGEON, BRICK, VOLCANIC, ROCK;
-	public static final Texture STONE_BRICKS;
+	public static final Texture STONE_BRICKS, LIGHT;
 
 	private static final Logger log;
 
@@ -23,6 +23,7 @@ public class Textures {
 		VOLCANIC = initTexture("walls/volcanic.png");
 		ROCK = initTexture("walls/rock.png");
 		STONE_BRICKS = initTexture("walls/stone_bricks.png");
+		LIGHT = initTexture("light.png");
 	}
 
 	public static SpriteList asSpriteList(Texture texture) {

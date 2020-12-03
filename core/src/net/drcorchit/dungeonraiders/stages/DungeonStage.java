@@ -1,22 +1,22 @@
 package net.drcorchit.dungeonraiders.stages;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.google.common.collect.ImmutableList;
 import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 import net.drcorchit.dungeonraiders.actors.Actor;
 import net.drcorchit.dungeonraiders.actors.DungeonActor;
+import net.drcorchit.dungeonraiders.actors.HasLightSources;
 import net.drcorchit.dungeonraiders.actors.Room;
 import net.drcorchit.dungeonraiders.assets.Dungeons;
 import net.drcorchit.dungeonraiders.assets.RoomLayout;
 import net.drcorchit.dungeonraiders.assets.Sprites;
 import net.drcorchit.dungeonraiders.assets.Textures;
-import net.drcorchit.dungeonraiders.drawing.AnimatedSprite;
-import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
-import net.drcorchit.dungeonraiders.drawing.RunnableRenderInstruction;
-import net.drcorchit.dungeonraiders.drawing.Surface;
+import net.drcorchit.dungeonraiders.drawing.*;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.utils.Coordinate;
+import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Utils;
 import net.drcorchit.dungeonraiders.utils.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -39,13 +39,14 @@ public class DungeonStage extends Stage {
 		return CAMERA_Z / (CAMERA_Z - z);
 	}
 
+	private final Surface lightTempSurface;
 	@NotNull
-	private ImmutableList<Surface> wallSurfaces, maskSurfaces;
+	private final ImmutableList<Surface> wallSurfaces, maskSurfaces, lightSurfaces;
 	@NotNull
 	private Vector gravity;
 	private float friction;
 	@NotNull
-	private final HashMap<Coordinate, net.drcorchit.dungeonraiders.actors.Room> rooms;
+	private final HashMap<Coordinate, Room> rooms;
 	@NotNull
 	private final Random random = new Random();
 	@NotNull
@@ -59,15 +60,22 @@ public class DungeonStage extends Stage {
 		friction = 1;
 		rooms = new HashMap<>();
 
-		//one surface for every layer
+		//init surfaces, one surface for every layer
+		//n layers -> 3*n surfaces
 		ImmutableList.Builder<Surface> wallBuilder = ImmutableList.builderWithExpectedSize(layers);
 		ImmutableList.Builder<Surface> maskBuilder = ImmutableList.builderWithExpectedSize(layers);
+		ImmutableList.Builder<Surface> lightBuilder = ImmutableList.builderWithExpectedSize(layers);
 		for (int i = 0; i < layers; i++) {
 			wallBuilder.add(new Surface());
 			maskBuilder.add(new Surface());
+			lightBuilder.add(new Surface());
+
 		}
 		wallSurfaces = wallBuilder.build();
 		maskSurfaces = maskBuilder.build();
+		lightSurfaces = lightBuilder.build();
+		lightTempSurface = new Surface();
+
 		floorSprite = Sprites.getSprite(Textures.TILES);
 		backgroundSprite = Sprites.getSprite(Textures.STONE_BRICKS);
 		wallSprites = new AnimatedSprite[getLayerCount()];
@@ -112,7 +120,7 @@ public class DungeonStage extends Stage {
 		return diff.multiply(scale).add(center);
 	}
 
-	public Set<net.drcorchit.dungeonraiders.actors.Room> getOverlappedRooms(DungeonActor<?> actor) {
+	public Set<Room> getOverlappedRooms(DungeonActor<?> actor) {
 		return getRoomCoordinates(actor.getViewBounds()).stream()
 				.filter(rooms::containsKey)
 				.map(rooms::get)
@@ -124,6 +132,10 @@ public class DungeonStage extends Stage {
 		super.act(factor);
 		loadVisibleRooms();
 		DungeonRaidersGame.getInstance().debugInfoMap.put("rooms", rooms.size());
+	}
+
+	private void drawLighting() {
+
 	}
 
 	@Override
@@ -141,15 +153,16 @@ public class DungeonStage extends Stage {
 		Set<Coordinate> cSet = getRoomCoordinates(viewBounds);
 		Set<Room> roomSet = cSet.stream().map(rooms::get).collect(Collectors.toSet());
 
-		float backgroundZ = (getLayerCount()-1) * -BLOCK_SIZE;
+		float backgroundZ = (getLayerCount() - 1) * -BLOCK_SIZE;
 		float backgroundScale = getZScale(backgroundZ);
 		instructions.add(new RunnableRenderInstruction(() -> {
 			Vector projectedPos = projectZPosition(getViewPosition().multiply(-1), backgroundZ);
 			//tile the wall surface with the wall sprite
 			backgroundSprite.drawTiled(draw.batch, projectedPos.x, projectedPos.y, backgroundScale, backgroundScale);
-		}, backgroundZ, -3f));
+		}, backgroundZ, -4f));
 
 		for (int layerIndex = 0; layerIndex < getLayerCount(); layerIndex++) {
+			//Setup wall masks
 			Surface maskSurface = maskSurfaces.get(layerIndex);
 			maskSurface.begin();
 			maskSurface.clear();
@@ -161,7 +174,9 @@ public class DungeonStage extends Stage {
 
 			draw.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			maskSurface.end();
+			//End wall masks
 
+			//Setup wall surfaces
 			Surface wallSurface = wallSurfaces.get(layerIndex);
 			wallSurface.begin();
 			wallSurface.clear();
@@ -176,9 +191,53 @@ public class DungeonStage extends Stage {
 			maskSurface.createSprite().draw(draw.batch);
 			draw.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			wallSurface.end();
+			//end wall surfaces
+			//add render instruction to draw wall
+			RenderInstruction wall = new RunnableRenderInstruction(() ->
+					wallSurface.createSprite().draw(draw.batch), z, -3f);
+			instructions.add(wall);
 
-			RenderInstruction instruction = new RunnableRenderInstruction(() -> wallSurface.createSprite().draw(draw.batch), z, -2f);
-			instructions.add(instruction);
+			//Setup light surfaces
+			AnimatedSprite lightSprite = Sprites.getSprite(Textures.LIGHT);
+			lightSprite.setOffsetCentered();
+			Surface lightSurface = lightSurfaces.get(layerIndex);
+			lightSurface.begin();
+			lightSurface.clear(new Color(.4f, .4f, .4f, 1f));
+			lightSurface.end();
+
+			for (Actor<?> actor : getActors()) {
+				if (actor instanceof HasLightSources) {
+					Collection<LightSource> lightSources = ((HasLightSources) actor).getLightSources();
+					for (LightSource lightSource : lightSources) {
+						lightSource.update();
+						lightTempSurface.begin();
+						lightTempSurface.clear();
+						draw.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
+						lightSprite.setBlend(lightSource.getLightColor());
+						lightSprite.setAlpha(MathUtils.clamp(0f, lightSource.getLightIntensity(), 1f));
+						Vector lightPos = projectZPosition(lightSource.getLightPosition().subtract(getViewPosition()), z);
+						float lightScale = 2 * lightSource.getLightRadius() / lightSprite.getMinWidth();
+						lightSprite.drawScaled(draw.batch, lightPos.x, lightPos.y, lightScale, lightScale, 0);
+						lightTempSurface.end();
+
+						//draw lightTempSurface to lightSurface additively
+						lightSurface.begin();
+						draw.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+						lightTempSurface.createSprite().draw(draw.batch);
+						draw.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+						lightSurface.end();
+					}
+				}
+			}
+
+			//Let there be light!
+			RenderInstruction light = new RunnableRenderInstruction(() -> {
+				draw.batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+				//draw.batch.setBlendFunction(GL20.GL_ZERO, GL20.GL_ONE_MINUS_SRC_COLOR);
+				lightSurface.createSprite().draw(draw.batch);
+				draw.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			}, z, -2f);
+			instructions.add(light);
 		}
 
 		Collections.sort(instructions);
@@ -219,10 +278,10 @@ public class DungeonStage extends Stage {
 	}
 
 	public RoomLayout getRandomDungeon(Coordinate c) {
-		Room top = rooms.get(new Coordinate(c.x, c.y+1));
-		Room left = rooms.get(new Coordinate(c.x-1, c.y));
-		Room right = rooms.get(new Coordinate(c.x+1, c.y));
-		Room bottom = rooms.get(new Coordinate(c.x, c.y-1));
+		Room top = rooms.get(new Coordinate(c.x, c.y + 1));
+		Room left = rooms.get(new Coordinate(c.x - 1, c.y));
+		Room right = rooms.get(new Coordinate(c.x + 1, c.y));
+		Room bottom = rooms.get(new Coordinate(c.x, c.y - 1));
 
 		Predicate<RoomLayout> rule = (layout) -> {
 			if (top != null && Utils.getIntersectionSize(top.bottomTags, layout.topTags) == 0) return false;

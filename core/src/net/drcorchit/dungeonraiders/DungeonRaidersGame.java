@@ -12,6 +12,7 @@ import net.drcorchit.dungeonraiders.assets.*;
 import net.drcorchit.dungeonraiders.assets.animation.AnimationState;
 import net.drcorchit.dungeonraiders.assets.animation.Animations;
 import net.drcorchit.dungeonraiders.drawing.Draw;
+import net.drcorchit.dungeonraiders.drawing.FlickeringLightSource;
 import net.drcorchit.dungeonraiders.input.KeyboardInfo;
 import net.drcorchit.dungeonraiders.input.MouseInfo;
 import net.drcorchit.dungeonraiders.stages.DungeonStage;
@@ -64,12 +65,20 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 
 		Player player = new Player(stage,
 				Skeletons.human_female,
-				Skins.lifeguard,
+				Skins.regal,
 				new Vector(500, 500),
 				new Vector(0, 110));
 		player.setColliderToRectangle(0, 95, 40, 190);
 		player.setCameraOffset(new Vector(0, 300));
 		player.setViewBounds(0, 95, 400, 400);
+
+		FlickeringLightSource light = new FlickeringLightSource(player::getSkeletonPosition);
+		light.setLightRadius(1000);
+		light.setFlicker(.01f, .95f, 1.05f);
+		light.setHueFlicker(1, 10, 40);
+		light.setSaturation(0.4f);
+		player.setLightSource(light);
+
 		stage.addActor(player);
 
 		Room room = new Room(stage, new Coordinate(0, 0));

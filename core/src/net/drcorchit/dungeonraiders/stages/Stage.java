@@ -3,6 +3,7 @@ package net.drcorchit.dungeonraiders.stages;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import net.drcorchit.dungeonraiders.DungeonRaidersGame;
+import net.drcorchit.dungeonraiders.actors.AbstractActor;
 import net.drcorchit.dungeonraiders.actors.Actor;
 import net.drcorchit.dungeonraiders.drawing.Draw;
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;

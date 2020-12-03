@@ -28,15 +28,19 @@ public abstract class PhysicsActor<T extends DungeonStage> extends DungeonActor<
 		return velocity;
 	}
 
+	public Vector getGravity() {
+		return getStage().getGravity();
+	}
+
 	@Override
 	public void act(float factor) {
 		if (!isFixed) {
 			if (!isGrounded()) {
-				Vector gravity = stage.getGravity().multiply(factor);
+				Vector gravity = getGravity().multiply(factor);
 				addVelocity(gravity);
 			}
 
-			Vector gravNorm = stage.getGravity().normalize();
+			Vector gravNorm = getGravity().normalize();
 			Vector antiGravNorm = gravNorm.rotateDegrees(90);
 			Vector grav = velocity.project(gravNorm);
 			Vector antiGrav = velocity.project(antiGravNorm);
@@ -60,6 +64,6 @@ public abstract class PhysicsActor<T extends DungeonStage> extends DungeonActor<
 	}
 
 	public boolean isGrounded() {
-		return isFixed || !canMoveInDirection(stage.getGravity());
+		return isFixed || !canMoveInDirection(getGravity());
 	}
 }

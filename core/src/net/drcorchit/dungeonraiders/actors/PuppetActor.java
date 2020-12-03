@@ -21,7 +21,7 @@ public abstract class PuppetActor<T extends DungeonStage> extends PhysicsActor<T
 	@NotNull
 	protected final AnimationState animator;
 	@NotNull
-	protected final Skin skin;
+	protected Skin skin;
 	@NotNull
 	protected final Skeleton skeleton;
 	protected final Vector skeletonOffset;
@@ -53,7 +53,7 @@ public abstract class PuppetActor<T extends DungeonStage> extends PhysicsActor<T
 		Runnable draw = () -> {
 			float originalScale = skeleton.scale;
 			float projectedScale = getZScale() * originalScale;
-			Vector projectedPosition = stage.projectZPosition(position.add(skeletonOffset), getZ());
+			Vector projectedPosition = getStage().projectZPosition(position.add(skeletonOffset), getZ());
 
 			skeleton.scale = projectedScale;
 			//getCollider().move(position.add(getColliderOffset())).draw(Color.YELLOW);
@@ -62,5 +62,14 @@ public abstract class PuppetActor<T extends DungeonStage> extends PhysicsActor<T
 			skeleton.scale = originalScale;
 		};
 		return ImmutableSet.of(new RunnableRenderInstruction(draw, getZ(), 1f));
+	}
+
+	@NotNull
+	public Skeleton getSkeleton() {
+		return skeleton;
+	}
+
+	public Vector getSkeletonPosition() {
+		return getPosition().add(skeletonOffset);
 	}
 }

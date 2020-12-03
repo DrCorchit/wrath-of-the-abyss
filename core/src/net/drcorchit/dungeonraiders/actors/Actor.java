@@ -7,69 +7,43 @@ import net.drcorchit.dungeonraiders.utils.Vector;
 
 import java.util.Collection;
 
-public abstract class Actor<T extends Stage> {
+public interface Actor<T extends Stage>  {
 
-	//stage is generic because certain actors depend on stage-specific properties
-	public final T stage;
-	private Vector lastPosition, position, viewOffset;
-	private Rectangle viewBounds;
+	T getStage();
 
-	public Actor(T stage, Vector initialPosition) {
-		this.stage = stage;
-		lastPosition = initialPosition;
-		this.position = initialPosition;
-		this.viewOffset = Vector.ZERO;
-		this.viewBounds = new Rectangle(this::getPosition, 100, 100);
+	//remove actor from parent stage
+	default void destroy() {
+		getStage().destroyActor(this);
 	}
 
-	public Vector getViewPosition() {
-		return getPosition().add(viewOffset);
+	Rectangle getViewBounds();
+
+	void setViewBounds(float x, float y, float w, float h);
+
+	Vector getViewPosition();
+
+	default boolean isInView() {
+		return getViewBounds().collidesWith(getStage().viewBounds);
 	}
 
-	public void setViewBounds(float x, float y, float w, float h) {
-		viewOffset = new Vector(x, y);
-		viewBounds = new Rectangle(this::getViewPosition, w, h);
-	}
+	Vector getLastPosition();
 
-	public void destroy() {
-		stage.destroyActor(this);
-	}
+	void updateLastPosition();
 
-	public Vector getLastPosition() {
-		return lastPosition;
-	}
-
-	public Vector getPosition() {
-		return position;
-	}
-
-	public Rectangle getViewBounds() {
-		return viewBounds.move(position.add(viewOffset));
-	}
+	Vector getPosition();
 
 	//attempt to set the location of the actor. returns whether the operation succeeded
-	boolean setPosition(Vector position) {
-		this.position = position;
-		return true;
+	boolean setPosition(Vector position);
+
+	default boolean setPositionRelative(Vector position) {
+		return setPosition(getPosition().add(position));
 	}
 
-	boolean setPositionRelative(Vector position) {
-		return setPosition(this.position.add(position));
-	}
+	void act(float delta);
 
-	public void updateLastPosition() {
-		lastPosition = position;
-	}
+	Collection<RenderInstruction> draw(Vector position);
 
-	public boolean isInView() {
-		return getViewBounds().collidesWith(stage.viewBounds);
-	}
-
-	public abstract void act(float delta);
-
-	public abstract Collection<RenderInstruction> draw(Vector position);
-
-	public Collection<RenderInstruction> draw() {
-		return draw(position);
+	default Collection<RenderInstruction> draw() {
+		return draw(getPosition());
 	}
 }

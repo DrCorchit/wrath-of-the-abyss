@@ -3,9 +3,10 @@ package net.drcorchit.dungeonraiders.actors;
 import net.drcorchit.dungeonraiders.DungeonRaidersGame;
 import net.drcorchit.dungeonraiders.assets.Skeleton;
 import net.drcorchit.dungeonraiders.assets.Skin;
+import net.drcorchit.dungeonraiders.assets.Skins;
 import net.drcorchit.dungeonraiders.assets.animation.Animations;
-import net.drcorchit.dungeonraiders.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.input.KeyboardInfo;
+import net.drcorchit.dungeonraiders.stages.DungeonStage;
 import net.drcorchit.dungeonraiders.utils.MathUtils;
 import net.drcorchit.dungeonraiders.utils.Vector;
 
@@ -18,6 +19,7 @@ public class Player extends PuppetActor<DungeonStage> {
 
 	private final KeyboardInfo keys = DungeonRaidersGame.getInstance().keyboard;
 	private Vector cameraOffset;
+	private int skinIndex = 0;
 
 	public Player(DungeonStage stage,
 				  Skeleton skeleton,
@@ -78,12 +80,24 @@ public class Player extends PuppetActor<DungeonStage> {
 		} else {
 			animator.setAnimation(Animations.jump2);
 		}
+
+		int newSkinIndex = skinIndex;
+		if (keys.letters[KeyboardInfo.I].isPressed()) {
+			newSkinIndex--;
+		} else if (keys.letters[KeyboardInfo.O].isPressed()) {
+			newSkinIndex++;
+		}
+
+		if (newSkinIndex != skinIndex) {
+			skinIndex = MathUtils.mod(newSkinIndex, Skins.SKINS.size());
+			skin = Skins.SKINS.get(skinIndex);
+		}
 	}
 
 	@Override
 	public void postPhysicsAct(float factor) {
 		//set camera
-		stage.setViewCenter(getPosition().add(cameraOffset));
+		getStage().setViewCenter(getPosition().add(cameraOffset));
 		TreeMap<String, Object> map = DungeonRaidersGame.getInstance().debugInfoMap;
 		int zLayer = Room.getLayerIndex(getZ());
 		map.put("velocity", getVelocity());
