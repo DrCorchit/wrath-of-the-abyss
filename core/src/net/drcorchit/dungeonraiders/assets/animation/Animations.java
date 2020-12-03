@@ -11,9 +11,12 @@ public class Animations {
 
 	private static final File ANIMATION_FOLDER = IOUtils.getFileAsChildOfWorkingDir("resources/animations");
 	public static final Animation stand = loadPose("stand.json");
-	public static final Animation stretch = loadReverse("stretch.json");
+	public static final Animation kneel = loadPose("kneel.json");
+	public static final Animation lean = loadPose("lean.json");
 	public static final Animation jump = loadPose("jump.json");
 	public static final Animation jump2 = loadPose("jump2.json");
+
+	public static final Animation stretch = loadReverse("stretch.json");
 	public static final Animation jog = loadLoop("jogging.json");
 
 	private static LoopingAnimation loadLoop(String file) {

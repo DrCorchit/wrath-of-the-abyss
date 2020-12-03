@@ -18,9 +18,10 @@ public interface Actor<T extends Stage>  {
 
 	Rectangle getViewBounds();
 
-	void setViewBounds(float x, float y, float w, float h);
-
+	//returns the center of the viewBounds rectangle.
 	Vector getViewPosition();
+
+	void setViewBounds(float x, float y, float w, float h);
 
 	default boolean isInView() {
 		return getViewBounds().collidesWith(getStage().viewBounds);

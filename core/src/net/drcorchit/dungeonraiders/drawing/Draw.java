@@ -28,8 +28,7 @@ public class Draw {
 			"uniform mat4 u_worldView;\n" +
 			"varying vec4 v_color;\n" +
 			"varying vec2 v_texCoords;\n" +
-			"void main()\n" +
-			"{\n" +
+			"void main() {\n" +
 			"   v_color =  vec4(1, 1, 1, 1);\n" +
 			"   v_texCoords = a_texCoord;\n" +
 			"   gl_Position =  u_worldView * a_position;\n" +
@@ -41,8 +40,7 @@ public class Draw {
 			"varying vec4 v_color;\n" +
 			"varying vec2 v_texCoords;\n" +
 			"uniform sampler2D u_texture;\n" +
-			"void main()\n" +
-			"{\n" +
+			"void main() {\n" +
 			"vec4 texColor = texture2D(u_texture, v_texCoords);\n" +
 			" gl_FragColor = texColor;\n" +
 			"}";

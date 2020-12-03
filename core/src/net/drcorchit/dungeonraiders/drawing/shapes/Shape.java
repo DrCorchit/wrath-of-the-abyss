@@ -7,6 +7,14 @@ public interface Shape {
 
 	Vector getPosition();
 
+	default float getX() {
+		return getPosition().x;
+	}
+
+	default float getY() {
+		return getPosition().y;
+	}
+
 	boolean containsPoint(Vector point);
 
 	boolean collidesWith(Shape other);

@@ -2,6 +2,7 @@ package net.drcorchit.dungeonraiders.utils;
 
 import com.badlogic.gdx.utils.Align;
 import com.google.common.collect.ImmutableList;
+import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 
 public enum Direction {
 	NORTHWEST(Align.right, -1, 1),
@@ -41,5 +42,39 @@ public enum Direction {
 		float y = (vert - 1) * h / 2;
 
 		return new Pair<>(x, y);
+	}
+
+	//By extrapolating the sides of the rectangle, space is divided into 8 regions,
+	//corresponding to the 8 directions. The region inside the rectangle does not correspond
+	//to any direction, however
+	public static Direction getRectangleDirection(Rectangle rect, Vector point) {
+		Vector pos = rect.getPosition();
+		final boolean above = point.y > pos.y + rect.height;
+
+		if (point.x < pos.x) {
+			if (point.y < pos.y) {
+				return SOUTHWEST;
+			} else if (above) {
+				return NORTHWEST;
+			} else {
+				return WEST;
+			}
+		} else if (point.x > pos.x + rect.width) {
+			if (point.y < pos.y) {
+				return SOUTHEAST;
+			} else if (above) {
+				return NORTHEAST;
+			} else {
+				return EAST;
+			}
+		} else {
+			if (point.y < pos.y) {
+				return SOUTH;
+			} else if (above) {
+				return NORTH;
+			} else {
+				return CENTER;
+			}
+		}
 	}
 }

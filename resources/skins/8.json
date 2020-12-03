@@ -1,0 +1,92 @@
+{
+  "sprites": [
+    {
+      "joint": "left_shoulder",
+      "texture": "skins/arms/arm_left.png",
+      "x": 6,
+      "y": 24
+    },
+    {
+      "joint": "left_elbow",
+      "texture": "skins/arms/forearm_left.png",
+      "x": 2,
+      "y": 41
+    },
+    {
+      "joint": "left_hip",
+      "texture": "skins/legs/thigh_left.png",
+      "x": 8,
+      "y": 39
+    },
+    {
+      "joint": "left_hip",
+      "texture": "skins/legs/thigh_left.png",
+      "x": 8,
+      "y": 39
+    },
+    {
+      "joint": "left_knee",
+      "texture": "skins/legs/calf_left.png",
+      "x": 9,
+      "y": 65
+    },
+    {
+      "joint": "root",
+      "texture": "skins/torsos/torso.png",
+      "x": 21,
+      "y": 20
+    },
+
+    {
+      "joint": "root",
+      "texture": "skins/torsos/rags.png",
+      "x": 19,
+      "y": 23
+    },
+
+    {
+      "joint": "root",
+      "texture": "skins/torsos/rags_top.png",
+      "x": 21,
+      "y": -25
+    },
+
+    {
+      "joint": "neck",
+      "texture": "skins/heads/head_2.png",
+      "x": 9,
+      "y": 0
+    },
+    {
+      "joint": "neck",
+      "texture": "skins/heads/hair_long.png",
+      "x": 21,
+      "y": 24,
+      "blend": "#805800"
+    },
+    {
+      "joint": "right_hip",
+      "texture": "skins/legs/thigh_right.png",
+      "x": 14,
+      "y": 32
+    },
+    {
+      "joint": "right_knee",
+      "texture": "skins/legs/calf_right.png",
+      "x": 11,
+      "y": 66
+    },
+    {
+      "joint": "right_shoulder",
+      "texture": "skins/arms/arm_right.png",
+      "x": 4,
+      "y": 24
+    },
+    {
+      "joint": "right_elbow",
+      "texture": "skins/arms/forearm_right.png",
+      "x": 1,
+      "y": 41
+    }
+  ]
+}

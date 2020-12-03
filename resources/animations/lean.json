@@ -1,0 +1,13 @@
+{
+  "x_offset": 0,
+  "y_offset": -80,
+  "root": 15,
+  "left_shoulder": 0,
+  "left_elbow": 20,
+  "right_shoulder": -30,
+  "right_elbow": 0,
+  "left_hip": 60,
+  "left_knee": 0,
+  "right_hip": 45,
+  "right_knee": -135
+}

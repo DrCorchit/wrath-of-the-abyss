@@ -12,6 +12,7 @@ public class FlickeringLightSource implements LightSource {
 	private final Supplier<Vector> position;
 	private final Color color;
 	private final Random random;
+	private boolean geometric;
 	private float hue, saturation, value, hueFlicker, maxHue, minHue;
 	private float radius, flicker, scale, maxScale, minScale;
 
@@ -19,6 +20,7 @@ public class FlickeringLightSource implements LightSource {
 		this.position = position;
 		color = Color.WHITE.cpy();
 		random = new Random();
+		this.geometric = false;
 		hue = 0;
 		saturation = 1;
 		value = 1;
@@ -61,6 +63,15 @@ public class FlickeringLightSource implements LightSource {
 		this.minScale = minScale;
 		this.maxScale = maxScale;
 		scale = MathUtils.clamp(minScale, scale, maxScale);
+	}
+
+	public void setGeometric(boolean geometric) {
+		this.geometric = geometric;
+	}
+
+	@Override
+	public boolean isGeometric() {
+		return geometric;
 	}
 
 	@Override

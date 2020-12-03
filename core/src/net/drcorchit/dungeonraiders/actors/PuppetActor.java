@@ -53,7 +53,8 @@ public abstract class PuppetActor<T extends DungeonStage> extends PhysicsActor<T
 		Runnable draw = () -> {
 			float originalScale = skeleton.scale;
 			float projectedScale = getZScale() * originalScale;
-			Vector projectedPosition = getStage().projectZPosition(position.add(skeletonOffset), getZ());
+			Vector skeletonPos = position.add(skeletonOffset.multiply(originalScale));
+			Vector projectedPosition = getStage().projectZPosition(skeletonPos, getZ());
 
 			skeleton.scale = projectedScale;
 			//getCollider().move(position.add(getColliderOffset())).draw(Color.YELLOW);

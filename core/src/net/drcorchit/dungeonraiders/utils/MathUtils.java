@@ -30,6 +30,17 @@ public class MathUtils {
 		return i < 0 ? i + divisor : i;
 	}
 
+	public static boolean between(Number min, Number value, Number max) {
+		return value.doubleValue() > min.doubleValue() && value.doubleValue() < max.doubleValue();
+	}
+
+	public static boolean angleBetween(float min, float a, float max) {
+		if (min + 180 < max) return  (a < min || a > max);
+		else if (max + 180 < min) return  (a < max || a > min);
+		else if (a > min && a < max) return true;
+		return a > max && a < min;
+	}
+
 	public static double distance(double x1, double y1, double x2, double y2) {
 		double x = x2 - x1;
 		double y = y2 - y1;

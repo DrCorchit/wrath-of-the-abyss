@@ -24,6 +24,7 @@ public class Skins {
 	public static final Skin gown = loadSkin("5.json");
 	public static final Skin goth = loadSkin("6.json");
 	public static final Skin lifeguard = loadSkin("7.json");
+	public static final Skin rags = loadSkin("8.json");
 
 	public static Skin loadSkin(String path) {
 		try {
