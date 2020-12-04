@@ -1,9 +1,10 @@
 {
+  "top": "open",
   "left": "top",
   "right": "top",
   "bottom": "left",
   "layer": [
-    "11111111111111111111",
+    "0",
     "0",
     "0",
     "0",

@@ -2,8 +2,9 @@
   "top": "open",
   "left": "open",
   "right": "open",
+  "bottom": "closed",
   "layer": [
-    "11000000000000000011",
+    "0",
     "0",
     "0",
     "0",

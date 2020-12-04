@@ -1,30 +1,28 @@
 package net.drcorchit.dungeonraiders.assets;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterators;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.drcorchit.dungeonraiders.actors.Room;
 import net.drcorchit.dungeonraiders.utils.Grid;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import static net.drcorchit.dungeonraiders.utils.MathUtils.getBit;
 
 public class RoomLayout {
 	public final String name;
 	public final float prevalence;
-	public final ImmutableSet<String> topTags, leftTags, rightTags, bottomTags;
+	public final EntryTags.EntryTag top, left, right, bottom;
 	private final ArrayList<Grid<Boolean>> layers;
 
 	public RoomLayout(String name, JsonObject info) {
 		this.name = name;
 
-		topTags = loadTags(info.get("top"));
-		leftTags = loadTags(info.get("left"));
-		rightTags = loadTags(info.get("right"));
-		bottomTags = loadTags(info.get("bottom"));
+		top = Dungeons.TOP.tags.get(info.get("top").getAsString());
+		left = Dungeons.SIDES.tags.get(info.get("left").getAsString());
+		right = Dungeons.SIDES.tags.get(info.get("right").getAsString());
+		bottom = Dungeons.BOTTOM.tags.get(info.get("bottom").getAsString());
 
 		if (info.has("prevalence")) {
 			prevalence = info.get("prevalence").getAsFloat();
@@ -47,13 +45,6 @@ public class RoomLayout {
 				layers.add(loadLayer(rows));
 			}
 		}
-	}
-
-	private static ImmutableSet<String> loadTags(JsonElement in) {
-		if (in == null) return ImmutableSet.of("closed");
-		if (in.isJsonPrimitive()) return ImmutableSet.of(in.getAsString());
-		JsonArray tags = in.getAsJsonArray();
-		return ImmutableSet.copyOf(Iterators.transform(tags.iterator(), JsonElement::getAsString));
 	}
 
 	private static Grid<Boolean> loadLayer(JsonArray rows) {

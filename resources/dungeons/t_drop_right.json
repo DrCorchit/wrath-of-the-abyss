@@ -2,6 +2,7 @@
   "top": "right",
   "left": "bottom",
   "right": "bottom",
+  "bottom": "closed",
   "layer": [
     "11111111110000001111",
     "11111111110000001111",

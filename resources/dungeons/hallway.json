@@ -1,6 +1,8 @@
 {
+  "top": "closed",
   "left": "open",
   "right": "open",
+  "bottom": "closed",
   "layer": [
     "11111111111111111111",
     "0",

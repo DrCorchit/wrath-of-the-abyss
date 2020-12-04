@@ -1,7 +1,8 @@
 {
-  "left": [
-    "split", "shelf", "top"
-  ],
+  "top": "closed",
+  "left": "shelf",
+  "right": "bottom",
+  "bottom": "closed",
   "layers": [
     [
       "11111111111111111111",

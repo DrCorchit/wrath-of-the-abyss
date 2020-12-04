@@ -1,6 +1,9 @@
 {
-  "left": "lower",
-  "right": "lower",
+  "prevalence": 2,
+  "top": "closed",
+  "left": "bottom",
+  "right": "bottom",
+  "bottom": "closed",
   "layer": [
     "11111111111111111111",
     "11111111111111111111",

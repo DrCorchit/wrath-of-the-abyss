@@ -2,6 +2,7 @@
   "top": "open",
   "left": "open",
   "right": "open",
+  "bottom": "closed",
   "layers": [
     [
       "0",

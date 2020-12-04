@@ -2,6 +2,8 @@
   "prevalence": 0.1,
   "top": "open",
   "left": "bottom",
+  "right": "closed",
+  "bottom": "closed",
   "layer": [
     "11000000000000000011",
     "11000000000000000011",

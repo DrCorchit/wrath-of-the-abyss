@@ -9,10 +9,7 @@ import net.drcorchit.dungeonraiders.actors.Actor;
 import net.drcorchit.dungeonraiders.actors.DungeonActor;
 import net.drcorchit.dungeonraiders.actors.HasLightSources;
 import net.drcorchit.dungeonraiders.actors.Room;
-import net.drcorchit.dungeonraiders.assets.Dungeons;
-import net.drcorchit.dungeonraiders.assets.RoomLayout;
-import net.drcorchit.dungeonraiders.assets.Sprites;
-import net.drcorchit.dungeonraiders.assets.Textures;
+import net.drcorchit.dungeonraiders.assets.*;
 import net.drcorchit.dungeonraiders.drawing.*;
 import net.drcorchit.dungeonraiders.drawing.shapes.Rectangle;
 import net.drcorchit.dungeonraiders.utils.Coordinate;
@@ -222,8 +219,9 @@ public class DungeonStage extends Stage {
 						float lightScale = 2 * r / lightSprite.getMinWidth();
 						lightSprite.drawScaled(draw.batch, lightPos.x, lightPos.y, lightScale, lightScale, 0);
 
-						if (lightSource.isGeometric()) {
-							if (layerIndex == 0) {
+						if (layerIndex == 0) {
+
+							if (lightSource.isGeometric()) {
 								draw.batch.setBlendFunction(GL20.GL_ZERO, GL20.GL_ONE_MINUS_SRC_COLOR);
 								for (Room room : roomSet) {
 									Room.Layer layer = room.getLayer(layerIndex);
@@ -252,6 +250,7 @@ public class DungeonStage extends Stage {
 				draw.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			}, z, -3f);
 			instructions.add(light);
+
 		}
 
 		Collections.sort(instructions);
@@ -292,19 +291,21 @@ public class DungeonStage extends Stage {
 	}
 
 	public RoomLayout getRandomDungeon(Coordinate c) {
-		Room top = rooms.get(new Coordinate(c.x, c.y + 1));
+		Room above = rooms.get(new Coordinate(c.x, c.y + 1));
 		Room left = rooms.get(new Coordinate(c.x - 1, c.y));
 		Room right = rooms.get(new Coordinate(c.x + 1, c.y));
-		Room bottom = rooms.get(new Coordinate(c.x, c.y - 1));
+		Room below = rooms.get(new Coordinate(c.x, c.y - 1));
 
-		Predicate<RoomLayout> rule = (layout) -> {
-			if (top != null && Utils.getIntersectionSize(top.bottomTags, layout.topTags) == 0) return false;
-			if (left != null && Utils.getIntersectionSize(left.rightTags, layout.leftTags) == 0) return false;
-			if (right != null && Utils.getIntersectionSize(right.leftTags, layout.rightTags) == 0) return false;
-			if (bottom != null && Utils.getIntersectionSize(bottom.topTags, layout.bottomTags) == 0) return false;
-			return true;
-		};
+		Predicate<RoomLayout> rule = (layout) -> (above == null || matches(above.bottom, layout.top, Dungeons.BOTTOM));
+		rule = rule.and(layout -> left == null || matches(left.right, layout.left, Dungeons.SIDES));
+		rule = rule.and(layout -> right == null || matches(right.left, layout.right, Dungeons.SIDES));
+		rule = rule.and(layout -> below == null || matches(below.top, layout.bottom, Dungeons.TOP));
 
 		return Dungeons.getRandomDungeon(rule, random);
+	}
+
+	private static boolean matches(EntryTags.EntryTag tag1, EntryTags.EntryTag tag2, EntryTags tag1toTag2) {
+		if (tag1 == null || tag2 == null) return true;
+		return tag1.getMatchingTags(tag1toTag2).contains(tag2);
 	}
 }

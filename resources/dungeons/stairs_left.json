@@ -1,11 +1,8 @@
 {
   "top": "open",
   "left": "open",
-  "right": [
-    "open",
-    "closed",
-    "shelf"
-  ],
+  "right": "open",
+  "bottom": "closed",
   "layers": [
     [
       "0",

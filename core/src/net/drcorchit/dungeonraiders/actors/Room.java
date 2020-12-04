@@ -3,6 +3,7 @@ package net.drcorchit.dungeonraiders.actors;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.google.common.collect.ImmutableSet;
+import net.drcorchit.dungeonraiders.assets.EntryTags;
 import net.drcorchit.dungeonraiders.assets.RoomLayout;
 import net.drcorchit.dungeonraiders.assets.Sprites;
 import net.drcorchit.dungeonraiders.drawing.RenderInstruction;
@@ -22,7 +23,7 @@ public class Room extends AbstractActor<DungeonStage> {
 	public static final float PIXEL_SIZE = SIZE * DungeonStage.BLOCK_SIZE;
 
 	public final Coordinate coordinate;
-	public final ImmutableSet<String> topTags, leftTags, rightTags, bottomTags;
+	public final EntryTags.EntryTag top, left, right, bottom;
 	private final Layer[] layers;
 	private final int lastlayerIndex;
 
@@ -40,10 +41,10 @@ public class Room extends AbstractActor<DungeonStage> {
 
 		setViewBounds(PIXEL_SIZE / 2, PIXEL_SIZE / 2, PIXEL_SIZE, PIXEL_SIZE);
 
-		topTags = ImmutableSet.of();
-		leftTags = ImmutableSet.of();
-		rightTags = ImmutableSet.of();
-		bottomTags = ImmutableSet.of();
+		top = null;
+		left = null;
+		right = null;
+		bottom = null;
 	}
 
 	public Room(DungeonStage stage, Coordinate coordinate, RoomLayout roomLayout) {
@@ -62,10 +63,10 @@ public class Room extends AbstractActor<DungeonStage> {
 		//initialize layers
 		roomLayout.copyToRoom(this);
 
-		topTags = roomLayout.topTags;
-		leftTags = roomLayout.leftTags;
-		rightTags = roomLayout.rightTags;
-		bottomTags = roomLayout.bottomTags;
+		top = roomLayout.top;
+		left = roomLayout.left;
+		right = roomLayout.right;
+		bottom = roomLayout.bottom;
 	}
 
 	public Coordinate getCoordinate() {

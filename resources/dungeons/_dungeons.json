@@ -1,0 +1,51 @@
+{
+  "start": [
+    "hallway_open"
+  ],
+  "transitions": {
+    "top": {
+      "open": [
+        "open",
+        "closed"
+      ],
+      "through": "open",
+      "closed": "closed",
+      "left": "left",
+      "right": "right"
+    },
+    "sides": {
+      "open": "open",
+      "closed": "closed",
+      "top": [
+        "top",
+        "shelf"
+      ],
+      "bottom": [
+        "bottom",
+        "shelf"
+      ],
+      "shelf": [
+        "top",
+        "bottom",
+        "shelf",
+        "split"
+      ],
+      "split": [
+        "shelf",
+        "split"
+      ]
+    },
+    "bottom": {
+      "open": [
+        "open",
+        "through"
+      ],
+      "closed": [
+        "open",
+        "closed"
+      ],
+      "left": "left",
+      "right": "right"
+    }
+  }
+}

@@ -1,8 +1,10 @@
 {
+  "top": "open",
   "left": "split",
   "right": "split",
+  "bottom": "closed",
   "layer": [
-    "111111111111111111111",
+    "0",
     "0",
     "0",
     "0",
