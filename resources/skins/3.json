@@ -70,13 +70,13 @@
     {
       "joint": "right_knee",
       "texture": "skins/legs/calf_right_footless.png",
-      "x": 11,
+      "x": 10,
       "y": 49
     },
     {
       "joint": "right_ankle",
       "texture": "skins/legs/tall_boot.png",
-      "x": 10,
+      "x": 9,
       "y": 8
     },
     {

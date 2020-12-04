@@ -111,19 +111,6 @@ public class DungeonRaidersGame extends ApplicationAdapter {
 
 		//Gdx.gl.glClearColor(0, 0, 0, 1);
 		//Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		//AnimatedSprite lightSprite = Sprites.getSprite(Textures.LIGHT);
-		//lightSprite.setOffsetCentered();
-		//float lightScale = 2 * testLight.getLightRadius() / lightSprite.getMinWidth();
-		/*
-		lightSprite.drawScaled(draw.batch,
-				testLight.getLightPosition().x,
-				testLight.getLightPosition().y,
-				lightScale, lightScale, 0);
-		*/
-		//Rectangle r = new Rectangle(() -> new Vector(500, 500), 45, 45);
-		//drawTest(testLight.getBoundingRectangle(), r);
-
 		StringBuilder builder = new StringBuilder();
 		debugInfoMap.forEach((key, val) -> builder.append(key).append(": ").append(val).append("\n"));
 		draw.drawText(40, 1040, Fonts.getDefaultFont(), builder.toString(), -1, Direction.SOUTHEAST, Color.GREEN);

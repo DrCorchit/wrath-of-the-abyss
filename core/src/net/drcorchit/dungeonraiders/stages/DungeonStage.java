@@ -218,13 +218,12 @@ public class DungeonStage extends Stage {
 						lightSprite.setAlpha(MathUtils.clamp(0f, lightSource.getLightIntensity(), 1f));
 						Vector lightPos = projectZPosition(lightSource.getLightPosition().subtract(getViewPosition()), z);
 						float lightZ = lightSource.getLightZ();
-						int lightZLayer = Room.getLayerIndex(lightZ);
 						float r = lightSource.getLightRadius() * getZScale(lightZ);
 						float lightScale = 2 * r / lightSprite.getMinWidth();
 						lightSprite.drawScaled(draw.batch, lightPos.x, lightPos.y, lightScale, lightScale, 0);
 
 						if (lightSource.isGeometric()) {
-							if (true) {
+							if (layerIndex == 0) {
 								draw.batch.setBlendFunction(GL20.GL_ZERO, GL20.GL_ONE_MINUS_SRC_COLOR);
 								for (Room room : roomSet) {
 									Room.Layer layer = room.getLayer(layerIndex);

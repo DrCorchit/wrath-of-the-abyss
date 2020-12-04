@@ -28,7 +28,7 @@
       "joint": "left_knee",
       "texture": "skins/legs/calf_left.png",
       "x": 9,
-      "y": 65
+      "y": 62
     },
     {
       "joint": "root",
@@ -73,8 +73,8 @@
     {
       "joint": "right_knee",
       "texture": "skins/legs/calf_right.png",
-      "x": 11,
-      "y": 66
+      "x": 10,
+      "y": 63
     },
     {
       "joint": "right_shoulder",
