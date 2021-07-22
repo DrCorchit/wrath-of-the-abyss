@@ -1,9 +1,10 @@
+apply plugin: "java"
+
 sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
-sourceSets.main.resources.srcDirs = ["../android/assets"]
 
 project.ext.mainClassName = "net.drcorchit.dungeonraiders.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../android/assets")
+project.ext.assetsDir = new File("..")
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
@@ -23,14 +24,15 @@ task debug(dependsOn: classes, type: JavaExec) {
 }
 
 task dist(type: Jar) {
+    from files(sourceSets.main.output.classesDirs)
+    from files(sourceSets.main.output.resourcesDir)
+    from files(project.assetsDir);
+    from { configurations.runtimeClasspath.collect { zipTree(it) } }
+
     manifest {
         attributes 'Main-Class': project.mainClassName
     }
-    dependsOn configurations.runtimeClasspath
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    with jar
+    baseName 'DungeonRaiders'
 }
 
 
